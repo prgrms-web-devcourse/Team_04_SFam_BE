@@ -9,8 +9,11 @@ spring:
     properties:
       hibernate:
         format_sql: ${SHOW_SQL:true}
-
 logging:
   level:
     com.kdt: DEBUG
     org.hibernate.type.descriptor.sql: DEBUG
+
+cors:
+  allowed:
+    origin: http://localhost:3000

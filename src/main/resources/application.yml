@@ -2,3 +2,25 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+cors:
+  allowed:
+    api: /api/**
+    method: *
+security:
+  patterns:
+    ignoring:
+      GET :
+        - /v3/api-docs/**
+        - /swagger-ui/**
+        - /swagger-ui.html/**
+    permit-all:
+      GET:
+        - /**
+      POST:
+        - /**
+      DELETE:
+        - /**
+      PATCH:
+        - /**
+      PUT:
+        - /**
