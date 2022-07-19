@@ -1,13 +1,11 @@
 # Team_04_Temp_BE
 ## 🤲🏻 프로젝트 소개
 
-----
 스포츠 대결 매칭 프로젝트입니다. 
 
 
 ## 👬 팀 소개
 
----
 ### [Backend] 
 <table>
   <tr>
@@ -18,7 +16,7 @@
     </td>
     <td>
         <a href="https://github.com/HYEBPARK">
-            <img src="https://avatars.githubusercontent.com/u/35947674?v=4" width="130px" />
+            <img src="https://avatars.githubusercontent.com/u/35947674?v=4" width="100px" />
         </a>
     </td>
     <td>
@@ -39,11 +37,11 @@
     
   </tr>
   <tr>
-    <td><b>김형욱</b></td>
-    <td><b>박혜빈</b></td>
-    <td><b>곽동운</b></td>
-    <td><b>김병연</b></td>
-    <td><b>박진형</b></td>
+    <td><b>Crong (김형욱)</b></td>
+    <td><b>Hyeb (박혜빈)</b></td>
+    <td><b>Mark (곽동운)</b></td>
+    <td><b>Elizabeth (김병연)</b></td>
+    <td><b>NULL (박진형)</b></td>
   </tr>
   <tr>
     <td><b>Product Owner</b></td>
@@ -65,7 +63,7 @@
     </td>
     <td>
         <a href="https://github.com/kyubumjang">
-            <img src="https://avatars.githubusercontent.com/u/33307948?v=4" width="130px" />
+            <img src="https://avatars.githubusercontent.com/u/33307948?v=4" width="100px" />
         </a>
     </td>
     <td>
@@ -82,10 +80,10 @@
 
   </tr>
   <tr>
-    <td><b>Papa(김창민)</b></td>
-    <td><b>Lawrence(장규범)</b></td>
-    <td><b>Claire(신승연)</b></td>
-    <td><b>Thompson(홍정기)</b></td>
+    <td><b>Papa (김창민)</b></td>
+    <td><b>Lawrence (장규범)</b></td>
+    <td><b>Claire (신승연)</b></td>
+    <td><b>Thompson (홍정기)</b></td>
   </tr>
   <tr>
     <td><b>Product Owner</b></td>
