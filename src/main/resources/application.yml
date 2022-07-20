@@ -5,7 +5,7 @@ spring:
 cors:
   allowed:
     api: /api/**
-    method: *
+    method: '*'
 security:
   patterns:
     ignoring:
