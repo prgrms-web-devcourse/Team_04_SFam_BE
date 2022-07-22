@@ -27,7 +27,7 @@ public class AuthController {
 		this.authService = authService;
 	}
 
-	@GetMapping("/signin")
+	@PostMapping("/signin")
 	public ApiResponse<AuthResponse.SignInResponse> signIn(HttpServletRequest request, HttpServletResponse response,
 		@RequestBody AuthRequest.SignInRequest signInRequest) {
 		AuthResponse.SignInResponse signInResponse = this.authService.signIn(signInRequest.username(),
