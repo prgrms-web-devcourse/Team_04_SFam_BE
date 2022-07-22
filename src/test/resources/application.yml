@@ -15,10 +15,9 @@ spring:
     baseline-on-migrate: false
 cors:
   allowed:
-    url: "http://localhost"
-security:
-  jwt:
-    client-secret: TEST_SECRET
+    origin: "http://localhost"
+jwt:
+  client-secret: TEST_SECRET
 
 logging:
   level:
