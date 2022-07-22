@@ -21,18 +21,12 @@ public class JpaAuditConfig {
 		return () -> {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-			if (authentication == null || !authentication.isAuthenticated() || isAnonymous(authentication)) {
+			if (authentication == null
+				|| !authentication.isAuthenticated()
+				|| (JwtAuthentication)authentication.getPrincipal() == null) {
 				return Optional.empty();
 			}
-
-			JwtAuthentication user = (JwtAuthentication)authentication.getPrincipal();
-
-			return Optional.ofNullable(user.id().toString());
+			return Optional.of(((JwtAuthentication)authentication.getPrincipal()).id().toString());
 		};
 	}
-
-	private boolean isAnonymous(Authentication authentication) {
-		return authentication instanceof AnonymousAuthenticationToken;
-	}
-
 }
