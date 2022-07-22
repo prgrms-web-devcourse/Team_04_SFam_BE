@@ -47,7 +47,7 @@ public class CommonRestControllerAdvice {
 	@ExceptionHandler({TransactionSystemException.class, ConstraintViolationException.class})
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleConstraintViolation(ConstraintViolationException e) {
 		this.log.warn(e.getMessage(), e);
-		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_NOT_VALID;
+		ErrorCode errorCode = ErrorCode.CONSTRAINT_VIOLATION;
 
 		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
 	}
