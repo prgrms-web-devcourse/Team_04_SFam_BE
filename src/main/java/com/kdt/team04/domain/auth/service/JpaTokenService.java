@@ -3,6 +3,7 @@ package com.kdt.team04.domain.auth.service;
 import java.text.MessageFormat;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
@@ -11,6 +12,7 @@ import com.kdt.team04.domain.auth.entity.Token;
 import com.kdt.team04.domain.auth.repository.TokenRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class JpaTokenService implements TokenService {
 
 	private final TokenRepository tokenRepository;
@@ -28,6 +30,7 @@ public class JpaTokenService implements TokenService {
 	}
 
 	@Override
+	@Transactional
 	public String save(String refreshToken, Long userId) {
 		return this.tokenRepository.save(new Token(refreshToken, userId)).token();
 	}

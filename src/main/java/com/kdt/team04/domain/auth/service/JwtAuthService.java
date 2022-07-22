@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
@@ -19,6 +20,7 @@ import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
 @Service
+@Transactional(readOnly = true)
 public class JwtAuthService implements AuthService {
 
 	private final UserService userService;
@@ -63,6 +65,7 @@ public class JwtAuthService implements AuthService {
 	}
 
 	@Override
+	@Transactional
 	public AuthResponse.SignUpResponse signUp(AuthRequest.SignUpRequest request) {
 		String encodedPassword = passwordEncoder.encode(request.password());
 
