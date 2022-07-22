@@ -1,4 +1,4 @@
-package com.kdt.team04.controller;
+package com.kdt.team04.domain.check;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

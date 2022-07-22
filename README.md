@@ -124,5 +124,5 @@ npm install
 ## Swagger
 - API를 테스트 할 수 있는 UI를 제공합니다.
 ```
-http://localhost:8080/swagger-ui.html 
+https://api.dongkyurami.link/swagger-ui/index.html
 ```
