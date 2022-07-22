@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+  flyway:
+    enabled: false
+    baseline-on-migrate: false
+cors:
+  allowed:
+    url: "http://localhost"
+security:
+  jwt:
+    client-secret: TEST_SECRET
+
+logging:
+  level:
+    org.hibernate.type.descriptor.sql: trace
