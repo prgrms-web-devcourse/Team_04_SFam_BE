@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.kdt.team04.domain.user.entity.User;
 
-@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByUsername(String username);
 }

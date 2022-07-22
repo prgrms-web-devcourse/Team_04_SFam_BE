@@ -60,15 +60,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private String getAccessToken(HttpServletRequest request) {
-		if (request.getCookies() != null) {
-			return Arrays.stream(request.getCookies())
-				.filter(cookie -> cookie.getName().equals(this.jwt.accessTokenProperties().header()))
-				.findFirst()
-				.map(Cookie::getValue)
-				.orElseThrow(() -> new JwtAccessTokenNotFoundException("AccessToken is not found"));
-		} else {
+		if (request.getCookies() == null) {
 			throw new JwtAccessTokenNotFoundException("AccessToken is not found.");
 		}
+		return Arrays.stream(request.getCookies())
+			.filter(cookie -> cookie.getName().equals(this.jwt.accessTokenProperties().header()))
+			.findFirst()
+			.map(Cookie::getValue)
+			.orElseThrow(() -> new JwtAccessTokenNotFoundException("AccessToken is not found"));
 	}
 
 	private void authenticate(String accessToken, HttpServletRequest request, HttpServletResponse response) {
@@ -76,8 +75,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			Jwt.Claims claims = verify(accessToken);
 			JwtAuthenticationToken authentication = createAuthenticationToken(claims, request, accessToken);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			this.log.info("set Authentication");
-
 		} catch (TokenExpiredException exception) {
 			Cookie cookie = new Cookie(jwt.accessTokenProperties().header(), "");
 			cookie.setPath("/");
