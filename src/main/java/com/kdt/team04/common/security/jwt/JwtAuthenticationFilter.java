@@ -20,6 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.security.jwt.exception.JwtAccessTokenNotFoundException;
 import com.kdt.team04.common.security.jwt.exception.JwtRefreshTokenNotFoundException;
 import com.kdt.team04.common.security.jwt.exception.JwtTokenNotFoundException;
@@ -145,7 +146,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 				return true;
 			}
-		} catch (JwtTokenNotFoundException | JWTVerificationException e) {
+		} catch (EntityNotFoundException | JWTVerificationException e) {
 			log.warn(e.getMessage());
 
 			return false;
