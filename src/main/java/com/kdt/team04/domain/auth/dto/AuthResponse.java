@@ -9,12 +9,19 @@ public record AuthResponse() {
 	public record SignInResponse(
 		@Schema(description = "회원 고유 PK")
 		Long id,
+
 		@Schema(description = "회원 id")
 		String username,
+
+		@Schema(description = "회원 닉네임")
+		String nickname,
+
 		@JsonIgnore
 		TokenDto accessToken,
+
 		@JsonIgnore
 		TokenDto refreshToken,
+
 		@JsonIgnore
 		JwtAuthenticationToken jwtAuthenticationToken
 	) {

@@ -28,7 +28,8 @@ public class UserService {
 		return new UserResponse(
 			foundUser.getId(),
 			foundUser.getUsername(),
-			foundUser.getPassword()
+			foundUser.getPassword(),
+			foundUser.getNickname()
 		);
 	}
 

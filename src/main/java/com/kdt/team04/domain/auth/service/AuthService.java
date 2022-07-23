@@ -58,6 +58,7 @@ public class AuthService {
 		return new AuthResponse.SignInResponse(
 			foundMember.id(),
 			username,
+			foundMember.nickname(),
 			new TokenDto(this.jwt.accessTokenProperties().header(), accessToken),
 			new TokenDto(this.jwt.refreshTokenProperties().header(), refreshToken),
 			authenticationToken
