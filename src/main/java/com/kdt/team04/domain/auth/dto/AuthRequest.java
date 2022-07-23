@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record AuthRequest() {
 	public record SignInRequest(
 		@Schema(description = "회원 id", required = true)
-		@Pattern(regexp = "%[a-z0-9_]*$")
+		@Pattern(regexp = "^[a-z0-9_]*$")
 		@NotBlank
 		@Size(min = 6, max = 24)
 		String username,
@@ -21,7 +21,7 @@ public record AuthRequest() {
 
 	public record SignUpRequest(
 		@Schema(description = "회원 id", required = true)
-		@Pattern(regexp = "%[a-z0-9_]*$")
+		@Pattern(regexp = "^[a-z0-9_]*$")
 		@NotBlank
 		@Size(min = 6, max = 24)
 		String username,
