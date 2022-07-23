@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +16,10 @@ import com.kdt.team04.domain.auth.dto.AuthRequest;
 import com.kdt.team04.domain.auth.dto.AuthResponse;
 import com.kdt.team04.domain.auth.service.AuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "로그인/회원가입 API")
 @RestController
 @RequestMapping("/api/users")
 public class AuthController {
@@ -27,6 +30,7 @@ public class AuthController {
 		this.authService = authService;
 	}
 
+	@Operation(summary = "로그인", description = "로그인을 통해 토큰을 획득합니다.")
 	@PostMapping("/signin")
 	public ApiResponse<AuthResponse.SignInResponse> signIn(HttpServletRequest request, HttpServletResponse response,
 		@RequestBody AuthRequest.SignInRequest signInRequest) {
@@ -44,6 +48,7 @@ public class AuthController {
 		return new ApiResponse<>(signInResponse);
 	}
 
+	@Operation(summary = "회원가입")
 	@PostMapping("/signup")
 	public AuthResponse.SignUpResponse signUp(@RequestBody AuthRequest.SignUpRequest request) {
 		return authService.signUp(request);
