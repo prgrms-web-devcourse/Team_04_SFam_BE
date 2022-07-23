@@ -3,6 +3,7 @@ package com.kdt.team04.domain.user.service;
 import java.text.MessageFormat;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
@@ -12,6 +13,7 @@ import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.repository.UserRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class DefaultUserService implements UserService {
 
 	private final UserRepository userRepository;
@@ -33,6 +35,7 @@ public class DefaultUserService implements UserService {
 		);
 	}
 
+	@Transactional
 	public Long create(UserRequest.CreateRequest request) {
 		return userRepository.save(new User(request.username(), request.nickname(), request.password())).getId();
 	}
