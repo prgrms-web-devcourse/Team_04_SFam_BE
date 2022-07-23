@@ -100,12 +100,12 @@ public class Jwt {
 		}
 
 		Claims(DecodedJWT decodedJWT) {
-			Claim memberId = decodedJWT.getClaim("userId");
-			if (!memberId.isNull()) {
-				this.userId = memberId.asLong();
+			Claim userId = decodedJWT.getClaim("userId");
+			if (!userId.isNull()) {
+				this.userId = userId.asLong();
 			}
 			Claim username = decodedJWT.getClaim("username");
-			if (!memberId.isNull()) {
+			if (!username.isNull()) {
 				this.username = username.asString();
 			}
 			Claim roles = decodedJWT.getClaim("roles");
@@ -119,6 +119,7 @@ public class Jwt {
 		@Builder
 		Claims(Long userId, String username, String[] roles, Date iat, Date exp) {
 			this.userId = userId;
+			this.username = username;
 			this.roles = roles;
 			this.iat = iat;
 			this.exp = exp;

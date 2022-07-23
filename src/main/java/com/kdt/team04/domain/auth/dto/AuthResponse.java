@@ -1,18 +1,36 @@
 package com.kdt.team04.domain.auth.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record AuthResponse() {
 	public record SignInResponse(
+		@Schema(description = "회원 고유 PK")
 		Long id,
+
+		@Schema(description = "회원 id")
 		String username,
+
+		@Schema(description = "회원 닉네임")
+		String nickname,
+
+		@JsonIgnore
 		TokenDto accessToken,
+
+		@JsonIgnore
 		TokenDto refreshToken,
+
+		@JsonIgnore
 		JwtAuthenticationToken jwtAuthenticationToken
 	) {
 	}
 
-	public record SignUpResponse(Long id) {
+	public record SignUpResponse(
+		@Schema(description = "회원 고유 PK")
+		Long id
+	) {
 
 	}
 }
