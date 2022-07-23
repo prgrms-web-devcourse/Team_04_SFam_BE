@@ -33,7 +33,7 @@ BRANCH_IN_COMMIT=$(grep -c "$JIRA_ID" $1)
 TICKET=[$(git rev-parse --abbrev-ref HEAD | grep -Eo '^(\w+/)?(\w+[-_ ])?[0-9]+' | grep -Eo '(\w+[-])?[0-9]+' | tr "[:lower:]" "[:upper:]")]
 COMMIT_SOURCE=$2
 
-if [[ $BRANCH_EXCLUDED -eq 1 || "$COMMIT_MESSAGE" == "$TICKET"* || "${COMMIT_SOURCE}" = merge ]];then
+if [[ $BRANCH_EXCLUDED -eq 1 || "$COMMIT_MESSAGE" == "$TICKET"* || "${COMMIT_SOURCE}" = merge || "${COMMIT_SOURCE}" = rebase ]];then
   exit 0;
 fi
 
