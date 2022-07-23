@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -64,5 +66,16 @@ class UserServiceTest {
 		assertThat(userResponse.username()).isEqualTo(user.getUsername());
 		assertThat(userResponse.nickname()).isEqualTo(user.getNickname());
 		assertThat(userResponse.password()).isEqualTo(user.getPassword());
+	}
+
+	@Test
+	void testFindByNotExistUsername() {
+		//given
+		String notExistUsername = "------";
+		given(userRepository.findByUsername(notExistUsername)).willThrow(EntityNotFoundException.class);
+
+		//when, then
+		assertThatThrownBy(() -> userService.findByUsername(notExistUsername)).isInstanceOf(
+			EntityNotFoundException.class);
 	}
 }
