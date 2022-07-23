@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -12,10 +13,11 @@ import javax.validation.constraints.Size;
 import com.kdt.team04.domain.BaseEntity;
 
 @Entity
+@Table(name = "users")
 public class User extends BaseEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotBlank
@@ -23,7 +25,7 @@ public class User extends BaseEntity {
 
 	@NotBlank
 	@Column(unique = true)
-	@Pattern(regexp = "%[a-z0-9_]*$")
+	@Pattern(regexp = "^[a-z0-9_]*$")
 	@Size(min = 6, max = 24)
 	private String username;
 
