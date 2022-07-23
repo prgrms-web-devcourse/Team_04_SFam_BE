@@ -53,7 +53,7 @@ class AuthServiceTest {
 		//given
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword);
+		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname");
 		List<GrantedAuthority> authorities = new ArrayList<>(
 			Collections.singleton(new SimpleGrantedAuthority("USER")));
 		Jwt.Claims claims = Jwt.Claims.builder()
@@ -85,6 +85,7 @@ class AuthServiceTest {
 
 		assertThat(signInResponse.id()).isEqualTo(userResponse.id());
 		assertThat(signInResponse.username()).isEqualTo(userResponse.username());
+		assertThat(signInResponse.nickname()).isEqualTo(userResponse.nickname());
 	}
 
 	@Test
@@ -104,10 +105,6 @@ class AuthServiceTest {
 		AuthResponse.SignUpResponse signUpResponse = authService.signUp(signUpRequest);
 
 		//then
-
-
 		assertThat(signUpResponse.id()).isEqualTo(userId);
-
-
 	}
 }
