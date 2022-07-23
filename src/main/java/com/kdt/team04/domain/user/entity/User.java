@@ -23,7 +23,7 @@ public class User extends BaseEntity {
 
 	@NotBlank
 	@Column(unique = true)
-	@Pattern(regexp = "%[a-z0-9_]*$")
+	@Pattern(regexp = "^[a-z0-9_]*$")
 	@Size(min = 6, max = 24)
 	private String username;
 
