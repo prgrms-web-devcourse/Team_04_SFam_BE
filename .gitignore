@@ -41,3 +41,5 @@ out/
 
 ### Node Module ###
 node_modules
+
+log/
