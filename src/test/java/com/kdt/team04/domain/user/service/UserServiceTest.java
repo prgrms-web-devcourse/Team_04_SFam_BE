@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.domain.user.dto.UserRequest;
+import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.repository.UserRepository;
 
@@ -56,9 +57,12 @@ class UserServiceTest {
 		given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.of(user));
 
 		//when
+		UserResponse userResponse = userService.findByUsername(user.getUsername());
 
 		//then
-
+		assertThat(userResponse.id()).isEqualTo(user.getId());
+		assertThat(userResponse.username()).isEqualTo(user.getUsername());
+		assertThat(userResponse.nickname()).isEqualTo(user.getNickname());
+		assertThat(userResponse.password()).isEqualTo(user.getPassword());
 	}
-
 }
