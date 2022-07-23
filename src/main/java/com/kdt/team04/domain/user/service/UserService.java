@@ -1,10 +1,38 @@
 package com.kdt.team04.domain.user.service;
 
+import java.text.MessageFormat;
+
+import org.springframework.stereotype.Service;
+
+import com.kdt.team04.common.exception.EntityNotFoundException;
+import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.entity.User;
+import com.kdt.team04.domain.user.repository.UserRepository;
 
-public interface UserService {
-	UserResponse findByUsername(String username);
+@Service
+public class UserService {
 
-	Long create(UserRequest.CreateRequest request);
+	private final UserRepository userRepository;
+
+	public UserService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
+
+	public UserResponse findByUsername(String username) {
+		User foundUser = this.userRepository.findByUsername(username)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
+				MessageFormat.format("Username = {0}", username)));
+
+		return new UserResponse(
+			foundUser.getId(),
+			foundUser.getUsername(),
+			foundUser.getPassword()
+		);
+	}
+
+	public Long create(UserRequest.CreateRequest request) {
+		return userRepository.save(new User(request.username(), request.nickname(), request.password())).getId();
+	}
 }
