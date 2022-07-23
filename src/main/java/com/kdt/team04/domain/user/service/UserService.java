@@ -36,4 +36,17 @@ public class UserService {
 	public Long create(UserRequest.CreateRequest request) {
 		return userRepository.save(new User(request.username(), request.nickname(), request.password())).getId();
 	}
+
+	public UserResponse findById(Long id) {
+		User foundUser = this.userRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
+				MessageFormat.format("UserId = {0}", id)));
+
+		return new UserResponse(
+			foundUser.getId(),
+			foundUser.getUsername(),
+			foundUser.getPassword(),
+			foundUser.getNickname()
+		);
+	}
 }
