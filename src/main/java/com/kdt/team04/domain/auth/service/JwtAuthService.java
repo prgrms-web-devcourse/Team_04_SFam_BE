@@ -11,10 +11,10 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
-import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.auth.dto.AuthRequest;
 import com.kdt.team04.domain.auth.dto.AuthResponse;
 import com.kdt.team04.domain.auth.dto.TokenDto;
+import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
@@ -68,10 +68,10 @@ public class JwtAuthService implements AuthService {
 	@Override
 	@Transactional
 	public AuthResponse.SignUpResponse signUp(AuthRequest.SignUpRequest request) {
-		String encodedPassword = passwordEncoder.encode(request.password());
+		String encodedPassword = this.passwordEncoder.encode(request.password());
+		Long userId = this.userService.create(
+			new UserRequest.CreateRequest(request.username(), encodedPassword, request.nickname()));
 
-		return new AuthResponse.SignUpResponse(this.userService.create(
-			new UserRequest.CreateRequest(request.username(), encodedPassword, request.nickname()))
-		);
+		return new AuthResponse.SignUpResponse(userId);
 	}
 }
