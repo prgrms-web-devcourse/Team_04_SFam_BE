@@ -61,7 +61,8 @@ public class JwtAuthService implements AuthService {
 			username,
 			new TokenDto(this.jwt.accessTokenProperties().header(), accessToken),
 			new TokenDto(this.jwt.refreshTokenProperties().header(), refreshToken),
-			authenticationToken);
+			authenticationToken
+		);
 	}
 
 	@Override
@@ -70,8 +71,7 @@ public class JwtAuthService implements AuthService {
 		String encodedPassword = passwordEncoder.encode(request.password());
 
 		return new AuthResponse.SignUpResponse(this.userService.create(
-			new UserRequest.CreateRequest(request.username(), request.password(), encodedPassword))
+			new UserRequest.CreateRequest(request.username(), encodedPassword, request.nickname()))
 		);
 	}
-
 }
