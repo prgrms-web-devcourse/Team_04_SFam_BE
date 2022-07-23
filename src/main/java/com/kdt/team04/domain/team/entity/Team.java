@@ -11,7 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.kdt.team04.domain.BaseEntity;
-import com.kdt.team04.domain.team.Category;
+import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.user.entity.User;
 
 import lombok.Builder;
@@ -28,7 +28,7 @@ public class Team extends BaseEntity {
 	private String description;
 
 	@Enumerated(value = EnumType.STRING)
-	private Category sportsCategory;
+	private SportsCategory sportsCategory;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "leader_id")
@@ -38,7 +38,7 @@ public class Team extends BaseEntity {
 	}
 
 	@Builder
-	public Team(Long id, String teamName, String description, Category sportsCategory, User leader) {
+	public Team(Long id, String teamName, String description, SportsCategory sportsCategory, User leader) {
 		this.id = id;
 		this.teamName = teamName;
 		this.description = description;
@@ -58,7 +58,7 @@ public class Team extends BaseEntity {
 		return description;
 	}
 
-	public Category getSportsCategory() {
+	public SportsCategory getSportsCategory() {
 		return sportsCategory;
 	}
 

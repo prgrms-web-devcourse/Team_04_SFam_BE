@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.domain.team.Category;
+import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
@@ -30,7 +30,7 @@ public class TeamService {
 	}
 
 	@Transactional
-	public TeamResponse create(Long userId, String teamName, Category sportsCategory, String description) {
+	public TeamResponse create(Long userId, String teamName, SportsCategory sportsCategory, String description) {
 		User user = teamConverter.toUser(userService.findById(userId));
 		Team savedTeam = teamRepository.save(Team.builder()
 			.teamName(teamName)

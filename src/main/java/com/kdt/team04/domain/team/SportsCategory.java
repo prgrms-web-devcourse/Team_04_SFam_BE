@@ -1,11 +1,11 @@
 package com.kdt.team04.domain.team;
 
-public enum Category {
+public enum SportsCategory {
 	BADMINTON("배드민턴");
 
 	private final String name;
 
-	Category(String name) {
+	SportsCategory(String name) {
 		this.name = name;
 	}
 
