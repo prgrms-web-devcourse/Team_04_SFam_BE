@@ -14,8 +14,7 @@ logging:
 cors:
   allowed:
     origin: "http://localhost:3000"
-security:
-  jwt:
-    client-secret: ENC(vaOuavM8/QZzrntUSL/CLC3Q47399EsR)
+jwt:
+  client-secret: ENC(vaOuavM8/QZzrntUSL/CLC3Q47399EsR)
 encryptor:
   key: ${ENCRYPTOR_KEY}
