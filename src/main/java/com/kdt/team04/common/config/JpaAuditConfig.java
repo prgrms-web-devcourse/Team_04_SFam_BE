@@ -23,7 +23,7 @@ public class JpaAuditConfig {
 
 			if (authentication == null
 				|| !authentication.isAuthenticated()
-				|| (JwtAuthentication)authentication.getPrincipal() == null) {
+				|| authentication instanceof AnonymousAuthenticationToken) {
 				return Optional.empty();
 			}
 			return Optional.of(((JwtAuthentication)authentication.getPrincipal()).id().toString());
