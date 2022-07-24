@@ -75,7 +75,7 @@ class UserServiceTest {
 		// given
 		Long requestId = 1L;
 
-		User user = new User(requestId, "1234", "test00", "nk-test00");
+		User user = new User(requestId, passwordEncoder.encode("1234"), "test00", "nk-test00");
 		UserResponse.FindProfile response =
 			new UserResponse.FindProfile(user.getId(), user.getUsername(), user.getNickname());
 
