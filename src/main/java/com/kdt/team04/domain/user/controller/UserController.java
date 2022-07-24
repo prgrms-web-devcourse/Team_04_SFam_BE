@@ -29,7 +29,7 @@ public class UserController {
 	@Operation(summary = "회원 프로필 조회", description = "회원 프로필을 닉네임을 통해 조회할 수 있다.")
 	@GetMapping
 	public ApiResponse<List<UserResponse.UserFindResponse>> findUsers(@RequestParam String nickname) {
-		List<UserResponse.UserFindResponse> foundUsers = userService.findByNickname(nickname);
+		List<UserResponse.UserFindResponse> foundUsers = userService.findAllByNickname(nickname);
 
 		return new ApiResponse<>(foundUsers);
 	}

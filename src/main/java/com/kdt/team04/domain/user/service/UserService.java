@@ -53,15 +53,14 @@ public class UserService {
 		);
 	}
 
-	public List<UserResponse.UserFindResponse> findByNickname(String nickname) {
-		return userRepository.findByNicknameContaining(nickname)
-			.stream()
+	public List<UserResponse.UserFindResponse> findAllByNickname(String nickname) {
+		return userRepository.findByNicknameContaining(nickname).stream()
 			.map(
-				u -> new UserResponse.UserFindResponse(
-						u.getId(),
-						u.getUsername(),
-						u.getNickname()
-					)
+				user -> new UserResponse.UserFindResponse(
+					user.getId(),
+					user.getUsername(),
+					user.getNickname()
+				)
 			)
 			.toList();
 	}
