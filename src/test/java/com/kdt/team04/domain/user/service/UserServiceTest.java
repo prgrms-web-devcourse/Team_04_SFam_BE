@@ -90,7 +90,8 @@ class UserServiceTest {
 	@DisplayName("존재하지 않은 ID로 조회 시 EntityNotFoundException 예외 발생")
 	void testFindByIdFail() {
 		Long invalidId = 1000L;
-		given(userRepository.findById(invalidId)).willThrow(EntityNotFoundException.class);
+		given(userRepository.findById(invalidId)).willReturn(Optional.empty());
+
 		assertThatThrownBy(() -> userService.findById(invalidId)).isInstanceOf(EntityNotFoundException.class);
 	}
 

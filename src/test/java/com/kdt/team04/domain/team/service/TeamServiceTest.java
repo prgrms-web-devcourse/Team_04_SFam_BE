@@ -95,7 +95,8 @@ class TeamServiceTest {
 	@DisplayName("존재하지 않은 ID로 조회 시 EntityNotFoundException 예외 발생")
 	void findByIdFail() {
 		Long invalidId = 1000L;
-		given(teamRepository.findById(invalidId)).willThrow(EntityNotFoundException.class);
+		given(teamRepository.findById(invalidId)).willReturn(Optional.empty());
+
 		assertThatThrownBy(() -> teamService.findById(invalidId)).isInstanceOf(EntityNotFoundException.class);
 	}
 }
