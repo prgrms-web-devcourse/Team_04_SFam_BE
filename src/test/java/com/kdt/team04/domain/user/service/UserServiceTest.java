@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -65,4 +68,31 @@ class UserServiceTest {
 		assertThat(userResponse.nickname()).isEqualTo(user.getNickname());
 		assertThat(userResponse.password()).isEqualTo(user.getPassword());
 	}
+
+	@Test
+	void testFindByIdSuccess() {
+		//given
+		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
+		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()));
+		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+
+		//when
+		UserResponse userResponse = userService.findById(user.getId());
+
+		//then
+		assertThat(userResponse.id()).isEqualTo(user.getId());
+		assertThat(userResponse.username()).isEqualTo(user.getUsername());
+		assertThat(userResponse.nickname()).isEqualTo(user.getNickname());
+		assertThat(userResponse.password()).isEqualTo(user.getPassword());
+	}
+
+	@Test
+	@DisplayName("존재하지 않은 ID로 조회 시 EntityNotFoundException 예외 발생")
+	void testFindByIdFail() {
+		Long invalidId = 1000L;
+		given(userRepository.findById(invalidId)).willReturn(Optional.empty());
+
+		assertThatThrownBy(() -> userService.findById(invalidId)).isInstanceOf(EntityNotFoundException.class);
+	}
+
 }
