@@ -100,7 +100,6 @@ class UserServiceTest {
 		MatcherAssert.assertThat(findResponses, samePropertyValuesAs(responses));
 	}
 
-
 	@Test
 	@DisplayName("사용자 프로필 조회한다.")
 	void testFindProfile() {
