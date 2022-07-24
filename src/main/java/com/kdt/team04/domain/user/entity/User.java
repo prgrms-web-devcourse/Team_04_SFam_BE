@@ -17,7 +17,7 @@ import com.kdt.team04.domain.BaseEntity;
 public class User extends BaseEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotBlank

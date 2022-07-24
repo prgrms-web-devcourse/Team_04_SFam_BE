@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -20,6 +21,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtConfig;
 import com.kdt.team04.domain.auth.dto.AuthRequest;
@@ -89,6 +91,21 @@ class AuthServiceTest {
 	}
 
 	@Test
+	void testSignInFail() {
+		//given
+		String password = "@Test1234";
+		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
+		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname");
+		given(userService.findByUsername(userResponse.username())).willReturn(userResponse);
+		given(passwordEncoder.matches(password, encodedPassword)).willReturn(false);
+		//when, then
+		assertThatThrownBy(()->authService.signIn(userResponse.username(), password)).isInstanceOf(BusinessException.class);
+
+		verify(userService, times(1)).findByUsername(userResponse.username());
+		verify(passwordEncoder, times(1)).matches(password, encodedPassword);
+	}
+
+	@Test
 	void testSignUpSuccess() {
 		//given
 		String password = "@Test1234";
@@ -107,4 +124,5 @@ class AuthServiceTest {
 		//then
 		assertThat(signUpResponse.id()).isEqualTo(userId);
 	}
+
 }
