@@ -92,7 +92,7 @@ class UserServiceTest {
 		given(userRepository.findByNicknameContaining(nickname)).willReturn(users);
 
 		// when
-		List<UserResponse.UserFindResponse> findResponses = userService.findByNickname(nickname);
+		List<UserResponse.UserFindResponse> findResponses = userService.findAllByNickname(nickname);
 
 		// then
 		verify(userRepository, times(1)).findByNicknameContaining(nickname);
