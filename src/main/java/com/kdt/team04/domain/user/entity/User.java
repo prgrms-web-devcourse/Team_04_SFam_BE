@@ -12,6 +12,7 @@ import javax.validation.constraints.Size;
 
 import com.kdt.team04.domain.BaseEntity;
 
+@Table(name = "users")
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity {
@@ -38,14 +39,14 @@ public class User extends BaseEntity {
 	}
 
 	public User(String username, String nickname, String password) {
-		this.username = username;
-		this.nickname = nickname;
-		this.password = password;
+		this(null, password, username, nickname);
 	}
 
 	public User(Long id, String password, String username, String nickname) {
-		this(username, nickname, password);
 		this.id = id;
+		this.password = password;
+		this.username = username;
+		this.nickname = nickname;
 	}
 
 	public Long getId() {

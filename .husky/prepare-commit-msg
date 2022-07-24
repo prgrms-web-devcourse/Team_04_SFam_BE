@@ -3,7 +3,7 @@
 Font_RED='\033[91m'
 Font_CLEAR='\033[0m' # No Color
 
-PREFIX_LIST=( 
+PREFIX_LIST=(
  feat
  refactor
  fix
@@ -27,13 +27,19 @@ COMMIT_MESSAGE="$(cat $1)"
 PREFIX=`echo $COMMIT_MESSAGE | cut -d ':' -f1 | sed 's/ *$//g'`
 MESSAGE=`echo $COMMIT_MESSAGE | cut -d ':' -f2`
 
+TICKET_REGEX="^\[[A-Z]+-[0-9]+\]"
+
+if [[ $COMMIT_MESSAGE =~ $TICKET_REGEX ]];then
+  exit 0;
+fi
+
 BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$")
 BRANCH_IN_COMMIT=$(grep -c "$JIRA_ID" $1)
 
 TICKET=[$(git rev-parse --abbrev-ref HEAD | grep -Eo '^(\w+/)?(\w+[-_ ])?[0-9]+' | grep -Eo '(\w+[-])?[0-9]+' | tr "[:lower:]" "[:upper:]")]
 COMMIT_SOURCE=$2
 
-if [[ $BRANCH_EXCLUDED -eq 1 || "$COMMIT_MESSAGE" == "$TICKET"* || "${COMMIT_SOURCE}" = merge || "${COMMIT_SOURCE}" = rebase ]];then
+if [[ $BRANCH_EXCLUDED -eq 1 || "$COMMIT_MESSAGE" == "$TICKET"* || "$COMMIT_SOURCE" = merge ]];then
   exit 0;
 fi
 
@@ -49,6 +55,6 @@ if !(printf '%s\n' "${PREFIX_LIST[@]}" | grep -xq $PREFIX); then
     exit 1
 fi
 
-if [ -n $JIRA_ID ] && ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then 
+if [ -n $JIRA_ID ] && ! [[ $BRANCH_IN_COMMIT -ge 1 ]]; then
   echo "[$JIRA_ID] $PREFIX: $MESSAGE" > $1
 fi
