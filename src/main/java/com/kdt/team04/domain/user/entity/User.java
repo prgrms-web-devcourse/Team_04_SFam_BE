@@ -5,12 +5,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.kdt.team04.domain.BaseEntity;
 
+@Table(name = "users")
 @Entity
 public class User extends BaseEntity {
 
@@ -36,14 +38,14 @@ public class User extends BaseEntity {
 	}
 
 	public User(String username, String nickname, String password) {
-		this.username = username;
-		this.nickname = nickname;
-		this.password = password;
+		this(null, password, username, nickname);
 	}
 
 	public User(Long id, String password, String username, String nickname) {
-		this(username, nickname, password);
 		this.id = id;
+		this.password = password;
+		this.username = username;
+		this.nickname = nickname;
 	}
 
 	public Long getId() {
