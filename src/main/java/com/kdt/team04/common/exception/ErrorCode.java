@@ -23,7 +23,10 @@ public enum ErrorCode {
 	USER_NOT_FOUND("U0001", "Not found user", HttpStatus.NOT_FOUND),
 
 	//TOKEN
-	TOKEN_NOT_FOUND("T0001", "Not found token", HttpStatus.NOT_FOUND);
+	TOKEN_NOT_FOUND("A0001", "Not found token", HttpStatus.NOT_FOUND),
+
+	//TEAM
+	TEAM_NOT_FOUND("T0001", "Not found team", HttpStatus.NOT_FOUND);
 
 	private final String code;
 	private final String message;
