@@ -1,8 +1,8 @@
 package com.kdt.team04.domain.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -118,4 +118,14 @@ class UserServiceTest {
 		assertThatThrownBy(() -> userService.findById(invalidId)).isInstanceOf(EntityNotFoundException.class);
 	}
 
+	@Test
+	void testFindByNotExistUsername() {
+		//given
+		String notExistUsername = "------";
+		given(userRepository.findByUsername(notExistUsername)).willThrow(EntityNotFoundException.class);
+
+		//when, then
+		assertThatThrownBy(() -> userService.findByUsername(notExistUsername)).isInstanceOf(
+			EntityNotFoundException.class);
+	}
 }

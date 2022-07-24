@@ -1,11 +1,11 @@
 <included>
     <timestamp datePattern="yyyy-MM-dd" key="LOG_DATE"/>
 
-    <property name="ROOT_PATH" value="./log"/>
+    <property name="ROOT_PATH" value="/home/ec2-user/app/team04/log"/>
     <property name="SUB_PATH_ERROR" value="error"/>
     <property name="SUB_PATH_WARN" value="warn"/>
     <property name="SUB_PATH_DB" value="db"/>
-    <property name="LOG_BACKUP_PATH" value="./log/backup"/>
+    <property name="LOG_BACKUP_PATH" value="/home/ec2-user/app/team04/log/backup"/>
 
     <property name="MAX_HISTORY" value="30"/>
     <property name="TOTAL_SIZE_CAP" value="10GB"/>
