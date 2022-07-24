@@ -16,4 +16,14 @@ public record UserResponse(Long id, String username, String password, String nic
 		@Schema(description = "회원 닉네임")
 		String nickname
 	) {}
+
+	public record UserFindResponse(
+		@Schema(description = "회원 고유 PK")
+		Long id,
+		@Schema(description = "회원 id")
+		String username,
+		@Schema(description = "회원 닉네임")
+		String nickname
+	) {}
+
 }
