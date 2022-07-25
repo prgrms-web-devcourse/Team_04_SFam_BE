@@ -147,4 +147,14 @@ class UserServiceTest {
 		assertThatThrownBy(() -> userService.findById(invalidId)).isInstanceOf(EntityNotFoundException.class);
 	}
 
+	@Test
+	void testFindByNotExistUsername() {
+		//given
+		String notExistUsername = "------";
+		given(userRepository.findByUsername(notExistUsername)).willThrow(EntityNotFoundException.class);
+
+		//when, then
+		assertThatThrownBy(() -> userService.findByUsername(notExistUsername)).isInstanceOf(
+			EntityNotFoundException.class);
+	}
 }

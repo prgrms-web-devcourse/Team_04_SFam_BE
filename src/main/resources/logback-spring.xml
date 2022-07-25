@@ -31,6 +31,7 @@
     </springProfile>
 
     <springProfile name="dev">
+        <include resource="logback/properties-dev.xml" />
         <include resource="logback/console-appender.xml" />
         <include resource="logback/file-db-appender.xml" />
         <include resource="logback/file-error-appender.xml" />

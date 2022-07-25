@@ -2,6 +2,7 @@ package com.kdt.team04.domain.auth.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,7 +34,7 @@ public class AuthController {
 	@Operation(summary = "로그인", description = "로그인을 통해 토큰을 획득합니다.")
 	@PostMapping("/signin")
 	public ApiResponse<AuthResponse.SignInResponse> signIn(HttpServletRequest request, HttpServletResponse response,
-		@RequestBody AuthRequest.SignInRequest signInRequest) {
+		@RequestBody @Valid AuthRequest.SignInRequest signInRequest) {
 		AuthResponse.SignInResponse signInResponse = this.authService.signIn(signInRequest.username(),
 			signInRequest.password());
 		ResponseCookie accessTokenCookie = ResponseCookie.from(signInResponse.accessToken().header(),
@@ -50,7 +51,7 @@ public class AuthController {
 
 	@Operation(summary = "회원가입")
 	@PostMapping("/signup")
-	public AuthResponse.SignUpResponse signUp(@RequestBody AuthRequest.SignUpRequest request) {
-		return authService.signUp(request);
+	public ApiResponse<AuthResponse.SignUpResponse> signUp(@RequestBody @Valid AuthRequest.SignUpRequest request) {
+		return new ApiResponse<>(authService.signUp(request));
 	}
 }
