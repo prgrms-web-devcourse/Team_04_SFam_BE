@@ -8,7 +8,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.LongStream;
 
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.DisplayName;
@@ -69,6 +71,33 @@ class UserServiceTest {
 		assertThat(userResponse.username()).isEqualTo(user.getUsername());
 		assertThat(userResponse.nickname()).isEqualTo(user.getNickname());
 		assertThat(userResponse.password()).isEqualTo(user.getPassword());
+	}
+
+	@Test
+	@DisplayName("사용지 프로필을 닉네임으로 조회한다.")
+	void testFindByNicknameSuccess() {
+		// given
+		String nickname = "test";
+		List<User> users = LongStream.range(1, 6)
+			.mapToObj(id ->
+				new User(id, passwordEncoder.encode("12345"),
+					"test0" + id, "test0" + id)
+			)
+			.toList();
+		List<UserResponse.UserFindResponse> responses = LongStream.range(1, 6)
+			.mapToObj(id ->
+				new UserResponse.UserFindResponse(id, "test0" + id, "test0" + id))
+			.toList();
+
+		given(userRepository.findByNicknameContaining(nickname)).willReturn(users);
+
+		// when
+		List<UserResponse.UserFindResponse> findResponses = userService.findAllByNickname(nickname);
+
+		// then
+		verify(userRepository, times(1)).findByNicknameContaining(nickname);
+
+		MatcherAssert.assertThat(findResponses, samePropertyValuesAs(responses));
 	}
 
 	@Test

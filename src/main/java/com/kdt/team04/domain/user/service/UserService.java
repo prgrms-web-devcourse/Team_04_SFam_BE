@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.user.service;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,18 @@ public class UserService {
 			foundUser.getUsername(),
 			foundUser.getNickname()
 		);
+	}
+
+	public List<UserResponse.UserFindResponse> findAllByNickname(String nickname) {
+		return userRepository.findByNicknameContaining(nickname).stream()
+			.map(
+				user -> new UserResponse.UserFindResponse(
+					user.getId(),
+					user.getUsername(),
+					user.getNickname()
+				)
+			)
+			.toList();
 	}
 
 	public UserResponse findById(Long id) {
