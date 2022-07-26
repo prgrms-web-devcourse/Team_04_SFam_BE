@@ -4,6 +4,10 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password:
+  flyway:
+    enabled: false
+    baseline-on-migrate: false
+    locations: classpath:db/migration, classpath:db/seed
   jpa:
     hibernate:
      ddl-auto: create-drop
