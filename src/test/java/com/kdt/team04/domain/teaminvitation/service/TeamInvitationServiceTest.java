@@ -14,7 +14,7 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.entity.Team;
-import com.kdt.team04.domain.teaminvitation.controller.TeamInvitationRequest;
+import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationRequest;
 import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationResponse;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
