@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtConfig;
 import com.kdt.team04.domain.auth.dto.AuthRequest;
@@ -103,6 +105,21 @@ class AuthServiceTest {
 
 		verify(userService, times(1)).findByUsername(userResponse.username());
 		verify(passwordEncoder, times(1)).matches(password, encodedPassword);
+	}
+
+	@Test
+	void testSignInWithNotFoundUser() {
+		//given
+		String password = "@Test1234";
+		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
+		String notExistUsername = "noname";
+		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname");
+		given(userService.findByUsername(notExistUsername)).willThrow(EntityNotFoundException.class);
+		//when, then
+		assertThatThrownBy(()->authService.signIn("noname", password)).isInstanceOf(BusinessException.class).hasMessageContaining(
+			MessageFormat.format("username : {0} not found", notExistUsername));
+
+		verify(userService, times(1)).findByUsername(notExistUsername);
 	}
 
 	@Test
