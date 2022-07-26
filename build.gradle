@@ -1,7 +1,14 @@
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.7.1'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id "org.flywaydb.flyway" version "6.2.4"
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 	id 'java'
 }
 
@@ -35,6 +42,10 @@ dependencies {
 
 	//JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	//QUERYDSL
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
 	//DB
 	runtimeOnly 'com.h2database:h2'
@@ -73,6 +84,33 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+/***************************
+ ** QueryDSL Config Start **
+ ***************************/
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+sourceSets {
+	main.java.srcDir querydslDir
+}
+
+// 여기부터는 Gradle 5.0 이후로 추가 작성
+compileQuerydsl{
+	options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	querydsl.extendsFrom compileClasspath
+}
+/***************************
+ *** QueryDSL Config End ***
+ ***************************/
 flyway {
 	configFiles = ['flyway.conf']
 }
