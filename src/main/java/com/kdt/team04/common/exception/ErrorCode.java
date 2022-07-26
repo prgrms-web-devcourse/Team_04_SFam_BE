@@ -18,7 +18,6 @@ public enum ErrorCode {
 	//AUTHENTICATION
 	AUTHENTICATION_FAILED("A0001", "Authentication failed", HttpStatus.BAD_REQUEST),
 
-
 	//USER
 	USER_NOT_FOUND("U0001", "Not found user", HttpStatus.NOT_FOUND),
 
@@ -26,7 +25,11 @@ public enum ErrorCode {
 	TOKEN_NOT_FOUND("A0001", "Not found token", HttpStatus.NOT_FOUND),
 
 	//TEAM
-	TEAM_NOT_FOUND("T0001", "Not found team", HttpStatus.NOT_FOUND);
+	TEAM_NOT_FOUND("T0001", "Not found team", HttpStatus.NOT_FOUND),
+	NOT_TEAM_LEADER("T0002", "Not team leader", HttpStatus.FORBIDDEN),
+
+	//TEAM_MEMBER
+	ALREADY_TEAM_MEMBER("M0001", "Already member of team" , HttpStatus.BAD_REQUEST);
 
 	private final String code;
 	private final String message;
