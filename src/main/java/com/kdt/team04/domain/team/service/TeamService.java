@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.team.service;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,8 @@ import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
+import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
+import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -22,11 +25,14 @@ public class TeamService {
 	private final TeamRepository teamRepository;
 	private final TeamConverter teamConverter;
 	private final UserService userService;
+	private final TeamMemberGiverService teamMemberGiver;
 
-	public TeamService(TeamRepository teamRepository, TeamConverter teamConverter, UserService userService) {
+	public TeamService(TeamRepository teamRepository, TeamConverter teamConverter, UserService userService,
+		TeamMemberGiverService teamMemberGiver) {
 		this.teamRepository = teamRepository;
 		this.teamConverter = teamConverter;
 		this.userService = userService;
+		this.teamMemberGiver = teamMemberGiver;
 	}
 
 	@Transactional
@@ -46,7 +52,8 @@ public class TeamService {
 		Team team = teamRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_FOUND,
 				MessageFormat.format("TeamId = {0}", id)));
+		List<TeamMemberResponse> teamMemberResponses = teamMemberGiver.findAllByTeamId(id);
 
-		return teamConverter.toTeamResponse(team);
+		return teamConverter.toTeamResponse(team, teamMemberResponses);
 	}
 }

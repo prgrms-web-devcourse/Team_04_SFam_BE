@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +25,7 @@ import com.kdt.team04.domain.team.dto.TeamRequest;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
+import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
@@ -43,6 +45,9 @@ class TeamServiceTest {
 	@Mock
 	private TeamRepository teamRepository;
 
+	@Mock
+	private TeamMemberGiverService teamMemberGiver;
+
 	private final User USER = new User(1L, "password", "username", "nickname");
 	private final UserResponse USER_RESPONSE = new UserResponse(USER.getId(), USER.getUsername(), USER.getPassword(),
 		USER.getNickname());
@@ -51,7 +56,8 @@ class TeamServiceTest {
 	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),
 		CREATE_REQUEST.sportsCategory(), USER);
 	private final TeamResponse RESPONSE = new TeamResponse(TEAM.getId(), TEAM.getTeamName(), TEAM.getDescription(),
-		TEAM.getSportsCategory(), USER_RESPONSE, TEAM.getCreatedAt(), TEAM.getUpdatedAt());
+		Collections.emptyList(),
+		TEAM.getSportsCategory(), USER_RESPONSE);
 
 	@Test
 	@DisplayName("팀 생성에 성공합니다.")
@@ -79,14 +85,15 @@ class TeamServiceTest {
 	void findByIdSuccess() {
 		//given
 		given(teamRepository.findById(TEAM.getId())).willReturn(Optional.of(TEAM));
-		given(teamConverter.toTeamResponse(TEAM)).willReturn(RESPONSE);
+		given(teamConverter.toTeamResponse(TEAM, Collections.emptyList())).willReturn(RESPONSE);
+		given(teamMemberGiver.findAllByTeamId(TEAM.getId())).willReturn(Collections.emptyList());
 
 		//when
 		TeamResponse foundTeam = teamService.findById(TEAM.getId());
 
 		//then
 		verify(teamRepository, times(1)).findById(TEAM.getId());
-		verify(teamConverter, times(1)).toTeamResponse(TEAM);
+		verify(teamConverter, times(1)).toTeamResponse(TEAM, Collections.emptyList());
 
 		assertThat(foundTeam.id()).isEqualTo(TEAM.getId());
 	}
