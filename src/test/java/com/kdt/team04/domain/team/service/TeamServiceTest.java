@@ -51,7 +51,7 @@ class TeamServiceTest {
 	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),
 		CREATE_REQUEST.sportsCategory(), USER);
 	private final TeamResponse RESPONSE = new TeamResponse(TEAM.getId(), TEAM.getTeamName(), TEAM.getDescription(),
-		TEAM.getSportsCategory(), TEAM.getCreatedAt(), TEAM.getUpdatedAt());
+		TEAM.getSportsCategory(), USER_RESPONSE, TEAM.getCreatedAt(), TEAM.getUpdatedAt());
 
 	@Test
 	@DisplayName("팀 생성에 성공합니다.")
