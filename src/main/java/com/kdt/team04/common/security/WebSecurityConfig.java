@@ -48,6 +48,10 @@ public class WebSecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring()
 			.antMatchers(HttpMethod.GET, this.securityConfigProperties.patterns().ignoring().get("GET"))
+			.antMatchers(HttpMethod.POST, this.securityConfigProperties.patterns().ignoring().get("POST"))
+			.antMatchers(HttpMethod.PATCH, this.securityConfigProperties.patterns().ignoring().get("PATCH"))
+			.antMatchers(HttpMethod.DELETE, this.securityConfigProperties.patterns().ignoring().get("DELETE"))
+			.antMatchers(HttpMethod.PUT, this.securityConfigProperties.patterns().ignoring().get("PUT"))
 			.requestMatchers(PathRequest.toStaticResources().atCommonLocations());
 	}
 
@@ -60,6 +64,7 @@ public class WebSecurityConfig {
 			.antMatchers(HttpMethod.PATCH, this.securityConfigProperties.patterns().permitAll().get("PATCH")).permitAll()
 			.antMatchers(HttpMethod.DELETE, this.securityConfigProperties.patterns().permitAll().get("DELETE")).permitAll()
 			.antMatchers(HttpMethod.PUT, this.securityConfigProperties.patterns().permitAll().get("PUT")).permitAll()
+			.anyRequest().authenticated()
 			.and()
 			.formLogin()
 				.disable()
