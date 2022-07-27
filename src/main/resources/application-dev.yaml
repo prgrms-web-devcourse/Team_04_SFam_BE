@@ -6,6 +6,11 @@ spring:
     url: ENC(9d/4bHB1HmtQc/9cqFnK/mWXll5mHPVs1V1JBqNjyCTNZzj2CE62LTe7mWKNhCW1FK8Zh0JPGiFj8ICXRlCl65pco0f/r7TTLqJGYKeMDln1QkZRmttdcg==)
   jpa:
     show-sql: false
+cors:
+  allowed:
+    origin:
+      - http://localhost:3000
+      - http://127.0.0.1:3000
 logging:
   level:
     org.hibernate.type.descriptor.sql: INFO
