@@ -30,12 +30,10 @@ public class TeamController {
 
 	@Operation(summary = "팀을 생성한다.", description = "새로운 팀을 생성할 수 있습니다.")
 	@PostMapping
-	public ApiResponse<TeamResponse> create(@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
+	public void create(@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
 		@RequestBody TeamRequest.CreateRequest request) {
-		TeamResponse team = teamService.create(jwtAuthentication.id(), request.name(), request.sportsCategory(),
+		teamService.create(jwtAuthentication.id(), request.name(), request.sportsCategory(),
 			request.description());
-
-		return new ApiResponse<>(team);
 	}
 
 	@Operation(summary = "팀 프로필 조회", description = "해당 id의 팀 프로필을 조회할 수 있습니다.")

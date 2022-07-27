@@ -17,7 +17,6 @@ import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 import com.kdt.team04.domain.teaminvitation.entity.TeamInvitation;
 import com.kdt.team04.domain.teaminvitation.repository.TeamInvitationRepository;
 import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
-import com.kdt.team04.domain.teammember.service.TeamMemberService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -60,6 +59,7 @@ public class TeamInvitationService {
 			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
 				MessageFormat.format("{0} is not team leader id {1} ", myId, team.getLeader().getId()));
 		}
+
 		User target = userConverter.toUser(targetResponse);
 		TeamInvitation invitation = new TeamInvitation(team, target, InvitationStatus.WAITING);
 		Long savedInvitationId = teamInvitationRepository.save(invitation).getId();

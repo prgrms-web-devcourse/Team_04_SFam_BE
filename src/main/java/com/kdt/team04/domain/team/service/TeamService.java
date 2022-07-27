@@ -8,6 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.domain.match.review.dto.MatchRecordResponse;
+import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.match.review.service.MatchRecordGiverService;
+import com.kdt.team04.domain.match.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
@@ -26,26 +30,33 @@ public class TeamService {
 	private final TeamConverter teamConverter;
 	private final UserService userService;
 	private final TeamMemberGiverService teamMemberGiver;
+	private final MatchRecordGiverService matchRecordGiver;
+	private final MatchReviewGiverService matchReviewGiver;
 
 	public TeamService(TeamRepository teamRepository, TeamConverter teamConverter, UserService userService,
-		TeamMemberGiverService teamMemberGiver) {
+		TeamMemberGiverService teamMemberGiver, MatchRecordGiverService matchRecordGiver,
+		MatchReviewGiverService matchReviewGiver) {
 		this.teamRepository = teamRepository;
 		this.teamConverter = teamConverter;
 		this.userService = userService;
 		this.teamMemberGiver = teamMemberGiver;
+		this.matchRecordGiver = matchRecordGiver;
+		this.matchReviewGiver = matchReviewGiver;
 	}
 
 	@Transactional
-	public TeamResponse create(Long userId, String teamName, SportsCategory sportsCategory, String description) {
+	public Long create(Long userId, String teamName, SportsCategory sportsCategory, String description) {
 		User user = teamConverter.toUser(userService.findById(userId));
-		Team savedTeam = teamRepository.save(Team.builder()
-			.name(teamName)
-			.sportsCategory(sportsCategory)
-			.description(description)
-			.leader(user)
-			.build());
+		Team savedTeam = teamRepository.save(
+			Team.builder()
+				.name(teamName)
+				.sportsCategory(sportsCategory)
+				.description(description)
+				.leader(user)
+				.build());
+		teamMemberGiver.registerTeamLeader(savedTeam.getId(), user.getId());
 
-		return teamConverter.toTeamResponse(savedTeam);
+		return savedTeam.getId();
 	}
 
 	public TeamResponse findById(Long id) {
@@ -53,7 +64,9 @@ public class TeamService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_FOUND,
 				MessageFormat.format("TeamId = {0}", id)));
 		List<TeamMemberResponse> teamMemberResponses = teamMemberGiver.findAllByTeamId(id);
+		MatchRecordResponse.TotalCount totalRecord = matchRecordGiver.findByTeamTotalRecord(id);
+		MatchReviewResponse.TotalCount totalReview = matchReviewGiver.findByTeamTotalReview(id);
 
-		return teamConverter.toTeamResponse(team, teamMemberResponses);
+		return teamConverter.toTeamResponse(team, teamMemberResponses, totalRecord, totalReview);
 	}
 }
