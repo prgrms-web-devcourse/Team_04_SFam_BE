@@ -1,9 +1,13 @@
 package com.kdt.team04.domain.auth.controller;
 
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.springframework.http.HttpCookie;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.domain.auth.dto.AuthRequest;
 import com.kdt.team04.domain.auth.dto.AuthResponse;
+import com.kdt.team04.domain.auth.dto.TokenDto;
 import com.kdt.team04.domain.auth.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,18 +40,29 @@ public class AuthController {
 	@PostMapping("/signin")
 	public ApiResponse<AuthResponse.SignInResponse> signIn(HttpServletRequest request, HttpServletResponse response,
 		@RequestBody @Valid AuthRequest.SignInRequest signInRequest) {
-		AuthResponse.SignInResponse signInResponse = this.authService.signIn(signInRequest.username(),
-			signInRequest.password());
-		ResponseCookie accessTokenCookie = ResponseCookie.from(signInResponse.accessToken().header(),
-			signInResponse.accessToken().token()).path("/").build();
-		ResponseCookie refreshTokenCookie = ResponseCookie.from(signInResponse.refreshToken().header(),
-			signInResponse.refreshToken().token()).path("/").build();
+		AuthResponse.SignInResponse signInResponse = this.authService.signIn(
+			signInRequest.username(),
+			signInRequest.password()
+		);
+
 		signInResponse.jwtAuthenticationToken().setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 		SecurityContextHolder.getContext().setAuthentication(signInResponse.jwtAuthenticationToken());
-		response.setHeader("Set-Cookie", accessTokenCookie.toString());
-		response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+		ResponseCookie accessTokenCookie = createSecureCookie(signInResponse.accessToken());
+		ResponseCookie refreshTokenCookie = createSecureCookie(signInResponse.refreshToken());
+		response.setHeader(SET_COOKIE, accessTokenCookie.toString());
+		response.addHeader(SET_COOKIE, refreshTokenCookie.toString());
 
 		return new ApiResponse<>(signInResponse);
+	}
+
+	private ResponseCookie createSecureCookie(TokenDto tokenDto) {
+		return ResponseCookie.from(tokenDto.header(), tokenDto.token())
+			.path("/")
+			.httpOnly(true)
+			.secure(true)
+			.maxAge(tokenDto.expirySecond())
+			.build();
 	}
 
 	@Operation(summary = "회원가입")
