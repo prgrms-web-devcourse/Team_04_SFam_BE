@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
@@ -37,28 +38,33 @@ public class AuthService {
 	}
 
 	public AuthResponse.SignInResponse signIn(String username, String password) {
-		UserResponse foundMember = this.userService.findByUsername(username);
-		if (!this.passwordEncoder.matches(password, foundMember.password())) {
+		UserResponse foundUser;
+		try {
+			foundUser = this.userService.findByUsername(username);
+		} catch (EntityNotFoundException e) {
+			throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED, MessageFormat.format("username : {0} not found", username));
+		}
+		if (!this.passwordEncoder.matches(password, foundUser.password())) {
 			throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED,
 				MessageFormat.format("Password = {0}", password));
 		}
 
 		Jwt.Claims claims = Jwt.Claims.builder()
-			.userId(foundMember.id())
+			.userId(foundUser.id())
 			.roles(new String[] {String.valueOf(Role.USER)})
-			.username(foundMember.username())
+			.username(foundUser.username())
 			.build();
 		String accessToken = this.jwt.generateAccessToken(claims);
 		String refreshToken = this.jwt.generateRefreshToken();
-		JwtAuthentication authentication = new JwtAuthentication(accessToken, foundMember.id(), foundMember.username());
+		JwtAuthentication authentication = new JwtAuthentication(accessToken, foundUser.id(), foundUser.username());
 		JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authentication, null,
 			this.jwt.getAuthorities(this.jwt.verify(accessToken)));
-		this.tokenService.save(refreshToken, foundMember.id());
+		this.tokenService.save(refreshToken, foundUser.id());
 
 		return new AuthResponse.SignInResponse(
-			foundMember.id(),
+			foundUser.id(),
 			username,
-			foundMember.nickname(),
+			foundUser.nickname(),
 			new TokenDto(this.jwt.accessTokenProperties().header(), accessToken),
 			new TokenDto(this.jwt.refreshTokenProperties().header(), refreshToken),
 			authenticationToken
