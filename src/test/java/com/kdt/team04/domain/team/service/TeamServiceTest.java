@@ -19,6 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
+import com.kdt.team04.domain.match.review.dto.MatchRecordResponse;
+import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.match.review.service.MatchRecordGiverService;
+import com.kdt.team04.domain.match.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamRequest;
@@ -48,6 +52,12 @@ class TeamServiceTest {
 	@Mock
 	private TeamMemberGiverService teamMemberGiver;
 
+	@Mock
+	private MatchRecordGiverService matchRecordGiver;
+
+	@Mock
+	private MatchReviewGiverService matchReviewGiver;
+
 	private final User USER = new User(1L, "password", "username", "nickname");
 	private final UserResponse USER_RESPONSE = new UserResponse(USER.getId(), USER.getUsername(), USER.getPassword(),
 		USER.getNickname());
@@ -55,29 +65,31 @@ class TeamServiceTest {
 		SportsCategory.BADMINTON);
 	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),
 		CREATE_REQUEST.sportsCategory(), USER);
+	private final MatchRecordResponse.TotalCount RECORD = new MatchRecordResponse.TotalCount(1, 1, 1);
+	private final MatchReviewResponse.TotalCount REVIEW = new MatchReviewResponse.TotalCount(1, 1, 1);
 	private final TeamResponse RESPONSE = new TeamResponse(TEAM.getId(), TEAM.getName(), TEAM.getDescription(),
-		Collections.emptyList(),
-		TEAM.getSportsCategory(), USER_RESPONSE);
+		TEAM.getSportsCategory(),
+		Collections.emptyList(), RECORD, REVIEW, USER_RESPONSE);
 
 	@Test
 	@DisplayName("팀 생성에 성공합니다.")
 	void createSuccess() {
 		//given
 		given(userService.findById(USER.getId())).willReturn(USER_RESPONSE);
+		given(teamConverter.toUser(USER_RESPONSE)).willReturn(USER);
 		given(teamRepository.save(any(Team.class))).willReturn(TEAM);
-		given(teamConverter.toTeamResponse(TEAM)).willReturn(RESPONSE);
 
 		//when
-		TeamResponse createdTeam = teamService.create(USER.getId(), CREATE_REQUEST.name(),
+		Long teamId = teamService.create(USER.getId(), CREATE_REQUEST.name(),
 			CREATE_REQUEST.sportsCategory(),
 			CREATE_REQUEST.description());
 
 		//then
 		verify(userService, times(1)).findById(USER.getId());
+		verify(teamConverter, times(1)).toUser(USER_RESPONSE);
 		verify(teamRepository, times(1)).save(any(Team.class));
-		verify(teamConverter, times(1)).toTeamResponse(TEAM);
 
-		assertThat(createdTeam.id()).isEqualTo(TEAM.getId());
+		assertThat(teamId).isEqualTo(TEAM.getId());
 	}
 
 	@Test
@@ -85,15 +97,17 @@ class TeamServiceTest {
 	void findByIdSuccess() {
 		//given
 		given(teamRepository.findById(TEAM.getId())).willReturn(Optional.of(TEAM));
-		given(teamConverter.toTeamResponse(TEAM, Collections.emptyList())).willReturn(RESPONSE);
+		given(teamConverter.toTeamResponse(TEAM, Collections.emptyList(), RECORD, REVIEW)).willReturn(RESPONSE);
 		given(teamMemberGiver.findAllByTeamId(TEAM.getId())).willReturn(Collections.emptyList());
+		given(matchRecordGiver.findByTeamTotalRecord(TEAM.getId())).willReturn(RECORD);
+		given(matchReviewGiver.findByTeamTotalReview(TEAM.getId())).willReturn(REVIEW);
 
 		//when
 		TeamResponse foundTeam = teamService.findById(TEAM.getId());
 
 		//then
 		verify(teamRepository, times(1)).findById(TEAM.getId());
-		verify(teamConverter, times(1)).toTeamResponse(TEAM, Collections.emptyList());
+		verify(teamConverter, times(1)).toTeamResponse(TEAM, Collections.emptyList(), RECORD, REVIEW);
 
 		assertThat(foundTeam.id()).isEqualTo(TEAM.getId());
 	}
