@@ -36,10 +36,10 @@ class TeamMemberGiverServiceTest {
 		List<User> users = Stream.of("test1234", "test1235", "test1236", "test1237", "test1238")
 			.map(n -> new User(n, n, "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ."))
 			.peek(entityManager::persist)
-			.collect(Collectors.toList());
+			.toList();
 
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.leader(users.get(0))
 			.description("discription")
 			.sportsCategory(SportsCategory.BADMINTON)
@@ -49,14 +49,13 @@ class TeamMemberGiverServiceTest {
 
 		List<TeamMember> teamMembers = users.stream()
 			.map(u -> new TeamMember(team, u, TeamMemberRole.MEMBER))
-			.peek(entityManager::persist)
-			.collect(Collectors.toList());
+			.peek(entityManager::persist).toList();
 
 		entityManager.flush();
 		entityManager.clear();
 
 		List<TeamMemberResponse> teamMemberResponses = teamMemberGiverService.findAllByTeamId(team.getId());
 
-		Assertions.assertThat(teamMemberResponses.size()).isEqualTo(teamMembers.size());
+		Assertions.assertThat(teamMemberResponses).hasSameSizeAs(teamMembers);
 	}
 }

@@ -20,10 +20,10 @@ import lombok.Builder;
 public class Team extends BaseEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String teamName;
+	private String name;
 
 	private String description;
 
@@ -38,9 +38,9 @@ public class Team extends BaseEntity {
 	}
 
 	@Builder
-	public Team(Long id, String teamName, String description, SportsCategory sportsCategory, User leader) {
+	public Team(Long id, String name, String description, SportsCategory sportsCategory, User leader) {
 		this.id = id;
-		this.teamName = teamName;
+		this.name = name;
 		this.description = description;
 		this.sportsCategory = sportsCategory;
 		this.leader = leader;
@@ -50,8 +50,8 @@ public class Team extends BaseEntity {
 		return id;
 	}
 
-	public String getTeamName() {
-		return teamName;
+	public String getName() {
+		return name;
 	}
 
 	public String getDescription() {

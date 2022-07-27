@@ -55,7 +55,7 @@ class TeamServiceTest {
 		SportsCategory.BADMINTON);
 	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),
 		CREATE_REQUEST.sportsCategory(), USER);
-	private final TeamResponse RESPONSE = new TeamResponse(TEAM.getId(), TEAM.getTeamName(), TEAM.getDescription(),
+	private final TeamResponse RESPONSE = new TeamResponse(TEAM.getId(), TEAM.getName(), TEAM.getDescription(),
 		Collections.emptyList(),
 		TEAM.getSportsCategory(), USER_RESPONSE);
 
