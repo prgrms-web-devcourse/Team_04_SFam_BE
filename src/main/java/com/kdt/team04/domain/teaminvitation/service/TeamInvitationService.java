@@ -51,6 +51,7 @@ public class TeamInvitationService {
 			throw new BusinessException(ErrorCode.ALREADY_TEAM_MEMBER,
 				MessageFormat.format("teamId = {0}, userId = {1}", request.teamId(), request.targetUserId()));
 		}
+
 		TeamResponse teamResponse = teamService.findById(request.teamId());
 		UserResponse targetResponse = userService.findById(request.targetUserId());
 		Team team = teamConverter.toTeam(teamResponse);
@@ -61,7 +62,8 @@ public class TeamInvitationService {
 		}
 		User target = userConverter.toUser(targetResponse);
 		TeamInvitation invitation = new TeamInvitation(team, target, InvitationStatus.WAITING);
+		Long savedInvitationId = teamInvitationRepository.save(invitation).getId();
 
-		return new TeamInvitationResponse.InviteResponse(teamInvitationRepository.save(invitation).getId());
+		return new TeamInvitationResponse.InviteResponse(savedInvitationId);
 	}
 }

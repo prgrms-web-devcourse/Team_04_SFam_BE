@@ -15,6 +15,8 @@ import javax.persistence.UniqueConstraint;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
+import lombok.Builder;
+
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "team_id", "target_id" }) })
 public class TeamInvitation {
@@ -34,8 +36,6 @@ public class TeamInvitation {
 	@Enumerated(value = EnumType.STRING)
 	private InvitationStatus status;
 
-
-
 	protected TeamInvitation() {
 	}
 
@@ -43,6 +43,7 @@ public class TeamInvitation {
 		this(null, team, target, status);
 	}
 
+	@Builder
 	public TeamInvitation(Long id, Team team, User target, InvitationStatus status) {
 		this.id = id;
 		this.team = team;

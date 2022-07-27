@@ -44,7 +44,7 @@ class TeamMemberRepositoryIntegrationTest {
 		entityManager.persist(teamMemberA);
 		entityManager.persist(teamMemberB);
 
-		Assertions.assertThat(teamMemberRepository.existsByTeamIdAndMemberId(persistedTeam.getId(), persistedUserA.getId())).isTrue();
+		Assertions.assertThat(teamMemberRepository.existsByTeamIdAndUserId(persistedTeam.getId(), persistedUserA.getId())).isTrue();
 	}
 
 	@Test
@@ -67,7 +67,7 @@ class TeamMemberRepositoryIntegrationTest {
 		entityManager.persist(teamMemberA);
 
 		//when
-		boolean exist = teamMemberRepository.existsByTeamIdAndMemberId(persistedTeam.getId(), persistedUserB.getId());
+		boolean exist = teamMemberRepository.existsByTeamIdAndUserId(persistedTeam.getId(), persistedUserB.getId());
 
 		//then
 		Assertions.assertThat(exist).isFalse();

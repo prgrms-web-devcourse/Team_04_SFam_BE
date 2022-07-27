@@ -16,7 +16,7 @@ import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class TeamMemberService {
 
 	private final TeamMemberRepository teamMemberRepository;
@@ -33,11 +33,7 @@ public class TeamMemberService {
 	}
 
 	public boolean existsTeamMember(Long teamId, Long userId) {
-		return teamMemberRepository.existsByTeamIdAndMemberId(teamId, userId);
-	}
-
-	public boolean existsTeamMember(User user, Team team) {
-		return teamMemberRepository.existsByTeamAndUser(team,user);
+		return teamMemberRepository.existsByTeamIdAndUserId(teamId, userId);
 	}
 
 	@Transactional
