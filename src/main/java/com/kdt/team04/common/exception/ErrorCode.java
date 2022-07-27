@@ -22,11 +22,15 @@ public enum ErrorCode {
 	USER_NOT_FOUND("U0001", "Not found user", HttpStatus.NOT_FOUND),
 
 	//TOKEN
-	TOKEN_NOT_FOUND("A0001", "Not found token", HttpStatus.NOT_FOUND),
+	TOKEN_NOT_FOUND("A0002", "Not found token", HttpStatus.NOT_FOUND),
 
 	//TEAM
 	TEAM_NOT_FOUND("T0001", "Not found team", HttpStatus.NOT_FOUND),
 	NOT_TEAM_LEADER("T0002", "Not team leader", HttpStatus.FORBIDDEN),
+
+	//TEAM_INVITATION
+	TEAM_INVITATION_NOT_FOUND("I001", "Not found invitation", HttpStatus.NOT_FOUND),
+	INVALID_INVITATION("I0002", "Invalid invitation", HttpStatus.BAD_REQUEST),
 
 	//TEAM_MEMBER
 	ALREADY_TEAM_MEMBER("M0001", "Already member of team" , HttpStatus.BAD_REQUEST);

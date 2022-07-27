@@ -66,4 +66,9 @@ public class TeamInvitation {
 	public InvitationStatus getStatus() {
 		return status;
 	}
+
+	public void accept() {
+		this.status = InvitationStatus.ACCEPTED;
+	}
+
 }

@@ -11,15 +11,15 @@ import com.kdt.team04.domain.user.entity.User;
 @Component
 public class TeamMemberConverter {
 
-	public User toUser(UserResponse userResponse) {
-		return new User(userResponse.id(), userResponse.password(), userResponse.username(), userResponse.nickname());
+	public User toUser(Long userId) {
+		return User.builder()
+			.id(userId)
+			.build();
 	}
 
-	public Team toTeam(TeamResponse response) {
+	public Team toTeam(Long teamId) {
 		return Team.builder()
-			.id(response.id())
-			.name(response.teamName())
-			.description(response.description())
+			.id(teamId)
 			.build();
 	}
 
