@@ -12,6 +12,8 @@ import javax.validation.constraints.Size;
 
 import com.kdt.team04.domain.BaseEntity;
 
+import lombok.Builder;
+
 @Table(name = "users")
 @Entity
 public class User extends BaseEntity {
@@ -41,6 +43,7 @@ public class User extends BaseEntity {
 		this(null, password, username, nickname);
 	}
 
+	@Builder
 	public User(Long id, String password, String username, String nickname) {
 		this.id = id;
 		this.password = password;
