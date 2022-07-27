@@ -77,8 +77,8 @@ class AuthControllerTest {
 			user.getId(),
 			username,
 			user.getNickname(),
-			new TokenDto("accessToken", "accessToken"),
-			new TokenDto("refreshToken", "refreshToken"),
+			new TokenDto("accessToken", "accessToken", 3600),
+			new TokenDto("refreshToken", "refreshToken", 3600),
 			new JwtAuthenticationToken(new JwtAuthentication("accessToken", user.getId(), username),
 				null,
 				authorities

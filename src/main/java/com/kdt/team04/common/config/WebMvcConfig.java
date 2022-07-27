@@ -20,6 +20,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		registry.addMapping(corsConfigProperties.api())
 			.allowedOrigins(corsConfigProperties.origin())
 			.allowedMethods(corsConfigProperties.method())
+			.allowCredentials(true).maxAge(3600)
 		;
 	}
 }
