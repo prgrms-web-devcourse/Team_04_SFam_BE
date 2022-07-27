@@ -12,11 +12,6 @@ spring:
 logging:
   level:
     com.kdt: DEBUG
-    org.hibernate.type.descriptor.sql: DEBUG
-
-cors:
-  allowed:
-    origin: http://localhost:3000
-
+    org.hibernate.type.descriptor.sql: DEBUG\
 jwt:
   client-secret: ${JWT_SECRET:DEFAULT_JWT_SECRET}
