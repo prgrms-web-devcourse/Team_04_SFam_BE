@@ -18,7 +18,7 @@ public class TeamMemberConverter {
 	public Team toTeam(TeamResponse response) {
 		return Team.builder()
 			.id(response.id())
-			.teamName(response.teamName())
+			.name(response.teamName())
 			.description(response.description())
 			.build();
 	}

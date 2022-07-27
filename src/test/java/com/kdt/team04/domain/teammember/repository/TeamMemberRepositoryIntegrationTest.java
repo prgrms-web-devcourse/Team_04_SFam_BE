@@ -31,7 +31,7 @@ class TeamMemberRepositoryIntegrationTest {
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)
@@ -54,7 +54,7 @@ class TeamMemberRepositoryIntegrationTest {
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)

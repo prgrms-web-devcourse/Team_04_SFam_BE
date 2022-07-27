@@ -39,7 +39,7 @@ public class TeamService {
 	public TeamResponse create(Long userId, String teamName, SportsCategory sportsCategory, String description) {
 		User user = teamConverter.toUser(userService.findById(userId));
 		Team savedTeam = teamRepository.save(Team.builder()
-			.teamName(teamName)
+			.name(teamName)
 			.sportsCategory(sportsCategory)
 			.description(description)
 			.leader(user)

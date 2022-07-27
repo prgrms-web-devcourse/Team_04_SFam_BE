@@ -43,7 +43,7 @@ class TeamInvitationServiceTest {
 		entityManager.persist(userA);
 		entityManager.persist(userB);
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)
@@ -74,7 +74,7 @@ class TeamInvitationServiceTest {
 		entityManager.persist(userA);
 		entityManager.persist(userB);
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)
@@ -104,7 +104,7 @@ class TeamInvitationServiceTest {
 		entityManager.persist(userA);
 		entityManager.persist(userB);
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)
@@ -133,7 +133,7 @@ class TeamInvitationServiceTest {
 		entityManager.persist(userA);
 		entityManager.persist(userB);
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)

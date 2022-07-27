@@ -26,7 +26,7 @@ public class TeamConverter {
 	public Team toTeam(TeamResponse response) {
 		return Team.builder()
 			.id(response.id())
-			.teamName(response.teamName())
+			.name(response.teamName())
 			.description(response.description())
 			.leader(userConverter.toUser(response.leader()))
 			.build();
@@ -35,7 +35,7 @@ public class TeamConverter {
 	public TeamResponse toTeamResponse(Team team) {
 		return TeamResponse.builder()
 			.id(team.getId())
-			.teamName(team.getTeamName())
+			.teamName(team.getName())
 			.sportsCategory(team.getSportsCategory())
 			.description(team.getDescription())
 			.leader(userConverter.toUserResponse(team.getLeader()))
@@ -45,7 +45,7 @@ public class TeamConverter {
 	public TeamResponse toTeamResponse(Team team, List<TeamMemberResponse> teamMemberResponses) {
 		return TeamResponse.builder()
 			.id(team.getId())
-			.teamName(team.getTeamName())
+			.teamName(team.getName())
 			.members(teamMemberResponses)
 			.sportsCategory(team.getSportsCategory())
 			.description(team.getDescription())
