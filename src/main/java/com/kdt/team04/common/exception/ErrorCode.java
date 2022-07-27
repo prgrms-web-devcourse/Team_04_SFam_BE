@@ -20,6 +20,7 @@ public enum ErrorCode {
 
 	//USER
 	USER_NOT_FOUND("U0001", "Not found user", HttpStatus.NOT_FOUND),
+	LOCATION_UPDATE_FAIL("U0002", "user location update failed", HttpStatus.BAD_REQUEST),
 
 	//TOKEN
 	TOKEN_NOT_FOUND("A0001", "Not found token", HttpStatus.NOT_FOUND),

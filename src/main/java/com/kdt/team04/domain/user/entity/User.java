@@ -14,6 +14,7 @@ import com.kdt.team04.domain.BaseEntity;
 
 @Table(name = "users")
 @Entity
+
 public class User extends BaseEntity {
 
 	@Id
@@ -33,6 +34,8 @@ public class User extends BaseEntity {
 	@Size(min = 2, max = 16)
 	@Column(unique = true)
 	private String nickname;
+
+	private Location location;
 
 	protected User() {
 	}
@@ -62,5 +65,13 @@ public class User extends BaseEntity {
 
 	public String getNickname() {
 		return nickname;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void updateLocation(Location location) {
+		this.location = location;
 	}
 }

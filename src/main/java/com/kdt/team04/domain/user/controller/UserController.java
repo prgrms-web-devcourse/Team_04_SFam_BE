@@ -2,16 +2,24 @@ package com.kdt.team04.domain.user.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.common.exception.NotAuthenticationException;
+import com.kdt.team04.common.security.jwt.JwtAuthentication;
+import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -46,5 +54,18 @@ public class UserController {
 		UserResponse.FindProfile user = userService.findProfileById(id);
 
 		return new ApiResponse<>(user);
+	}
+
+	@Operation(summary = "회원 위치 정보 업데이트", description = "회원 위치 정보(위도, 경도)를 업데이트 한다.")
+	@PutMapping("/{id}/location")
+	public ApiResponse<UserResponse.UpdateLocationResponse> update(
+		@AuthenticationPrincipal JwtAuthentication auth, @Valid @NotNull UserRequest.UpdateLocationRequest request) {
+		if (auth == null) {
+			throw new NotAuthenticationException("not authenticated");
+		}
+
+		UserResponse.UpdateLocationResponse response = userService.updateLocation(auth.id(), request);
+
+		return new ApiResponse<>(response);
 	}
 }
