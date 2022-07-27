@@ -53,11 +53,11 @@ class TeamInvitationServiceTest {
 		entityManager.persist(teamMemberA);
 
 		entityManager.flush();
-		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(team.getId(), userB.getId());
+		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
 
 		//when
-		TeamInvitationResponse.InviteResponse response = teamInvitationService.invite(userA.getId(),
-			teamInvitationRequest);
+		TeamInvitationResponse.InviteResponse response = teamInvitationService.invite(userA.getId(), team.getId(),
+			teamInvitationRequest.targetUserId());
 
 		//then
 		Assertions.assertThat(response.invitationId()).isNotNull();
@@ -87,10 +87,10 @@ class TeamInvitationServiceTest {
 		entityManager.persist(teamMemberB);
 		entityManager.flush();
 		entityManager.clear();
-		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(team.getId(), userB.getId());
+		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
 
 		//when, then
-		Assertions.assertThatThrownBy(() -> teamInvitationService.invite(userA.getId(), teamInvitationRequest))
+		Assertions.assertThatThrownBy(() -> teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId()))
 			.isInstanceOf(BusinessException.class);
 	}
 
@@ -115,9 +115,9 @@ class TeamInvitationServiceTest {
 		entityManager.persist(teamMemberA);
 		entityManager.flush();
 		entityManager.clear();
-		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(team.getId(), userB.getId());
-		teamInvitationService.invite(userA.getId(), teamInvitationRequest);
-		teamInvitationService.invite(userA.getId(), teamInvitationRequest);
+		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
+		teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId());
+		teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId());
 
 		//when, then
 		Assertions.assertThatThrownBy(() -> entityManager.flush()).isInstanceOf(PersistenceException.class);
@@ -143,11 +143,11 @@ class TeamInvitationServiceTest {
 		entityManager.persist(teamMemberA);
 
 		entityManager.flush();
-		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(team.getId(), userB.getId());
+		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
 
 		//when, then
 		Assertions.assertThatThrownBy(
-				() -> teamInvitationService.invite(-999L, teamInvitationRequest))
+				() -> teamInvitationService.invite(-999L, team.getId(), teamInvitationRequest.targetUserId()))
 			.isInstanceOf(BusinessException.class);
 	}
 }

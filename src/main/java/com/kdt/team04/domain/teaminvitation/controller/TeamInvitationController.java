@@ -3,6 +3,7 @@ package com.kdt.team04.domain.teaminvitation.controller;
 import javax.validation.Valid;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,8 @@ import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationResponse;
 import com.kdt.team04.domain.teaminvitation.service.TeamInvitationService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -29,12 +32,20 @@ public class TeamInvitationController {
 		this.teamInvitationService = teamInvitationService;
 	}
 
-	@PostMapping("/invitations")
+	@PostMapping("/{teamId}/invitations")
 	@Operation(summary = "팀원 초대", description = "팀 ID와 초대 대상 유저 ID를 받아 팀으로 초대합니다.")
-	public ApiResponse<TeamInvitationResponse.InviteResponse> invite(@AuthenticationPrincipal JwtAuthentication auth, @RequestBody @Valid TeamInvitationRequest request) {
+	public ApiResponse<TeamInvitationResponse.InviteResponse> invite(
+		@AuthenticationPrincipal JwtAuthentication auth,
+
+		@Parameter(description = "팀 ID", required = true)
+		@PathVariable Long teamId,
+
+		@RequestBody @Valid TeamInvitationRequest request
+
+	) {
 		if (auth == null)
 			throw new NotAuthenticationException("Not Authenticated");
 
-		return new ApiResponse<>(teamInvitationService.invite(auth.id(), request));
+		return new ApiResponse<>(teamInvitationService.invite(auth.id(), teamId, request.targetUserId()));
 	}
 }

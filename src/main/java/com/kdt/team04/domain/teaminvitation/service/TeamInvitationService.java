@@ -46,14 +46,14 @@ public class TeamInvitationService {
 	}
 
 	@Transactional
-	public TeamInvitationResponse.InviteResponse invite(Long myId, TeamInvitationRequest request) {
-		if (teamMemberService.existsTeamMember(request.teamId(), request.targetUserId())) {
+	public TeamInvitationResponse.InviteResponse invite(Long myId, Long teamId, Long targetUserId) {
+		if (teamMemberService.existsTeamMember(teamId, targetUserId)) {
 			throw new BusinessException(ErrorCode.ALREADY_TEAM_MEMBER,
-				MessageFormat.format("teamId = {0}, userId = {1}", request.teamId(), request.targetUserId()));
+				MessageFormat.format("teamId = {0}, userId = {1}", teamId, targetUserId));
 		}
 
-		TeamResponse teamResponse = teamService.findById(request.teamId());
-		UserResponse targetResponse = userService.findById(request.targetUserId());
+		TeamResponse teamResponse = teamService.findById(teamId);
+		UserResponse targetResponse = userService.findById(targetUserId);
 		Team team = teamConverter.toTeam(teamResponse);
 
 		if (!Objects.equals(team.getLeader().getId(), myId)) {
