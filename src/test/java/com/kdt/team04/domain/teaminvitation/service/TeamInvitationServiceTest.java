@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
@@ -94,34 +95,35 @@ class TeamInvitationServiceTest {
 			.isInstanceOf(BusinessException.class);
 	}
 
-	// @Test
-	// @DisplayName("이미 초대를 보냈으면 초대할 수 없다.")
-	// void testInviteAlreadySendInviteFail() {
-	// 	//given
-	// 	User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
-	// 	User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
-	//
-	// 	entityManager.persist(userA);
-	// 	entityManager.persist(userB);
-	// 	Team team = Team.builder()
-	// 		.name("teamA")
-	// 		.description("description")
-	// 		.sportsCategory(SportsCategory.BADMINTON)
-	// 		.leader(userA)
-	// 		.build();
-	//
-	// 	entityManager.persist(team);
-	// 	TeamMember teamMemberA = new TeamMember(team, userA, TeamMemberRole.LEADER);
-	// 	entityManager.persist(teamMemberA);
-	// 	entityManager.flush();
-	// 	entityManager.clear();
-	// 	TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
-	// 	teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId());
-	// 	teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId());
-	//
-	// 	//when, then
-	// 	Assertions.assertThatThrownBy(() -> entityManager.flush()).isInstanceOf(PersistenceException.class);
-	// }
+	@Test
+	@DisplayName("이미 초대를 보냈으면 초대할 수 없다.")
+	void testInviteAlreadySendInviteFail() {
+		//given
+		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+
+		entityManager.persist(userA);
+		entityManager.persist(userB);
+		Team team = Team.builder()
+			.name("teamA")
+			.description("description")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(userA)
+			.build();
+
+		entityManager.persist(team);
+		TeamMember teamMemberA = new TeamMember(team, userA, TeamMemberRole.LEADER);
+		entityManager.persist(teamMemberA);
+		entityManager.flush();
+		entityManager.clear();
+		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
+		teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId());
+
+		//when, then
+		Assertions.assertThatThrownBy(() ->
+			teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId())
+		).isInstanceOf(DataIntegrityViolationException.class);
+	}
 
 	@Test
 	@DisplayName("팀 리더가 아닌사람은 초대할 수 없다.")
