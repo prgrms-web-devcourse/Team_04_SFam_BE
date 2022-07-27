@@ -18,6 +18,8 @@ import com.kdt.team04.domain.match.post.entity.Match;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
+import lombok.Builder;
+
 @Entity
 public class MatchRecord extends BaseEntity {
 
@@ -42,6 +44,7 @@ public class MatchRecord extends BaseEntity {
 
 	protected MatchRecord() {/*no-op*/}
 
+	@Builder
 	public MatchRecord(Long id, Match match, User user, Team team, MatchRecordValue result) {
 		this.id = id;
 		this.match = match;
