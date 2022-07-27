@@ -66,7 +66,7 @@ public class AuthService {
 			username,
 			foundUser.nickname(),
 			new TokenDto(this.jwt.accessTokenProperties().header(), accessToken, this.jwt.accessTokenProperties().expirySeconds()),
-			new TokenDto(this.jwt.refreshTokenProperties().header(), refreshToken, this.jwt.accessTokenProperties().expirySeconds()),
+			new TokenDto(this.jwt.refreshTokenProperties().header(), refreshToken, this.jwt.refreshTokenProperties().expirySeconds()),
 			authenticationToken
 		);
 	}
