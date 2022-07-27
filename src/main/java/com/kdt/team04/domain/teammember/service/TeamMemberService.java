@@ -6,14 +6,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamService;
-import com.kdt.team04.domain.user.dto.UserResponse;
-import com.kdt.team04.domain.user.entity.User;
-import com.kdt.team04.domain.user.service.UserService;
 import com.kdt.team04.domain.teammember.dto.TeamMemberConverter;
 import com.kdt.team04.domain.teammember.dto.TeamMemberRequest;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.teammember.repository.TeamMemberRepository;
+import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.entity.User;
+import com.kdt.team04.domain.user.service.UserService;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,6 +30,10 @@ public class TeamMemberService {
 		this.userService = userService;
 		this.teamService = teamService;
 		this.converter = converter;
+	}
+
+	public boolean existsTeamMember(Long teamId, Long userId) {
+		return teamMemberRepository.existsByTeamIdAndUserId(teamId, userId);
 	}
 
 	@Transactional
@@ -53,5 +57,4 @@ public class TeamMemberService {
 		TeamMember teamMember = new TeamMember(team, user, TeamMemberRole.LEADER);
 		teamMemberRepository.save(teamMember);
 	}
-
 }

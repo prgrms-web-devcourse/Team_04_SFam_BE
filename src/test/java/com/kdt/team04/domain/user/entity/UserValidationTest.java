@@ -12,11 +12,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.kdt.team04.configure.TestQueryDslConfig;
 import com.kdt.team04.configure.WebSecurityTestConfigure;
 import com.kdt.team04.domain.user.repository.UserRepository;
 
 @DataJpaTest
-@Import(WebSecurityTestConfigure.class)
+@Import({WebSecurityTestConfigure.class, TestQueryDslConfig.class})
 public class UserValidationTest {
 
 	@Autowired

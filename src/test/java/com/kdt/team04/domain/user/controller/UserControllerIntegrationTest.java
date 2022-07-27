@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.domain.security.WithMockJwtAuthentication;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 
@@ -48,6 +49,7 @@ class UserControllerIntegrationTest {
 	@Test
 	@Transactional
 	@DisplayName("회원 프로필을 조회한다.")
+	@WithMockJwtAuthentication
 	void testFindProfile() throws Exception {
 		// given
 		User newUser = new User("test00", "nk-test00", passwordEncoder.encode("1234"));
@@ -74,6 +76,7 @@ class UserControllerIntegrationTest {
 	@Test
 	@Transactional
 	@DisplayName("회원 프로필 닉네임이 포함된 유저들을 조회한다.")
+	@WithMockJwtAuthentication
 	void testFindAllByNickname() throws Exception {
 		// given
 		String nickname = "test";
@@ -108,6 +111,7 @@ class UserControllerIntegrationTest {
 	@Test
 	@Transactional
 	@DisplayName("닉네임이 포함된 사용자가 없다면 비어있는 리스트를 반환한다.")
+	@WithMockJwtAuthentication
 	void testFindAllByNicknameEmpty() throws Exception {
 		// given
 		String nickname = "notfound";
@@ -139,6 +143,7 @@ class UserControllerIntegrationTest {
 	@Test
 	@Transactional
 	@DisplayName("닉네임이 null 혹은 빈값으로 요청된다면 예외를 반환한다.")
+	@WithMockJwtAuthentication
 	void testFindAllByNicknameException() throws Exception {
 		// given
 		LongStream.range(1, 6)
