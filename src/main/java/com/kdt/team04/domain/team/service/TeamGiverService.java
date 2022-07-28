@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.team.service;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,4 +38,11 @@ public class TeamGiverService {
 		return teamConverter.toTeamResponse(team, leader);
 	}
 
+	public List<TeamResponse.SimpleResponse> findAllByTeamMemberUserId(Long userId) {
+		return teamRepository.findAllByTeamMemberUserId(userId).stream()
+			.map(team -> new TeamResponse.SimpleResponse(
+					team.getId(), team.getName(), team.getSportsCategory()
+				)
+			).toList();
+	}
 }

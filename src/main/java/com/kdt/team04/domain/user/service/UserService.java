@@ -8,6 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.match.review.service.MatchReviewGiverService;
+import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -18,9 +22,13 @@ import com.kdt.team04.domain.user.repository.UserRepository;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final MatchReviewGiverService matchReviewGiver;
+	private final TeamGiverService teamGiver;
 
-	public UserService(UserRepository userRepository) {
+	public UserService(UserRepository userRepository, MatchReviewGiverService matchReviewGiver, TeamGiverService teamGiver) {
 		this.userRepository = userRepository;
+		this.matchReviewGiver = matchReviewGiver;
+		this.teamGiver = teamGiver;
 	}
 
 	public UserResponse findByUsername(String username) {
@@ -46,10 +54,13 @@ public class UserService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", id)));
 
+		MatchReviewResponse.TotalCount review = matchReviewGiver.findTotalReviewByUserId(id);
+		List<TeamResponse.SimpleResponse> teams = teamGiver.findAllByTeamMemberUserId(id);
+
 		return new UserResponse.FindProfile(
-			foundUser.getId(),
-			foundUser.getUsername(),
-			foundUser.getNickname()
+			foundUser.getNickname(),
+			review,
+			teams
 		);
 	}
 

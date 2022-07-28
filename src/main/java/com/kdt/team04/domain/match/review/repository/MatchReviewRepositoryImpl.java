@@ -30,4 +30,17 @@ public class MatchReviewRepositoryImpl implements MatchReviewRepositoryCustom {
 			.where(matchReview.targetTeam.id.eq(teamId))
 			.fetchOne();
 	}
+
+	@Override
+	public MatchReviewResponse.TotalCount getTeamTotalCountByUserId(Long userId) {
+		return jpaQueryFactory
+			.select(Projections.constructor(MatchReviewResponse.TotalCount.class,
+				matchReview.review.when(MatchReviewValue.BEST).then(1).otherwise(0).sum(),
+				matchReview.review.when(MatchReviewValue.LIKE).then(1).otherwise(0).sum(),
+				matchReview.review.when(MatchReviewValue.DISLIKE).then(1).otherwise(0).sum()
+			))
+			.from(matchReview)
+			.where(matchReview.targetUser.id.eq(userId))
+			.fetchOne();
+	}
 }

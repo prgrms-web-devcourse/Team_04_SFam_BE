@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.LongStream;
@@ -24,6 +25,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
+import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.match.review.service.MatchReviewGiverService;
+import com.kdt.team04.domain.team.SportsCategory;
+import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -38,6 +44,12 @@ class UserServiceTest {
 
 	@Mock
 	UserRepository userRepository;
+
+	@Mock
+	MatchReviewGiverService matchReviewGiver;
+
+	@Mock
+	TeamGiverService teamGiver;
 
 	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -107,18 +119,38 @@ class UserServiceTest {
 		Long requestId = 1L;
 
 		User user = new User(requestId, passwordEncoder.encode("1234"), "test00", "nk-test00");
-		UserResponse.FindProfile response =
-			new UserResponse.FindProfile(user.getId(), user.getUsername(), user.getNickname());
+
+		MatchReviewResponse.TotalCount review = new MatchReviewResponse.TotalCount(1, 1, 1);
+		List<TeamResponse.SimpleResponse> teams = Arrays.asList(
+			new TeamResponse.SimpleResponse(1L, "축구왕", SportsCategory.SOCCER),
+			new TeamResponse.SimpleResponse(2L, "야구왕", SportsCategory.BASEBALL)
+		);
+		UserResponse.FindProfile response = new UserResponse.FindProfile(user.getUsername(), review, teams);
 
 		given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
+		given(matchReviewGiver.findTotalReviewByUserId(any(Long.class))).willReturn(review);
+		given(teamGiver.findAllByTeamMemberUserId(any(Long.class))).willReturn(teams);
 
 		// when
 		UserResponse.FindProfile userResponse = userService.findProfileById(requestId);
 
 		// then
 		verify(userRepository, times(1)).findById(requestId);
+		verify(matchReviewGiver, times(1)).findTotalReviewByUserId(requestId);
+		verify(teamGiver, times(1)).findAllByTeamMemberUserId(requestId);
 
 		MatcherAssert.assertThat(userResponse, samePropertyValuesAs(response));
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 ID로 프로필 조회 시, 오류가 발생한다.")
+	void testFindProfileFail() {
+		Long invalidId = 1000L;
+		given(userRepository.findById(invalidId)).willReturn(Optional.empty());
+
+		assertThatThrownBy(() ->
+			userService.findProfileById(invalidId)
+		).isInstanceOf(EntityNotFoundException.class);
 	}
 
 	@Test
