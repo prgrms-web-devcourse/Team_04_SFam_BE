@@ -1,0 +1,11 @@
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (1, 'test01', '1234', 'Elizabath');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (2, 'test02', '1234', 'Crong');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (3, 'test03', '1234', 'hyeb');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (4, 'test04', '1234', 'Null');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (5, 'test05', '1234', 'mark');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (6, 'test06', '1234', 'Lawrence');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (7, 'test07', '1234', 'papa');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (8, 'test08', '1234', 'Thompson');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (9, 'test09', '1234', 'Claire');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (10, 'test10', '1234', 'regyu');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (11, 'test11', '1234', 'Dong-Young Kim');
