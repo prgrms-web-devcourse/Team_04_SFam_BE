@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.match.review.entity;
+package com.kdt.team04.domain.matches.review.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,14 +14,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.kdt.team04.domain.BaseEntity;
-import com.kdt.team04.domain.match.post.entity.Match;
+import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
-import lombok.Builder;
-
 @Entity
-public class MatchRecord extends BaseEntity {
+public class MatchReview extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +29,9 @@ public class MatchRecord extends BaseEntity {
 	@JoinColumn(name = "match_id")
 	private Match match;
 
+	@Enumerated(value = EnumType.STRING)
+	private MatchReviewValue review;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
@@ -39,18 +40,25 @@ public class MatchRecord extends BaseEntity {
 	@JoinColumn(name = "team_id")
 	private Team team;
 
-	@Enumerated(value = EnumType.STRING)
-	private MatchRecordValue result;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "target_user_id")
+	private User targetUser;
 
-	protected MatchRecord() {/*no-op*/}
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "target_team_id")
+	private Team targetTeam;
 
-	@Builder
-	public MatchRecord(Long id, Match match, User user, Team team, MatchRecordValue result) {
+	protected MatchReview() {/*no-op*/}
+
+	public MatchReview(Long id, Match match, MatchReviewValue review, User user, Team team, User targetUser,
+		Team targetTeam) {
 		this.id = id;
 		this.match = match;
+		this.review = review;
 		this.user = user;
 		this.team = team;
-		this.result = result;
+		this.targetUser = targetUser;
+		this.targetTeam = targetTeam;
 	}
 
 	public Long getId() {
@@ -61,6 +69,10 @@ public class MatchRecord extends BaseEntity {
 		return match;
 	}
 
+	public MatchReviewValue getReview() {
+		return review;
+	}
+
 	public User getUser() {
 		return user;
 	}
@@ -69,8 +81,12 @@ public class MatchRecord extends BaseEntity {
 		return team;
 	}
 
-	public MatchRecordValue getResult() {
-		return result;
+	public User getTargetUser() {
+		return targetUser;
+	}
+
+	public Team getTargetTeam() {
+		return targetTeam;
 	}
 
 	@Override
@@ -78,9 +94,11 @@ public class MatchRecord extends BaseEntity {
 		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
 			.append("id", id)
 			.append("match", match)
+			.append("review", review)
 			.append("user", user)
 			.append("team", team)
-			.append("result", result)
+			.append("targetUser", targetUser)
+			.append("targetTeam", targetTeam)
 			.toString();
 	}
 }

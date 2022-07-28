@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.match.request.entity;
+package com.kdt.team04.domain.matches.request.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

@@ -1,4 +1,7 @@
-package com.kdt.team04.domain.match.review.entity;
+package com.kdt.team04.domain.matches.request.entity;
+
+import static com.kdt.team04.domain.matches.request.entity.MatchRequestStatus.WAITING;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,12 +17,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.kdt.team04.domain.BaseEntity;
-import com.kdt.team04.domain.match.post.entity.Match;
+import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
 @Entity
-public class MatchReview extends BaseEntity {
+public class MatchRequest extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +32,7 @@ public class MatchReview extends BaseEntity {
 	@JoinColumn(name = "match_id")
 	private Match match;
 
-	@Enumerated(value = EnumType.STRING)
-	private MatchReviewValue review;
+	private String content;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -40,25 +42,18 @@ public class MatchReview extends BaseEntity {
 	@JoinColumn(name = "team_id")
 	private Team team;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "target_user_id")
-	private User targetUser;
+	@Enumerated(value = EnumType.STRING)
+	private MatchRequestStatus status;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "target_team_id")
-	private Team targetTeam;
+	protected MatchRequest() {/*no-op*/}
 
-	protected MatchReview() {/*no-op*/}
-
-	public MatchReview(Long id, Match match, MatchReviewValue review, User user, Team team, User targetUser,
-		Team targetTeam) {
+	public MatchRequest(Long id, Match match, String content, User user, Team team, MatchRequestStatus status) {
 		this.id = id;
 		this.match = match;
-		this.review = review;
+		this.content = content;
 		this.user = user;
 		this.team = team;
-		this.targetUser = targetUser;
-		this.targetTeam = targetTeam;
+		this.status = defaultIfNull(status, WAITING);
 	}
 
 	public Long getId() {
@@ -69,8 +64,8 @@ public class MatchReview extends BaseEntity {
 		return match;
 	}
 
-	public MatchReviewValue getReview() {
-		return review;
+	public String getContent() {
+		return content;
 	}
 
 	public User getUser() {
@@ -81,12 +76,8 @@ public class MatchReview extends BaseEntity {
 		return team;
 	}
 
-	public User getTargetUser() {
-		return targetUser;
-	}
-
-	public Team getTargetTeam() {
-		return targetTeam;
+	public MatchRequestStatus getStatus() {
+		return status;
 	}
 
 	@Override
@@ -94,11 +85,10 @@ public class MatchReview extends BaseEntity {
 		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
 			.append("id", id)
 			.append("match", match)
-			.append("review", review)
+			.append("content", content)
 			.append("user", user)
 			.append("team", team)
-			.append("targetUser", targetUser)
-			.append("targetTeam", targetTeam)
+			.append("status", status)
 			.toString();
 	}
 }

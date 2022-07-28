@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.kdt.team04.domain.match.review.dto.MatchRecordResponse;
-import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.MatchRecordResponse;
+import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
 import com.kdt.team04.domain.user.dto.UserResponse;

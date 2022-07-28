@@ -1,7 +1,9 @@
-package com.kdt.team04.domain.match.request.entity;
+package com.kdt.team04.domain.matches.match.entity;
 
-import static com.kdt.team04.domain.match.request.entity.MatchRequestStatus.WAITING;
+import static com.kdt.team04.domain.matches.match.entity.MatchStatus.WAITING;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
+import java.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,27 +14,38 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.kdt.team04.domain.BaseEntity;
-import com.kdt.team04.domain.match.post.entity.Match;
+import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
+@Table(name = "matches")
 @Entity
-public class MatchRequest extends BaseEntity {
+public class Match extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "match_id")
-	private Match match;
+	private String title;
+
+	@Enumerated(value = EnumType.STRING)
+	private SportsCategory sportsCategory;
+
+	@Enumerated(value = EnumType.STRING)
+	private MatchType matchType;
+
+	private LocalDate matchDate;
 
 	private String content;
+
+	@Enumerated(value = EnumType.STRING)
+	private MatchStatus status;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -42,30 +55,49 @@ public class MatchRequest extends BaseEntity {
 	@JoinColumn(name = "team_id")
 	private Team team;
 
-	@Enumerated(value = EnumType.STRING)
-	private MatchRequestStatus status;
+	protected Match() {/*no-op*/}
 
-	protected MatchRequest() {/*no-op*/}
-
-	public MatchRequest(Long id, Match match, String content, User user, Team team, MatchRequestStatus status) {
+	public Match(
+		Long id, String title, SportsCategory sportsCategory, MatchType matchType, LocalDate matchDate,
+		String content, MatchStatus status, User user, Team team
+	) {
 		this.id = id;
-		this.match = match;
+		this.title = title;
+		this.sportsCategory = sportsCategory;
+		this.matchType = matchType;
+		this.matchDate = matchDate;
 		this.content = content;
+		this.status = defaultIfNull(status, WAITING);
 		this.user = user;
 		this.team = team;
-		this.status = defaultIfNull(status, WAITING);
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public Match getMatch() {
-		return match;
+	public String getTitle() {
+		return title;
+	}
+
+	public SportsCategory getSportsCategory() {
+		return sportsCategory;
+	}
+
+	public MatchType getMatchType() {
+		return matchType;
+	}
+
+	public LocalDate getMatchDate() {
+		return matchDate;
 	}
 
 	public String getContent() {
 		return content;
+	}
+
+	public MatchStatus getStatus() {
+		return status;
 	}
 
 	public User getUser() {
@@ -76,19 +108,18 @@ public class MatchRequest extends BaseEntity {
 		return team;
 	}
 
-	public MatchRequestStatus getStatus() {
-		return status;
-	}
-
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
 			.append("id", id)
-			.append("match", match)
+			.append("title", title)
+			.append("sportsCategory", sportsCategory)
+			.append("matchType", matchType)
+			.append("matchDate", matchDate)
 			.append("content", content)
+			.append("status", status)
 			.append("user", user)
 			.append("team", team)
-			.append("status", status)
 			.toString();
 	}
 }

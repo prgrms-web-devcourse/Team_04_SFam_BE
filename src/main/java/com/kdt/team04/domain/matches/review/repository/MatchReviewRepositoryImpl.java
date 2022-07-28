@@ -1,11 +1,11 @@
-package com.kdt.team04.domain.match.review.repository;
+package com.kdt.team04.domain.matches.review.repository;
 
-import static com.kdt.team04.domain.match.review.entity.QMatchReview.matchReview;
+import static com.kdt.team04.domain.matches.review.entity.QMatchReview.matchReview;
 
 import org.springframework.stereotype.Repository;
 
-import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
-import com.kdt.team04.domain.match.review.entity.MatchReviewValue;
+import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.entity.MatchReviewValue;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
