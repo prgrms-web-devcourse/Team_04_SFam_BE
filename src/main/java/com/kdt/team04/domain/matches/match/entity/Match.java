@@ -24,6 +24,8 @@ import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
+import lombok.Builder;
+
 @Table(name = "matches")
 @Entity
 public class Match extends BaseEntity {
@@ -44,6 +46,8 @@ public class Match extends BaseEntity {
 
 	private String content;
 
+	private int participants;
+
 	@Enumerated(value = EnumType.STRING)
 	private MatchStatus status;
 
@@ -57,9 +61,10 @@ public class Match extends BaseEntity {
 
 	protected Match() {/*no-op*/}
 
+	@Builder
 	public Match(
 		Long id, String title, SportsCategory sportsCategory, MatchType matchType, LocalDate matchDate,
-		String content, MatchStatus status, User user, Team team
+		String content, int participants, MatchStatus status, User user, Team team
 	) {
 		this.id = id;
 		this.title = title;
@@ -67,6 +72,7 @@ public class Match extends BaseEntity {
 		this.matchType = matchType;
 		this.matchDate = matchDate;
 		this.content = content;
+		this.participants = participants;
 		this.status = defaultIfNull(status, WAITING);
 		this.user = user;
 		this.team = team;
@@ -90,6 +96,10 @@ public class Match extends BaseEntity {
 
 	public LocalDate getMatchDate() {
 		return matchDate;
+	}
+
+	public int getParticipants() {
+		return participants;
 	}
 
 	public String getContent() {
