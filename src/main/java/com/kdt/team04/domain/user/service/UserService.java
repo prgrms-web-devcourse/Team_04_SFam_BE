@@ -54,7 +54,7 @@ public class UserService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", id)));
 
-		MatchReviewResponse.TotalCount review = matchReviewGiver.findByUserTotalReview(id);
+		MatchReviewResponse.TotalCount review = matchReviewGiver.findTotalReviewByUserId(id);
 		List<TeamResponse.SimpleResponse> teams = teamGiver.findAllByTeamMemberUserId(id);
 
 		return new UserResponse.FindProfile(

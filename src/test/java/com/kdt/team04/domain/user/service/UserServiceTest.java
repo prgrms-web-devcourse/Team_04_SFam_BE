@@ -128,7 +128,7 @@ class UserServiceTest {
 		UserResponse.FindProfile response = new UserResponse.FindProfile(user.getUsername(), review, teams);
 
 		given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
-		given(matchReviewGiver.findByUserTotalReview(any(Long.class))).willReturn(review);
+		given(matchReviewGiver.findTotalReviewByUserId(any(Long.class))).willReturn(review);
 		given(teamGiver.findAllByTeamMemberUserId(any(Long.class))).willReturn(teams);
 
 		// when
@@ -136,7 +136,7 @@ class UserServiceTest {
 
 		// then
 		verify(userRepository, times(1)).findById(requestId);
-		verify(matchReviewGiver, times(1)).findByUserTotalReview(requestId);
+		verify(matchReviewGiver, times(1)).findTotalReviewByUserId(requestId);
 		verify(teamGiver, times(1)).findAllByTeamMemberUserId(requestId);
 
 		MatcherAssert.assertThat(userResponse, samePropertyValuesAs(response));
