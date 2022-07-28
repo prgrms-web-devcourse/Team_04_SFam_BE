@@ -15,6 +15,6 @@ public class MatchReviewGiverService {
 	}
 
 	public MatchReviewResponse.TotalCount findByTeamTotalReview(Long teamId) {
-		return matchReviewRepository.getTotalCount(teamId);
+		return matchReviewRepository.getTeamTotalCount(teamId);
 	}
 }

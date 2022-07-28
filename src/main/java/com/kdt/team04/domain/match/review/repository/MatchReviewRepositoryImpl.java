@@ -1,10 +1,11 @@
 package com.kdt.team04.domain.match.review.repository;
 
+import static com.kdt.team04.domain.match.review.entity.QMatchReview.matchReview;
+
 import org.springframework.stereotype.Repository;
 
 import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.match.review.entity.MatchReviewValue;
-import com.kdt.team04.domain.match.review.entity.QMatchReview;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -18,13 +19,15 @@ public class MatchReviewRepositoryImpl implements MatchReviewRepositoryCustom {
 	}
 
 	@Override
-	public MatchReviewResponse.TotalCount getTotalCount(Long teamId) {
-		return jpaQueryFactory.select(Projections.constructor(MatchReviewResponse.TotalCount.class,
-				QMatchReview.matchReview.review.when(MatchReviewValue.BEST).then(1).otherwise(0),
-				QMatchReview.matchReview.review.when(MatchReviewValue.LIKE).then(1).otherwise(0),
-				QMatchReview.matchReview.review.when(MatchReviewValue.DISLIKE).then(1).otherwise(0)))
-			.from(QMatchReview.matchReview)
-			.where(QMatchReview.matchReview.id.eq(teamId))
+	public MatchReviewResponse.TotalCount getTeamTotalCount(Long teamId) {
+		return jpaQueryFactory
+			.select(Projections.constructor(MatchReviewResponse.TotalCount.class,
+				matchReview.review.when(MatchReviewValue.BEST).then(1).otherwise(0).sum(),
+				matchReview.review.when(MatchReviewValue.LIKE).then(1).otherwise(0).sum(),
+				matchReview.review.when(MatchReviewValue.DISLIKE).then(1).otherwise(0).sum()
+			))
+			.from(matchReview)
+			.where(matchReview.targetTeam.id.eq(teamId))
 			.fetchOne();
 	}
 }
