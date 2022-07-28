@@ -14,34 +14,26 @@ import com.kdt.team04.domain.user.entity.User;
 @Component
 public class TeamConverter {
 
-	public User toUser(UserResponse userResponse) {
-		return new User(userResponse.id(), userResponse.password(), userResponse.username(), userResponse.nickname());
-	}
-
-	public UserResponse toUserResponse(User user) {
-		return new UserResponse(user.getId(), user.getUsername(), user.getPassword(), user.getNickname());
-	}
-
-	public Team toTeam(TeamResponse response) {
+	public Team toTeam(TeamResponse response, User leader) {
 		return Team.builder()
 			.id(response.id())
 			.name(response.teamName())
 			.description(response.description())
-			.leader(toUser(response.leader()))
+			.leader(leader)
 			.build();
 	}
 
-	public TeamResponse toTeamResponse(Team team) {
+	public TeamResponse toTeamResponse(Team team, UserResponse leader) {
 		return TeamResponse.builder()
 			.id(team.getId())
 			.teamName(team.getName())
 			.sportsCategory(team.getSportsCategory())
 			.description(team.getDescription())
-			.leader(toUserResponse(team.getLeader()))
+			.leader(leader)
 			.build();
 	}
 
-	public TeamResponse toTeamResponse(Team team, List<TeamMemberResponse> teamMemberResponses,
+	public TeamResponse toTeamResponse(Team team, UserResponse leader, List<TeamMemberResponse> teamMemberResponses,
 		MatchRecordResponse.TotalCount recordCount, MatchReviewResponse.TotalCount review) {
 		return TeamResponse.builder()
 			.id(team.getId())
@@ -51,7 +43,7 @@ public class TeamConverter {
 			.description(team.getDescription())
 			.matchRecord(recordCount)
 			.matchReview(review)
-			.leader(toUserResponse(team.getLeader()))
+			.leader(leader)
 			.build();
 	}
 }

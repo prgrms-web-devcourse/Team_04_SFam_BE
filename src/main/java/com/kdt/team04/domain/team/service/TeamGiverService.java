@@ -11,6 +11,7 @@ import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
+import com.kdt.team04.domain.user.UserConverter;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,10 +19,12 @@ public class TeamGiverService {
 
 	private final TeamRepository teamRepository;
 	private final TeamConverter teamConverter;
+	private final UserConverter userConverter;
 
-	public TeamGiverService(TeamRepository teamRepository, TeamConverter teamConverter) {
+	public TeamGiverService(TeamRepository teamRepository, TeamConverter teamConverter, UserConverter userConverter) {
 		this.teamRepository = teamRepository;
 		this.teamConverter = teamConverter;
+		this.userConverter = userConverter;
 	}
 
 	public TeamResponse findById(Long id) {
@@ -29,7 +32,7 @@ public class TeamGiverService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_FOUND,
 				MessageFormat.format("TeamId = {0}", id)));
 
-		return teamConverter.toTeamResponse(team);
+		return teamConverter.toTeamResponse(team, userConverter.toUserResponse(team.getLeader()));
 	}
 
 }

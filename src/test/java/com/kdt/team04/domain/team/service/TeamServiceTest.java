@@ -30,6 +30,7 @@ import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
 import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
+import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
@@ -45,6 +46,9 @@ class TeamServiceTest {
 
 	@Mock
 	private TeamConverter teamConverter;
+
+	@Mock
+	private UserConverter userConverter;
 
 	@Mock
 	private TeamRepository teamRepository;
@@ -76,9 +80,8 @@ class TeamServiceTest {
 	void createSuccess() {
 		//given
 		given(userService.findById(USER.getId())).willReturn(USER_RESPONSE);
-		given(teamConverter.toUser(USER_RESPONSE)).willReturn(USER);
+		given(userConverter.toUser(USER_RESPONSE)).willReturn(USER);
 		given(teamRepository.save(any(Team.class))).willReturn(TEAM);
-
 		//when
 		Long teamId = teamService.create(USER.getId(), CREATE_REQUEST.name(),
 			CREATE_REQUEST.sportsCategory(),
@@ -86,7 +89,6 @@ class TeamServiceTest {
 
 		//then
 		verify(userService, times(1)).findById(USER.getId());
-		verify(teamConverter, times(1)).toUser(USER_RESPONSE);
 		verify(teamRepository, times(1)).save(any(Team.class));
 
 		assertThat(teamId).isEqualTo(TEAM.getId());
@@ -97,17 +99,19 @@ class TeamServiceTest {
 	void findByIdSuccess() {
 		//given
 		given(teamRepository.findById(TEAM.getId())).willReturn(Optional.of(TEAM));
-		given(teamConverter.toTeamResponse(TEAM, Collections.emptyList(), RECORD, REVIEW)).willReturn(RESPONSE);
+		given(teamConverter.toTeamResponse(TEAM, USER_RESPONSE, Collections.emptyList(), RECORD, REVIEW)).willReturn(
+			RESPONSE);
 		given(teamMemberGiver.findAllByTeamId(TEAM.getId())).willReturn(Collections.emptyList());
 		given(matchRecordGiver.findByTeamTotalRecord(TEAM.getId())).willReturn(RECORD);
 		given(matchReviewGiver.findByTeamTotalReview(TEAM.getId())).willReturn(REVIEW);
+		given(userConverter.toUserResponse(USER)).willReturn(USER_RESPONSE);
 
 		//when
 		TeamResponse foundTeam = teamService.findById(TEAM.getId());
 
 		//then
 		verify(teamRepository, times(1)).findById(TEAM.getId());
-		verify(teamConverter, times(1)).toTeamResponse(TEAM, Collections.emptyList(), RECORD, REVIEW);
+		verify(teamConverter, times(1)).toTeamResponse(TEAM, USER_RESPONSE, Collections.emptyList(), RECORD, REVIEW);
 
 		assertThat(foundTeam.id()).isEqualTo(TEAM.getId());
 	}

@@ -19,6 +19,8 @@ import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
 import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
 import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
+import com.kdt.team04.domain.user.UserConverter;
+import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -28,16 +30,19 @@ public class TeamService {
 
 	private final TeamRepository teamRepository;
 	private final TeamConverter teamConverter;
+	private final UserConverter userConverter;
 	private final UserService userService;
 	private final TeamMemberGiverService teamMemberGiver;
 	private final MatchRecordGiverService matchRecordGiver;
 	private final MatchReviewGiverService matchReviewGiver;
 
-	public TeamService(TeamRepository teamRepository, TeamConverter teamConverter, UserService userService,
+	public TeamService(TeamRepository teamRepository, TeamConverter teamConverter, UserConverter userConverter,
+		UserService userService,
 		TeamMemberGiverService teamMemberGiver, MatchRecordGiverService matchRecordGiver,
 		MatchReviewGiverService matchReviewGiver) {
 		this.teamRepository = teamRepository;
 		this.teamConverter = teamConverter;
+		this.userConverter = userConverter;
 		this.userService = userService;
 		this.teamMemberGiver = teamMemberGiver;
 		this.matchRecordGiver = matchRecordGiver;
@@ -46,7 +51,7 @@ public class TeamService {
 
 	@Transactional
 	public Long create(Long userId, String teamName, SportsCategory sportsCategory, String description) {
-		User user = teamConverter.toUser(userService.findById(userId));
+		User user = userConverter.toUser(userService.findById(userId));
 		Team savedTeam = teamRepository.save(
 			Team.builder()
 				.name(teamName)
@@ -66,7 +71,12 @@ public class TeamService {
 		List<TeamMemberResponse> teamMemberResponses = teamMemberGiver.findAllByTeamId(id);
 		MatchRecordResponse.TotalCount totalRecord = matchRecordGiver.findByTeamTotalRecord(id);
 		MatchReviewResponse.TotalCount totalReview = matchReviewGiver.findByTeamTotalReview(id);
+		UserResponse leader = userConverter.toUserResponse(team.getLeader());
 
-		return teamConverter.toTeamResponse(team, teamMemberResponses, totalRecord, totalReview);
+		return teamConverter.toTeamResponse(team, leader, teamMemberResponses, totalRecord, totalReview);
+	}
+
+	public void test(Long id) {
+		matchReviewGiver.findByTeamTotalReview(id);
 	}
 }

@@ -53,7 +53,7 @@ public class TeamInvitationService {
 
 		TeamResponse teamResponse = teamService.findById(teamId);
 		UserResponse targetResponse = userService.findById(targetUserId);
-		Team team = teamConverter.toTeam(teamResponse);
+		Team team = teamConverter.toTeam(teamResponse, userConverter.toUser(teamResponse.leader()));
 
 		if (!Objects.equals(team.getLeader().getId(), myId)) {
 			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
