@@ -15,6 +15,6 @@ public class MatchRecordGiverService {
 	}
 
 	public MatchRecordResponse.TotalCount findByTeamTotalRecord(Long id) {
-		return matchRecordRepository.getTotalCount(id);
+		return matchRecordRepository.getTeamTotalCount(id);
 	}
 }

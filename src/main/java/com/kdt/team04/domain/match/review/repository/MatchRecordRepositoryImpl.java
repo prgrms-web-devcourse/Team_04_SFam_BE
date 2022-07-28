@@ -19,7 +19,7 @@ public class MatchRecordRepositoryImpl implements MatchRecordRepositoryCustom {
 	}
 
 	@Override
-	public MatchRecordResponse.TotalCount getTotalCount(Long teamId) {
+	public MatchRecordResponse.TotalCount getTeamTotalCount(Long teamId) {
 		return queryFactory
 			.select(Projections.constructor(MatchRecordResponse.TotalCount.class,
 				matchRecord.result.when(MatchRecordValue.WIN).then(1).otherwise(0).sum(),
