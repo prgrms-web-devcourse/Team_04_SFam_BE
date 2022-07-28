@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.team.dto.TeamRequest;
 import com.kdt.team04.domain.team.dto.TeamResponse;
@@ -32,6 +33,11 @@ public class TeamController {
 	@PostMapping
 	public void create(@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
 		@RequestBody TeamRequest.CreateRequest request) {
+
+		if (jwtAuthentication == null) {
+			throw new NotAuthenticationException("Not Authenticated");
+		}
+
 		teamService.create(jwtAuthentication.id(), request.name(), request.sportsCategory(),
 			request.description());
 	}
@@ -43,5 +49,4 @@ public class TeamController {
 
 		return new ApiResponse<>(team);
 	}
-
 }
