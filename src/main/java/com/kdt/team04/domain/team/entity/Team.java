@@ -37,6 +37,10 @@ public class Team extends BaseEntity {
 	protected Team() {
 	}
 
+	public Team(String name, String description, SportsCategory sportsCategory, User leader) {
+		this(null, name, description, sportsCategory, leader);
+	}
+
 	@Builder
 	public Team(Long id, String name, String description, SportsCategory sportsCategory, User leader) {
 		this.id = id;

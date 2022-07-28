@@ -2,6 +2,8 @@ package com.kdt.team04.domain.team.dto;
 
 import java.util.List;
 
+import com.kdt.team04.domain.match.review.dto.MatchRecordResponse;
+import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
 import com.kdt.team04.domain.user.dto.UserResponse;
@@ -13,8 +15,10 @@ public record TeamResponse(
 	Long id,
 	String teamName,
 	String description,
-	List<TeamMemberResponse> members,
 	SportsCategory sportsCategory,
+	List<TeamMemberResponse> members,
+	MatchRecordResponse.TotalCount matchRecord,
+	MatchReviewResponse.TotalCount matchReview,
 	UserResponse leader
 ) {
 }
