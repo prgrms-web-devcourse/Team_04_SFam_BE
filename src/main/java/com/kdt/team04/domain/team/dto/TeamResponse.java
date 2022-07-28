@@ -17,7 +17,7 @@ public record TeamResponse(
 	Long id,
 
 	@Schema(description = "팀 이름")
-	String teamName,
+	String name,
 
 	@Schema(description = "팀 설명")
 	String description,

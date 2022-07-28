@@ -37,7 +37,6 @@ public class TeamController {
 	@PostMapping
 	public void create(@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
 		@RequestBody @Valid TeamRequest.CreateRequest request) {
-
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
@@ -55,9 +54,13 @@ public class TeamController {
 	}
 
 	@Operation(summary = "해당 user가 리더인 팀 조회", description = "해당 userId를 가진 user가 리더인 팀을 조회할 수 있습니다.")
-	@GetMapping("/test")
+	@GetMapping("/me/leader")
 	public ApiResponse<List<TeamResponse.SimpleResponse>> getByLeaderId(
 		@AuthenticationPrincipal JwtAuthentication jwtAuthentication) {
+		if (jwtAuthentication == null) {
+			throw new NotAuthenticationException("Not Authenticated");
+		}
+
 		List<TeamResponse.SimpleResponse> teams = teamService.findByLeaderId(jwtAuthentication.id());
 
 		return new ApiResponse<>(teams);

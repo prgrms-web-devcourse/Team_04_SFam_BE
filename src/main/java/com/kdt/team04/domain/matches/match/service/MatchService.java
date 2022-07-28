@@ -21,9 +21,6 @@ import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Transactional(readOnly = true)
 @Service
 public class MatchService {
@@ -46,20 +43,19 @@ public class MatchService {
 
 	@Transactional
 	public Long create(Long userId, MatchRequest.MatchCreateRequest request) {
-		Match match = null;
-
-		if (request.matchType() == MatchType.TEAM_MATCH) {
-			match = teamCreate(userId, request);
-		} else if (request.matchType() == MatchType.INDIVIDUAL_MATCH) {
-			match = individualCreate(userId, request);
-		}
-
+		Match match = request.matchType() == MatchType.TEAM_MATCH ?
+			teamMatch(userId, request) : individualMatch(userId, request);
 		Match savedMatch = matchRepository.save(match);
 
 		return savedMatch.getId();
 	}
 
-	private Match individualCreate(Long userId, MatchRequest.MatchCreateRequest request) {
+	private Match individualMatch(Long userId, MatchRequest.MatchCreateRequest request) {
+		if (request.participants() != 1) {
+			throw new BusinessException(ErrorCode.MATCH_PARTICIPANTS,
+				MessageFormat.format("userId = {0}, participants = {1}", userId, request.participants()));
+		}
+
 		UserResponse userResponse = userService.findById(userId);
 		User user = userConverter.toUser(userResponse);
 
@@ -67,14 +63,14 @@ public class MatchService {
 			.title(request.title())
 			.matchDate(request.matchDate())
 			.matchType(request.matchType())
-			.participants(1)
+			.participants(request.participants())
 			.user(user)
 			.sportsCategory(request.sportsCategory())
 			.content(request.content())
 			.build();
 	}
 
-	private Match teamCreate(Long userId, MatchRequest.MatchCreateRequest request) {
+	private Match teamMatch(Long userId, MatchRequest.MatchCreateRequest request) {
 		TeamResponse teamResponse = teamGiver.findById(request.teamId());
 
 		if (!Objects.equals(userId, teamResponse.leader().id())) {

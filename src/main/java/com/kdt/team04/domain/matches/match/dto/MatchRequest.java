@@ -3,6 +3,7 @@ package com.kdt.team04.domain.matches.match.dto;
 import java.time.LocalDate;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -33,8 +34,8 @@ public record MatchRequest() {
 		@Schema(description = "팀 아이디")
 		Long teamId,
 
-		@Min(1)
-		@Schema(description = "참가 인원, 1명 이상", required = true)
+		@Min(1) @Max(15)
+		@Schema(description = "참가 인원, 1명 이상 15명 이하", required = true)
 		int participants,
 
 		@NotNull
