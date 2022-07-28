@@ -68,6 +68,7 @@ public class TeamService {
 		Team team = teamRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_FOUND,
 				MessageFormat.format("TeamId = {0}", id)));
+
 		List<TeamMemberResponse> teamMemberResponses = teamMemberGiver.findAllByTeamId(id);
 		MatchRecordResponse.TotalCount totalRecord = matchRecordGiver.findByTeamTotalRecord(id);
 		MatchReviewResponse.TotalCount totalReview = matchReviewGiver.findByTeamTotalReview(id);
@@ -76,7 +77,13 @@ public class TeamService {
 		return teamConverter.toTeamResponse(team, leader, teamMemberResponses, totalRecord, totalReview);
 	}
 
-	public void test(Long id) {
-		matchReviewGiver.findByTeamTotalReview(id);
+	public List<TeamResponse.SimpleResponse> findByLeaderId(Long userId) {
+		return teamRepository.findAllByLeaderId(userId).stream()
+			.map(team ->
+				new TeamResponse.SimpleResponse(
+					team.getId(),
+					team.getName(),
+					team.getSportsCategory()))
+			.toList();
 	}
 }

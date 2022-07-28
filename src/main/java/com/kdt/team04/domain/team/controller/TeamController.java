@@ -1,5 +1,9 @@
 package com.kdt.team04.domain.team.controller;
 
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +36,7 @@ public class TeamController {
 	@Operation(summary = "팀을 생성한다.", description = "새로운 팀을 생성할 수 있습니다.")
 	@PostMapping
 	public void create(@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
-		@RequestBody TeamRequest.CreateRequest request) {
+		@RequestBody @Valid TeamRequest.CreateRequest request) {
 
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
@@ -48,5 +52,14 @@ public class TeamController {
 		TeamResponse team = teamService.findById(id);
 
 		return new ApiResponse<>(team);
+	}
+
+	@Operation(summary = "해당 user가 리더인 팀 조회", description = "해당 userId를 가진 user가 리더인 팀을 조회할 수 있습니다.")
+	@GetMapping("/test")
+	public ApiResponse<List<TeamResponse.SimpleResponse>> getByLeaderId(
+		@AuthenticationPrincipal JwtAuthentication jwtAuthentication) {
+		List<TeamResponse.SimpleResponse> teams = teamService.findByLeaderId(jwtAuthentication.id());
+
+		return new ApiResponse<>(teams);
 	}
 }

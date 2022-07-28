@@ -9,6 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.kdt.team04.domain.BaseEntity;
 import com.kdt.team04.domain.team.SportsCategory;
@@ -23,10 +26,15 @@ public class Team extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@NotBlank
+	@Size(min = 2, max = 10)
 	private String name;
 
+	@NotBlank
+	@Size(max = 100)
 	private String description;
 
+	@NotNull
 	@Enumerated(value = EnumType.STRING)
 	private SportsCategory sportsCategory;
 
@@ -35,10 +43,6 @@ public class Team extends BaseEntity {
 	private User leader;
 
 	protected Team() {
-	}
-
-	public Team(String name, String description, SportsCategory sportsCategory, User leader) {
-		this(null, name, description, sportsCategory, leader);
 	}
 
 	@Builder

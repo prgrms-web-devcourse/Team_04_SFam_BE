@@ -37,4 +37,15 @@ public record TeamResponse(
 	@Schema(description = "팀 리더 정보")
 	UserResponse leader
 ) {
+
+	public record SimpleResponse(
+		@Schema(description = "팀 아이디")
+		Long id,
+
+		@Schema(description = "팀명")
+		String teamName,
+
+		@Schema(description = "스포츠 종목")
+		SportsCategory sportsCategory
+	) { }
 }
