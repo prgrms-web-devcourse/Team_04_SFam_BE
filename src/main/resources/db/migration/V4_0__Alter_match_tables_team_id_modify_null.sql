@@ -1,0 +1,3 @@
+ALTER TABLE matches MODIFY team_id BIGINT NULL;
+ALTER TABLE match_request MODIFY team_id BIGINT NULL;
+ALTER TABLE match_record MODIFY team_id BIGINT NULL;
