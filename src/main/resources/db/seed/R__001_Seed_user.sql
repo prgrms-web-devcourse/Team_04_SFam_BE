@@ -1,0 +1,11 @@
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (1, 'test01', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'Elizabath');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (2, 'test02', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'Crong');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (3, 'test03', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'hyeb');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (4, 'test04', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'Null');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (5, 'test05', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'mark');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (6, 'test06', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'Lawrence');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (7, 'test07', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'papa');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (8, 'test08', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'Thompson');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (9, 'test09', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'Claire');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (10, 'test10', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'regyu');
+INSERT IGNORE INTO users(id, username, password, nickname) VALUES (11, 'test11', '$2a$12$e/n5T8uw2kqCx15f7zCeruPcoRlAJJr1pLVubCoU45HeMPeOpeaZq', 'Dong-Young Kim');

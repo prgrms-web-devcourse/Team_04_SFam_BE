@@ -18,8 +18,10 @@ import com.kdt.team04.domain.match.post.entity.Match;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
+import lombok.Builder;
+
 @Entity
-public class MatchResult extends BaseEntity {
+public class MatchRecord extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,11 +40,12 @@ public class MatchResult extends BaseEntity {
 	private Team team;
 
 	@Enumerated(value = EnumType.STRING)
-	private MatchResultValue result;
+	private MatchRecordValue result;
 
-	protected MatchResult() {/*no-op*/}
+	protected MatchRecord() {/*no-op*/}
 
-	public MatchResult(Long id, Match match, User user, Team team, MatchResultValue result) {
+	@Builder
+	public MatchRecord(Long id, Match match, User user, Team team, MatchRecordValue result) {
 		this.id = id;
 		this.match = match;
 		this.user = user;
@@ -66,7 +69,7 @@ public class MatchResult extends BaseEntity {
 		return team;
 	}
 
-	public MatchResultValue getResult() {
+	public MatchRecordValue getResult() {
 		return result;
 	}
 

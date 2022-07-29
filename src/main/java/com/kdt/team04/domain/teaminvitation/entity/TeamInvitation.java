@@ -22,7 +22,7 @@ import lombok.Builder;
 public class TeamInvitation {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -66,4 +66,9 @@ public class TeamInvitation {
 	public InvitationStatus getStatus() {
 		return status;
 	}
+
+	public void accept() {
+		this.status = InvitationStatus.ACCEPTED;
+	}
+
 }

@@ -15,7 +15,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.kdt.team04.domain.BaseEntity;
 import com.kdt.team04.domain.match.post.entity.Match;
+import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
+
+import lombok.Builder;
 
 @Entity
 public class MatchReview extends BaseEntity {
@@ -35,13 +38,30 @@ public class MatchReview extends BaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "team_id")
+	private Team team;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "target_user_id")
+	private User targetUser;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "target_team_id")
+	private Team targetTeam;
+
 	protected MatchReview() {/*no-op*/}
 
-	public MatchReview(Long id, Match match, MatchReviewValue review, User user) {
+	@Builder
+	public MatchReview(Long id, Match match, MatchReviewValue review, User user, Team team, User targetUser,
+		Team targetTeam) {
 		this.id = id;
 		this.match = match;
 		this.review = review;
 		this.user = user;
+		this.team = team;
+		this.targetUser = targetUser;
+		this.targetTeam = targetTeam;
 	}
 
 	public Long getId() {
@@ -60,6 +80,18 @@ public class MatchReview extends BaseEntity {
 		return user;
 	}
 
+	public Team getTeam() {
+		return team;
+	}
+
+	public User getTargetUser() {
+		return targetUser;
+	}
+
+	public Team getTargetTeam() {
+		return targetTeam;
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -67,6 +99,9 @@ public class MatchReview extends BaseEntity {
 			.append("match", match)
 			.append("review", review)
 			.append("user", user)
+			.append("team", team)
+			.append("targetUser", targetUser)
+			.append("targetTeam", targetTeam)
 			.toString();
 	}
 }

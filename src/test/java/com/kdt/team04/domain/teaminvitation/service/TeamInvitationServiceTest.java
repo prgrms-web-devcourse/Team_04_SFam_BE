@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
@@ -43,7 +44,7 @@ class TeamInvitationServiceTest {
 		entityManager.persist(userA);
 		entityManager.persist(userB);
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)
@@ -74,7 +75,7 @@ class TeamInvitationServiceTest {
 		entityManager.persist(userA);
 		entityManager.persist(userB);
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)
@@ -104,7 +105,7 @@ class TeamInvitationServiceTest {
 		entityManager.persist(userA);
 		entityManager.persist(userB);
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)
@@ -117,10 +118,11 @@ class TeamInvitationServiceTest {
 		entityManager.clear();
 		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
 		teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId());
-		teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId());
 
 		//when, then
-		Assertions.assertThatThrownBy(() -> entityManager.flush()).isInstanceOf(PersistenceException.class);
+		Assertions.assertThatThrownBy(() ->
+			teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId())
+		).isInstanceOf(DataIntegrityViolationException.class);
 	}
 
 	@Test
@@ -133,7 +135,7 @@ class TeamInvitationServiceTest {
 		entityManager.persist(userA);
 		entityManager.persist(userB);
 		Team team = Team.builder()
-			.teamName("teamA")
+			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)

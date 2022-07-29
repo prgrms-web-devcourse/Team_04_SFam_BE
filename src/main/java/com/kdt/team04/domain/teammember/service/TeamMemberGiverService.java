@@ -5,13 +5,16 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.teammember.dto.TeamMemberConverter;
 import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
+import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.teammember.repository.TeamMemberRepository;
+import com.kdt.team04.domain.user.entity.User;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class TeamMemberGiverService {
 
 	private final TeamMemberRepository teamMemberRepository;
@@ -29,4 +32,18 @@ public class TeamMemberGiverService {
 			.map(teamMemberConverter::toTeamMemberResponse)
 			.toList();
 	}
+
+	public boolean existsTeamMember(Long teamId, Long userId) {
+		return teamMemberRepository.existsByTeamIdAndUserId(teamId, userId);
+	}
+
+	@Transactional
+	public void registerTeamLeader(Long teamId, Long userId) {
+		User user = teamMemberConverter.toUser(userId);
+		Team team = teamMemberConverter.toTeam(teamId);
+
+		TeamMember teamMember = new TeamMember(team, user, TeamMemberRole.LEADER);
+		teamMemberRepository.save(teamMember);
+	}
+
 }
