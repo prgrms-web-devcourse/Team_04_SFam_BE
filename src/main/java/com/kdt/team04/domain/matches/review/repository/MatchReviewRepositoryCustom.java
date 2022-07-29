@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.match.review.repository;
+package com.kdt.team04.domain.matches.review.repository;
 
 import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 

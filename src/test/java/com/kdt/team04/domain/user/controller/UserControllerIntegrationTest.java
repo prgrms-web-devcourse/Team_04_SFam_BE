@@ -1,6 +1,6 @@
 package com.kdt.team04.domain.user.controller;
 
-import static com.kdt.team04.domain.match.post.entity.MatchStatus.END;
+import static com.kdt.team04.domain.matches.match.entity.MatchStatus.END;
 import static com.kdt.team04.domain.team.SportsCategory.BASEBALL;
 import static com.kdt.team04.domain.team.SportsCategory.SOCCER;
 import static com.kdt.team04.domain.teammember.entity.TeamMemberRole.LEADER;
@@ -33,11 +33,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
-import com.kdt.team04.domain.match.post.entity.Match;
-import com.kdt.team04.domain.match.post.entity.MatchType;
-import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
-import com.kdt.team04.domain.match.review.entity.MatchReview;
-import com.kdt.team04.domain.match.review.entity.MatchReviewValue;
+import com.kdt.team04.domain.matches.match.entity.Match;
+import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.entity.MatchReview;
+import com.kdt.team04.domain.matches.review.entity.MatchReviewValue;
 import com.kdt.team04.domain.security.WithMockJwtAuthentication;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
@@ -66,15 +66,32 @@ class UserControllerIntegrationTest {
 	@WithMockJwtAuthentication
 	void testFindProfile() throws Exception {
 		// given
-		User findUser = new User("test00", "nk-test00", passwordEncoder.encode("$2a$12$/LTEq6Ip8SeC2HeQazQnQeJQm4ZF1GTxD8R9/lWyMC/jNPIwZ3YUa"));
-		User user = new User("test01", "nk-test01", passwordEncoder.encode("$2a$12$/LTEq6Ip8SeC2HeQazQnQeJQm4ZF1GTxD8R9/lWyMC/jNPIwZ3YUa"));
+		User findUser = new User("test00", "nk-test00",
+			passwordEncoder.encode("$2a$12$/LTEq6Ip8SeC2HeQazQnQeJQm4ZF1GTxD8R9/lWyMC/jNPIwZ3YUa"));
+		User user = new User("test01", "nk-test01",
+			passwordEncoder.encode("$2a$12$/LTEq6Ip8SeC2HeQazQnQeJQm4ZF1GTxD8R9/lWyMC/jNPIwZ3YUa"));
 
-		Team findUserTeam1 = Team.builder().name("team00").description("desc-team00").sportsCategory(SOCCER).leader(findUser).build();
+		Team findUserTeam1 = Team.builder()
+			.name("team00")
+			.description("desc-team00")
+			.sportsCategory(SOCCER)
+			.leader(findUser)
+			.build();
 		TeamMember findUserTeamMember1 = new TeamMember(findUserTeam1, findUser, LEADER);
-		Team findUserTeam2 = Team.builder().name("team01").description("desc-team01").sportsCategory(BASEBALL).leader(findUser).build();
+		Team findUserTeam2 = Team.builder()
+			.name("team01")
+			.description("desc-team01")
+			.sportsCategory(BASEBALL)
+			.leader(findUser)
+			.build();
 		TeamMember findUserTeamMember2 = new TeamMember(findUserTeam2, findUser, LEADER);
 
-		Team userTeam = Team.builder().name("team02").description("desc-team02").sportsCategory(SOCCER).leader(user).build();
+		Team userTeam = Team.builder()
+			.name("team02")
+			.description("desc-team02")
+			.sportsCategory(SOCCER)
+			.leader(user)
+			.build();
 		TeamMember userTeamMember = new TeamMember(userTeam, user, LEADER);
 
 		Match match = Match.builder()
@@ -109,10 +126,13 @@ class UserControllerIntegrationTest {
 
 		MatchReviewResponse.TotalCount reviewResponse = new MatchReviewResponse.TotalCount(1, 0, 0);
 		List<TeamResponse.SimpleResponse> teamResponses = Arrays.asList(
-			new TeamResponse.SimpleResponse(findUserTeam1.getId(), findUserTeam1.getName(), findUserTeam1.getSportsCategory()),
-			new TeamResponse.SimpleResponse(findUserTeam2.getId(), findUserTeam2.getName(), findUserTeam2.getSportsCategory())
+			new TeamResponse.SimpleResponse(findUserTeam1.getId(), findUserTeam1.getName(),
+				findUserTeam1.getSportsCategory()),
+			new TeamResponse.SimpleResponse(findUserTeam2.getId(), findUserTeam2.getName(),
+				findUserTeam2.getSportsCategory())
 		);
-		UserResponse.FindProfile profileResponse = new UserResponse.FindProfile(findUser.getNickname(), reviewResponse, teamResponses);
+		UserResponse.FindProfile profileResponse = new UserResponse.FindProfile(findUser.getNickname(), reviewResponse,
+			teamResponses);
 
 		String response = objectMapper.writeValueAsString(new ApiResponse<>(profileResponse));
 
@@ -153,7 +173,7 @@ class UserControllerIntegrationTest {
 		// when
 		ResultActions result = mockMvc.perform(
 			get("/api/users")
-				.param("nickname",nickname)
+				.param("nickname", nickname)
 				.accept(MediaType.APPLICATION_JSON)
 		);
 
@@ -185,7 +205,7 @@ class UserControllerIntegrationTest {
 		// when
 		ResultActions result = mockMvc.perform(
 			get("/api/users")
-				.param("nickname",nickname)
+				.param("nickname", nickname)
 				.accept(MediaType.APPLICATION_JSON)
 		);
 

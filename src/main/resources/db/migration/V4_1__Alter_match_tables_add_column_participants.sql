@@ -1,0 +1,1 @@
+ALTER TABLE matches ADD participants INT NOT NULL default 1;
