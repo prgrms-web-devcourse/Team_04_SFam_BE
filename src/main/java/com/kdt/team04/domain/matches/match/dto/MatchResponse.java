@@ -35,12 +35,25 @@ public record MatchResponse(
 ) {
 
 	public record ListViewResponse(
+		@Schema(description = "매칭 ID")
 		Long id,
+
+		@Schema(description = "매칭 글 제목")
 		String title,
+
+		@Schema(description = "매칭 종목")
 		SportsCategory category,
+
+		@Schema(description = "매칭 타입")
 		MatchType matchType,
+
+		@Schema(description = "매칭 글 내용")
 		String content,
+
+		@Schema(description = "나와의 거리")
 		Double distance,
+
+		@Schema(description = "작성 일자")
 		LocalDateTime createdAt
 	) {
 

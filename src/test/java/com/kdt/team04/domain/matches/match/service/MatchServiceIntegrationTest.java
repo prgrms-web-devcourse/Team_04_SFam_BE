@@ -211,7 +211,7 @@ class MatchServiceIntegrationTest {
 		entityManager.persist(match);
 		entityManager.flush();
 
-		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder().createdAt(cursorCreatedAt)
+		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
 			.id(match.getId())
 			.createdAt(cursorCreatedAt)
 			.size(5)
@@ -274,7 +274,7 @@ class MatchServiceIntegrationTest {
 
 		entityManager.flush();
 
-		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder().createdAt(cursorCreatedAt)
+		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
 			.id(matches.get(matches.size() - 1).getId())
 			.createdAt(cursorCreatedAt)
 			.size(5)
@@ -356,7 +356,7 @@ class MatchServiceIntegrationTest {
 
 		entityManager.flush();
 
-		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder().createdAt(cursorCreatedAt)
+		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
 			.id(badmintonMatches.get(badmintonMatches.size() - 1).getId())
 			.createdAt(cursorCreatedAt)
 			.size(5)
@@ -421,10 +421,10 @@ class MatchServiceIntegrationTest {
 
 		entityManager.flush();
 
-		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder().createdAt(cursorCreatedAt)
+		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
+			.createdAt(cursorCreatedAt)
 			.id(matches.get(matches.size() - 1).getId())
 			.size(5)
-			.createdAt(cursorCreatedAt)
 			.category(SportsCategory.BADMINTON)
 			.distance(1.51)
 			.build();
@@ -435,7 +435,6 @@ class MatchServiceIntegrationTest {
 		Long lastId = foundMatches.cursor().getId();
 
 		PageDto.MatchCursorPageRequest secondRequest = PageDto.MatchCursorPageRequest.builder()
-			.createdAt(cursorCreatedAt)
 			.id(lastId)
 			.createdAt(lastCreatedAt)
 			.size(5)
@@ -453,7 +452,7 @@ class MatchServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("페이징 요청 객체가 없으면 디폴트 PageRequest로 조회한다.")
+	@DisplayName("페이징 커서가 없다면 전체 내림차순으로 조회한다.")
 	void testFindAllMatchesIfNullPagingRequest() {
 		Location myLocation = new Location(37.3947122, 127.111253);
 		Location authorLocation = new Location(37.3956683, 127.128228);
@@ -501,12 +500,18 @@ class MatchServiceIntegrationTest {
 
 		entityManager.flush();
 
-		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
-			member.getId(), null);
+		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
+			.size(5)
+			.category(SportsCategory.BADMINTON)
+			.distance(1.51)
+			.build();
 
-		assertThat(foundMatches.values().size()).isEqualTo(matches.size());
+		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
+			member.getId(), request);
+
+		assertThat(foundMatches.values().size()).isEqualTo(request.getSize());
 		assertThat(foundMatches.values().get(0).id()).isEqualTo(matches.get(matches.size() - 1).getId());
-		assertThat(foundMatches.values().get(9).id()).isEqualTo(matches.get(matches.size() - 10).getId());
-		assertThat(foundMatches.hasNext()).isFalse();
+		assertThat(foundMatches.values().get(4).id()).isEqualTo(matches.get(matches.size() - 5).getId());
+		assertThat(foundMatches.hasNext()).isTrue();
 	}
 }

@@ -43,7 +43,8 @@ public class MatchController {
 	}
 
 	@GetMapping
-	public ApiResponse<PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor>> getMatches(
+	@Operation(summary = "매치 공고 리스트 조회", description = "매칭 상태별, 종목별 공고 리스트를 최신글 순으로 커서방식 페이징한다.")
+	public ApiResponse<PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor>> getWithCursorPaging(
 		@AuthenticationPrincipal JwtAuthentication auth, @Valid PageDto.MatchCursorPageRequest pageRequest) {
 		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> matches = matchService.findMatches(
 			auth.id(), pageRequest);

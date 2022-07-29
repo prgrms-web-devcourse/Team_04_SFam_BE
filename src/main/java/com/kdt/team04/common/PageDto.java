@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.team.SportsCategory;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Builder;
 
 public class PageDto {
@@ -39,21 +42,31 @@ public class PageDto {
 	public static class MatchCursorPageRequest {
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 		@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-		@NotNull
+		@Parameter(description = "마지막 조회 일자 (yyyy-MM-dd HH:mm:ss)")
 		private LocalDateTime createdAt;
 
-		@NotNull
+		@Parameter(description = "마지막 조회 ID")
 		private Long id;
 
 		@NotNull
+		@Parameter(description = "페이징 사이즈")
 		private Integer size;
 
+		@Parameter(description = "매칭 종목")
 		private SportsCategory category;
 
+		@Parameter(description = "매칭 상태")
 		private MatchStatus status;
 
-		@Size(min = 1, max = 30)
+		@Min(1)
+		@Max(30)
+		@Parameter(description = "검색 거리")
 		private Double distance;
+
+		@AssertFalse
+		public boolean isValidCursor() {
+			return id != null && createdAt == null || id == null && createdAt != null;
+		}
 
 		@Builder
 		public MatchCursorPageRequest(LocalDateTime createdAt, Long id, Integer size, SportsCategory category,
