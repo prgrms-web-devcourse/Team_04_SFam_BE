@@ -49,15 +49,15 @@ public class MatchService {
 	@Transactional
 	public Long create(Long userId, MatchRequest.MatchCreateRequest request) {
 		Match match = request.matchType() == MatchType.TEAM_MATCH ?
-			teamMatch(userId, request) : individualMatch(userId, request);
+			teamMatchCreate(userId, request) : individualMatchCreate(userId, request);
 		Match savedMatch = matchRepository.save(match);
 
 		return savedMatch.getId();
 	}
 
-	private Match individualMatch(Long userId, MatchRequest.MatchCreateRequest request) {
+	private Match individualMatchCreate(Long userId, MatchRequest.MatchCreateRequest request) {
 		if (request.participants() != 1) {
-			throw new BusinessException(ErrorCode.MATCH_PARTICIPANTS,
+			throw new BusinessException(ErrorCode.INVALID_PARTICIPANTS,
 				MessageFormat.format("userId = {0}, participants = {1}", userId, request.participants()));
 		}
 
@@ -75,13 +75,13 @@ public class MatchService {
 			.build();
 	}
 
-	private Match teamMatch(Long userId, MatchRequest.MatchCreateRequest request) {
-		TeamResponse teamResponse = teamGiver.findById(request.teamId());
-
-		if (!Objects.equals(userId, teamResponse.leader().id())) {
-			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
-				MessageFormat.format("teamId = {0} , userId = {1}", request.teamId(), userId));
+	private Match teamMatchCreate(Long userId, MatchRequest.MatchCreateRequest request) {
+		if (request.teamId() == null) {
+			throw new BusinessException(ErrorCode.METHOD_ARGUMENT_NOT_VALID, "teamId is null");
 		}
+
+		TeamResponse teamResponse = teamGiver.findById(request.teamId());
+		verifyLeader(userId, request.teamId(), teamResponse.leader().id());
 
 		User teamLeader = userConverter.toUser(teamResponse.leader());
 		Team team = teamConverter.toTeam(teamResponse, teamLeader);
@@ -115,5 +115,12 @@ public class MatchService {
 		}
 
 		return matchConverter.toMatchResponse(foundMatch, authorResponse);
+	}
+
+	private void verifyLeader(Long userId, Long teamId, Long leaderId) {
+		if (!Objects.equals(userId, leaderId)) {
+			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
+				MessageFormat.format("teamId = {0} , userId = {1}", teamId, userId));
+		}
 	}
 }

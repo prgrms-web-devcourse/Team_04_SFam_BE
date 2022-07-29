@@ -1,17 +1,20 @@
-package com.kdt.team04.domain.matches.request.service;
+package com.kdt.team04.domain.matches.proposal.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
+import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.service.MatchService;
-import com.kdt.team04.domain.matches.request.dto.MatchProposalRequest;
-import com.kdt.team04.domain.matches.request.entity.MatchProposal;
-import com.kdt.team04.domain.matches.request.entity.MatchProposalStatus;
-import com.kdt.team04.domain.matches.request.repository.MatchProposalRepository;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalRequest;
+import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
+import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
+import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
@@ -49,6 +52,10 @@ public class MatchProposalService {
 	public Long create(Long proposerId, Long matchId, MatchProposalRequest.ProposalCreate request) {
 		MatchResponse matchResponse = matchService.findById(matchId);
 
+		if (matchResponse.status() != MatchStatus.WAITING) {
+			throw new BusinessException(ErrorCode.INVALID_CREATE_REQUEST, "already matched");
+		}
+
 		UserResponse authorResponse = userService.findById(matchResponse.author().id());
 		User author = userConverter.toUser(authorResponse);
 
@@ -56,7 +63,7 @@ public class MatchProposalService {
 		User proposer = userConverter.toUser(userResponse);
 
 		MatchProposal matchProposal = matchResponse.matchType() == MatchType.TEAM_MATCH ?
-			teamProposalCreate(author, proposer, matchResponse, request.teamId(), request.content()) :
+			teamProposalCreate(author, proposer, matchResponse, request) :
 			individualProposalCreate(author, proposer, matchResponse, request.content());
 
 		MatchProposal createdProposal = proposalRepository.save(matchProposal);
@@ -77,12 +84,15 @@ public class MatchProposalService {
 	}
 
 	private MatchProposal teamProposalCreate(User author, User proposer, MatchResponse matchResponse,
-		Long teamId, String content) {
+		MatchProposalRequest.ProposalCreate request) {
+		if (request.teamId() == null) {
+			throw new BusinessException(ErrorCode.METHOD_ARGUMENT_NOT_VALID, "Request team is null");
+		}
 
 		TeamResponse teamResponse = teamGiverService.findById(matchResponse.team().id());
 		Team team = teamConverter.toTeam(teamResponse, author);
 
-		TeamResponse proposeTeamResponse = teamGiverService.findById(teamId);
+		TeamResponse proposeTeamResponse = teamGiverService.findById(request.teamId());
 		Team proposerTeam = teamConverter.toTeam(proposeTeamResponse, proposer);
 
 		Match match = matchConverter.toMatch(matchResponse, author, team);
@@ -91,7 +101,7 @@ public class MatchProposalService {
 			.match(match)
 			.team(proposerTeam)
 			.user(proposer)
-			.content(content)
+			.content(request.content())
 			.status(MatchProposalStatus.WAITING)
 			.build();
 	}
