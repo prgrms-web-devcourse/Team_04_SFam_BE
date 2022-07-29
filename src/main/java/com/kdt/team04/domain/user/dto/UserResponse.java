@@ -40,4 +40,10 @@ public record UserResponse(Long id, String username, String password, String nic
 		@Schema(description = "사용자 위치 - 경도")
 		double longitude) {
 	}
+
+	public record AuthorResponse(
+		@Schema(description = "회원 고유 PK")
+		Long id,
+		@Schema(description = "회원 닉네임")
+		String nickname) {}
 }

@@ -7,8 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.MatchRequest;
+import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
@@ -28,15 +31,17 @@ public class MatchService {
 	private final MatchRepository matchRepository;
 	private final UserService userService;
 	private final TeamGiverService teamGiver;
+	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
 
 	public MatchService(MatchRepository matchRepository, UserService userService, TeamGiverService teamGiver,
-		TeamConverter teamConverter,
+		MatchConverter matchConverter, TeamConverter teamConverter,
 		UserConverter userConverter) {
 		this.matchRepository = matchRepository;
 		this.userService = userService;
 		this.teamGiver = teamGiver;
+		this.matchConverter = matchConverter;
 		this.teamConverter = teamConverter;
 		this.userConverter = userConverter;
 	}
@@ -91,5 +96,24 @@ public class MatchService {
 			.sportsCategory(request.sportsCategory())
 			.content(request.content())
 			.build();
+	}
+
+	public MatchResponse findById(Long id) {
+		Match foundMatch = matchRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
+				MessageFormat.format("matchId = {0}", id)));
+
+		UserResponse author = userService.findById(foundMatch.getUser().getId());
+		UserResponse.AuthorResponse authorResponse = new UserResponse.AuthorResponse(author.id(), author.nickname());
+
+		if (foundMatch.getMatchType() == MatchType.TEAM_MATCH) {
+			Team team = foundMatch.getTeam();
+			TeamResponse.SimpleResponse teamResponse = new TeamResponse.SimpleResponse(team.getId(), team.getName(),
+				team.getSportsCategory());
+
+			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);
+		}
+
+		return matchConverter.toMatchResponse(foundMatch, authorResponse);
 	}
 }
