@@ -31,4 +31,11 @@ public record UserResponse(Long id, String username, String password, String nic
 		String nickname
 	) {}
 
+	public record UpdateLocationResponse(
+		@Schema(description = "사용자 위치 - 위도")
+		double latitude,
+
+		@Schema(description = "사용자 위치 - 경도")
+		double longitude) {
+	}
 }

@@ -14,6 +14,7 @@ import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.repository.UserRepository;
 
@@ -87,5 +88,15 @@ public class UserService {
 			foundUser.getPassword(),
 			foundUser.getNickname()
 		);
+	}
+
+	@Transactional
+	public UserResponse.UpdateLocationResponse updateLocation(Long targetId,
+		UserRequest.UpdateLocationRequest request) {
+		User foundUser = userRepository.findById(targetId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
+		foundUser.updateLocation(new Location(request.latitude(), request.longitude()));
+
+		return new UserResponse.UpdateLocationResponse(request.latitude(), request.longitude());
 	}
 }
