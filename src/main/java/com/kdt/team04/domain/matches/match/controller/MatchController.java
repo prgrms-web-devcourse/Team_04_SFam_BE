@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,4 +51,9 @@ public class MatchController {
 		return new ApiResponse<>(matches);
 	}
 
+	@Operation(summary = "매치 공고 상세 조회", description = "매칭 공고의 세부 정보를 조회할 수 있다.")
+	@GetMapping("/{id}")
+	public ApiResponse<MatchResponse> getById(@PathVariable Long id) {
+		return new ApiResponse<>(matchService.findById(id));
+	}
 }

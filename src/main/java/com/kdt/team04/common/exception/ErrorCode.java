@@ -37,7 +37,8 @@ public enum ErrorCode {
 	ALREADY_TEAM_MEMBER("TM0001", "Already member of team", HttpStatus.BAD_REQUEST),
 
 	//MATCHES
-	MATCH_PARTICIPANTS("M0001", "Invalid match participants", HttpStatus.BAD_REQUEST);
+	MATCH_NOT_FOUND("M0001", "Not found match", HttpStatus.NOT_FOUND),
+	MATCH_PARTICIPANTS("M0002", "Invalid match participants", HttpStatus.BAD_REQUEST);
 
 	private final String code;
 	private final String message;
