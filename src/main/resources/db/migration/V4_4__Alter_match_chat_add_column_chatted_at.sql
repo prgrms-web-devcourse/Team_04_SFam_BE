@@ -1,0 +1,1 @@
+ALTER TABLE match_chat ADD chatted_at DATETIME NOT NULL;

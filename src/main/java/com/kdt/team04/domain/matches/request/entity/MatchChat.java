@@ -1,5 +1,7 @@
 package com.kdt.team04.domain.matches.request.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,7 +27,7 @@ public class MatchChat extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "match_proposal_id")
-	private MatchProposal request;
+	private MatchProposal proposal;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -37,23 +39,26 @@ public class MatchChat extends BaseEntity {
 
 	private String content;
 
+	private LocalDateTime chattedAt;
+
 	protected MatchChat() {/*no-op*/}
 
 	@Builder
-	public MatchChat(Long id, MatchProposal request, User user, User target, String content) {
+	public MatchChat(Long id, MatchProposal proposal, User user, User target, String content, LocalDateTime chattedAt) {
 		this.id = id;
-		this.request = request;
+		this.proposal = proposal;
 		this.user = user;
 		this.target = target;
 		this.content = content;
+		this.chattedAt = chattedAt;
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public MatchProposal getRequest() {
-		return request;
+	public MatchProposal getProposal() {
+		return proposal;
 	}
 
 	public User getUser() {
@@ -68,14 +73,19 @@ public class MatchChat extends BaseEntity {
 		return content;
 	}
 
+	public LocalDateTime getChattedAt() {
+		return chattedAt;
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
 			.append("id", id)
-			.append("request", request)
+			.append("proposal", proposal)
 			.append("user", user)
 			.append("target", target)
 			.append("content", content)
+			.append("chattedAt", chattedAt)
 			.toString();
 	}
 }
