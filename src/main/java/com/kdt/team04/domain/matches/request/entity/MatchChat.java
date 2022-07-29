@@ -14,6 +14,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.kdt.team04.domain.BaseEntity;
 import com.kdt.team04.domain.user.entity.User;
 
+import lombok.Builder;
+
 @Entity
 public class MatchChat extends BaseEntity {
 
@@ -22,8 +24,8 @@ public class MatchChat extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "match_request_id")
-	private MatchRequest request;
+	@JoinColumn(name = "match_proposal_id")
+	private MatchProposal request;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -37,7 +39,8 @@ public class MatchChat extends BaseEntity {
 
 	protected MatchChat() {/*no-op*/}
 
-	public MatchChat(Long id, MatchRequest request, User user, User target, String content) {
+	@Builder
+	public MatchChat(Long id, MatchProposal request, User user, User target, String content) {
 		this.id = id;
 		this.request = request;
 		this.user = user;
@@ -49,7 +52,7 @@ public class MatchChat extends BaseEntity {
 		return id;
 	}
 
-	public MatchRequest getRequest() {
+	public MatchProposal getRequest() {
 		return request;
 	}
 
