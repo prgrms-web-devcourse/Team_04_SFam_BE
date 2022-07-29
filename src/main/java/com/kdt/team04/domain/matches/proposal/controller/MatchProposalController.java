@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.matches.request.controller;
+package com.kdt.team04.domain.matches.proposal.controller;
 
 import javax.validation.Valid;
 
@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.matches.request.dto.MatchProposalRequest;
-import com.kdt.team04.domain.matches.request.service.MatchProposalService;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalRequest;
+import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/api/matches/{matchId}/proposals")
-public class RequestController {
+public class MatchProposalController {
 
 	private final MatchProposalService matchProposalService;
 
-	public RequestController(MatchProposalService matchProposalService) {
+	public MatchProposalController(MatchProposalService matchProposalService) {
 		this.matchProposalService = matchProposalService;
 	}
 

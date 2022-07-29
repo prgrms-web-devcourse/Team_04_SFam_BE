@@ -1,6 +1,6 @@
-package com.kdt.team04.domain.matches.request.entity;
+package com.kdt.team04.domain.matches.proposal.entity;
 
-import static com.kdt.team04.domain.matches.request.entity.MatchProposalStatus.WAITING;
+import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.WAITING;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import javax.persistence.Entity;

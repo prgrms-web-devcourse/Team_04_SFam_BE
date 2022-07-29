@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.matches.request.dto;
+package com.kdt.team04.domain.matches.proposal.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
