@@ -4,11 +4,19 @@ import java.util.List;
 
 import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.user.entity.Location;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
-public record UserResponse(Long id, String username, String password, String nickname) {
+public record UserResponse(
+	Long id,
+	String username,
+	String password,
+	String nickname,
+	Location location
+
+) {
 
 	@Builder
 	public record FindProfile(

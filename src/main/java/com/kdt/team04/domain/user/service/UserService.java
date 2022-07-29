@@ -42,7 +42,8 @@ public class UserService {
 			foundUser.getId(),
 			foundUser.getUsername(),
 			foundUser.getPassword(),
-			foundUser.getNickname()
+			foundUser.getNickname(),
+			foundUser.getLocation()
 		);
 	}
 
@@ -87,7 +88,8 @@ public class UserService {
 			foundUser.getId(),
 			foundUser.getUsername(),
 			foundUser.getPassword(),
-			foundUser.getNickname()
+			foundUser.getNickname(),
+			foundUser.getLocation()
 		);
 	}
 
