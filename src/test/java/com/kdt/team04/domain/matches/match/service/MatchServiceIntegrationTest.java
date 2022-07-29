@@ -13,14 +13,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.domain.matches.match.dto.MatchRequest;
+import com.kdt.team04.domain.matches.match.dto.MatchResponse;
+import com.kdt.team04.domain.matches.match.entity.Match;
+import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 
 @SpringBootTest
+@Transactional
 class MatchServiceIntegrationTest {
 
 	@Autowired
@@ -34,7 +40,7 @@ class MatchServiceIntegrationTest {
 	@DisplayName("팀의 리더는 팀 캐칭 공고를 생성할 수 있다.")
 	void testTeamCreateSuccess() {
 		//given
-		User user = new User("password", "username", "nickname");
+		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(user);
 		Team team = Team.builder()
 			.name("team1")
@@ -59,7 +65,7 @@ class MatchServiceIntegrationTest {
 	@DisplayName("사용자는 개인전 매칭 공고를 생성할 수 있다.")
 	void testIndividualCreateSuccess() {
 		//given
-		User user = new User("password", "username", "nickname");
+		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(user);
 		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.INDIVIDUAL_MATCH,
@@ -77,7 +83,7 @@ class MatchServiceIntegrationTest {
 	@DisplayName("개인전 매칭 공고는 참여 인원이 1명이 아닐경우 예외가 발생한다.")
 	void testIndividualCreateFail() {
 		//given
-		User user = new User("password", "username", "nickname");
+		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(user);
 		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.INDIVIDUAL_MATCH,
@@ -92,8 +98,8 @@ class MatchServiceIntegrationTest {
 	@DisplayName("팀 매칭 공고를 생성하는 주체가 팀의 리더가 아닐 경우 예외가 발생한다.")
 	void testTeamCreateFail() {
 		//given
-		User leader = new User("password", "leader", "nickname");
-		User member = new User("password", "member", "nickname");
+		User leader = new User("test1234", "nicknameA", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+		User member = new User("test1235", "nicknameB", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(leader);
 		Team team = Team.builder()
 			.name("team1")
