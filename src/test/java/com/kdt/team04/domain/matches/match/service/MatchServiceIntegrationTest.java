@@ -14,8 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.domain.matches.match.dto.MatchRequest;
+import com.kdt.team04.domain.matches.match.dto.MatchResponse;
+import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
@@ -27,11 +31,14 @@ class MatchServiceIntegrationTest {
 	private EntityManager entityManager;
 
 	@Autowired
+	private MatchRepository matchRepository;
+
+	@Autowired
 	private MatchService matchService;
 
 	@Test
 	@Transactional
-	@DisplayName("팀의 리더는 팀 캐칭 공고를 생성할 수 있다.")
+	@DisplayName("팀의 리더는 팀 매칭 공고를 생성할 수 있다.")
 	void testTeamCreateSuccess() {
 		//given
 		User user = new User("password", "username", "nickname");
@@ -110,4 +117,43 @@ class MatchServiceIntegrationTest {
 		assertThatThrownBy(() -> matchService.create(member.getId(), request)).isInstanceOf(BusinessException.class);
 	}
 
+	@Test
+	@Transactional
+	@DisplayName("매칭 공고 단건 조회를 할 수 있다.")
+	void testFindByIdSuccess() {
+		//given
+		User user = new User("password", "username", "nickname");
+		entityManager.persist(user);
+
+		Match savedMatch = matchRepository.save(Match.builder()
+			.title("match")
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(user)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build());
+
+		//when
+		MatchResponse foundMatch = matchService.findById(savedMatch.getId());
+
+		//then
+		assertThat(foundMatch.title()).isEqualTo(savedMatch.getTitle());
+		assertThat(foundMatch.matchDate()).isEqualTo(savedMatch.getMatchDate());
+		assertThat(foundMatch.content()).isEqualTo(savedMatch.getContent());
+		assertThat(foundMatch.participants()).isEqualTo(savedMatch.getParticipants());
+		assertThat(foundMatch.author().id()).isEqualTo(user.getId());
+		assertThat(foundMatch.team()).isNull();
+	}
+
+	@Test
+	@Transactional
+	@DisplayName("존재하지 않은 매칭 공고 id의 경우 EntityNotFound 예외가 발생한다.")
+	void testFindByIdFail() {
+		//given
+		Long invalidId = 1234L;
+		//when, then
+		assertThatThrownBy(() -> matchService.findById(invalidId)).isInstanceOf(EntityNotFoundException.class);
+	}
 }
