@@ -71,7 +71,8 @@ public class TeamInvitationService {
 	@Transactional
 	public void refuse(Long teamId, Long invitationId) {
 		teamInvitationRepository.findByIdAndTeamId(invitationId, teamId)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_INVITATION_NOT_FOUND))
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_INVITATION_NOT_FOUND,
+				MessageFormat.format("{0} is not team invitation id {1}", teamId, invitationId)))
 			.refuse();
 	}
 
