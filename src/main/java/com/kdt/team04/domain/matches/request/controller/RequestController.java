@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.matches.request.dto.MatchProposalRequest;
 import com.kdt.team04.domain.matches.request.service.MatchProposalService;
@@ -27,9 +28,12 @@ public class RequestController {
 
 	@PostMapping
 	@Operation(summary = "대결 신청", description = "사용자는 대결을 신청할 수 있다.")
-	public void propose(@PathVariable Long matchId, @AuthenticationPrincipal JwtAuthentication auth,
+	public void propose(@PathVariable Long matchId, @AuthenticationPrincipal JwtAuthentication jwtAuthentication,
 		@RequestBody @Valid MatchProposalRequest.ProposalCreate request) {
+		if (jwtAuthentication == null) {
+			throw new NotAuthenticationException("Not Authenticated");
+		}
 
-		matchProposalService.create(auth.id(), matchId, request);
+		matchProposalService.create(jwtAuthentication.id(), matchId, request);
 	}
 }
