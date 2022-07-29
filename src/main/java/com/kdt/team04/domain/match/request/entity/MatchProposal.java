@@ -1,6 +1,6 @@
 package com.kdt.team04.domain.match.request.entity;
 
-import static com.kdt.team04.domain.match.request.entity.MatchRequestStatus.WAITING;
+import static com.kdt.team04.domain.match.request.entity.MatchProposalStatus.WAITING;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import javax.persistence.Entity;
@@ -21,8 +21,10 @@ import com.kdt.team04.domain.match.post.entity.Match;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
+import lombok.Builder;
+
 @Entity
-public class MatchRequest extends BaseEntity {
+public class MatchProposal extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,11 +45,12 @@ public class MatchRequest extends BaseEntity {
 	private Team team;
 
 	@Enumerated(value = EnumType.STRING)
-	private MatchRequestStatus status;
+	private MatchProposalStatus status;
 
-	protected MatchRequest() {/*no-op*/}
+	protected MatchProposal() {/*no-op*/}
 
-	public MatchRequest(Long id, Match match, String content, User user, Team team, MatchRequestStatus status) {
+	@Builder
+	public MatchProposal(Long id, Match match, String content, User user, Team team, MatchProposalStatus status) {
 		this.id = id;
 		this.match = match;
 		this.content = content;
@@ -76,7 +79,7 @@ public class MatchRequest extends BaseEntity {
 		return team;
 	}
 
-	public MatchRequestStatus getStatus() {
+	public MatchProposalStatus getStatus() {
 		return status;
 	}
 
