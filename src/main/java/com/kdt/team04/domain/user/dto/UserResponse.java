@@ -2,7 +2,7 @@ package com.kdt.team04.domain.user.dto;
 
 import java.util.List;
 
-import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,7 +20,8 @@ public record UserResponse(Long id, String username, String password, String nic
 
 		@Schema(description = "소속 팀 목록")
 		List<TeamResponse.SimpleResponse> teams
-	) {}
+	) {
+	}
 
 	public record UserFindResponse(
 		@Schema(description = "회원 고유 PK")
@@ -29,7 +30,8 @@ public record UserResponse(Long id, String username, String password, String nic
 		String username,
 		@Schema(description = "회원 닉네임")
 		String nickname
-	) {}
+	) {
+	}
 
 	public record UpdateLocationResponse(
 		@Schema(description = "사용자 위치 - 위도")
