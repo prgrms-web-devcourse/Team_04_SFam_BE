@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.kdt.team04.domain.match.review.dto.MatchRecordResponse;
-import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.MatchRecordResponse;
+import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
 import com.kdt.team04.domain.user.dto.UserResponse;
@@ -17,7 +17,7 @@ public class TeamConverter {
 	public Team toTeam(TeamResponse response, User leader) {
 		return Team.builder()
 			.id(response.id())
-			.name(response.teamName())
+			.name(response.name())
 			.description(response.description())
 			.leader(leader)
 			.build();
@@ -26,7 +26,7 @@ public class TeamConverter {
 	public TeamResponse toTeamResponse(Team team, UserResponse leader) {
 		return TeamResponse.builder()
 			.id(team.getId())
-			.teamName(team.getName())
+			.name(team.getName())
 			.sportsCategory(team.getSportsCategory())
 			.description(team.getDescription())
 			.leader(leader)
@@ -37,7 +37,7 @@ public class TeamConverter {
 		MatchRecordResponse.TotalCount recordCount, MatchReviewResponse.TotalCount review) {
 		return TeamResponse.builder()
 			.id(team.getId())
-			.teamName(team.getName())
+			.name(team.getName())
 			.members(teamMemberResponses)
 			.sportsCategory(team.getSportsCategory())
 			.description(team.getDescription())

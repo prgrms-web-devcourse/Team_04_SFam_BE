@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.domain.match.review.dto.MatchRecordResponse;
-import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
-import com.kdt.team04.domain.match.review.service.MatchRecordGiverService;
-import com.kdt.team04.domain.match.review.service.MatchReviewGiverService;
+import com.kdt.team04.domain.matches.review.dto.MatchRecordResponse;
+import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.service.MatchRecordGiverService;
+import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
@@ -68,6 +68,7 @@ public class TeamService {
 		Team team = teamRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_FOUND,
 				MessageFormat.format("TeamId = {0}", id)));
+
 		List<TeamMemberResponse> teamMemberResponses = teamMemberGiver.findAllByTeamId(id);
 		MatchRecordResponse.TotalCount totalRecord = matchRecordGiver.findByTeamTotalRecord(id);
 		MatchReviewResponse.TotalCount totalReview = matchReviewGiver.findByTeamTotalReview(id);
@@ -76,7 +77,13 @@ public class TeamService {
 		return teamConverter.toTeamResponse(team, leader, teamMemberResponses, totalRecord, totalReview);
 	}
 
-	public void test(Long id) {
-		matchReviewGiver.findByTeamTotalReview(id);
+	public List<TeamResponse.SimpleResponse> findByLeaderId(Long userId) {
+		return teamRepository.findAllByLeaderId(userId).stream()
+			.map(team ->
+				new TeamResponse.SimpleResponse(
+					team.getId(),
+					team.getName(),
+					team.getSportsCategory()))
+			.toList();
 	}
 }

@@ -33,7 +33,10 @@ public enum ErrorCode {
 	INVALID_INVITATION("I0002", "Invalid invitation", HttpStatus.BAD_REQUEST),
 
 	//TEAM_MEMBER
-	ALREADY_TEAM_MEMBER("M0001", "Already member of team" , HttpStatus.BAD_REQUEST);
+	ALREADY_TEAM_MEMBER("TM0001", "Already member of team", HttpStatus.BAD_REQUEST),
+
+	//MATCHES
+	MATCH_PARTICIPANTS("M0001", "Invalid match participants", HttpStatus.BAD_REQUEST);
 
 	private final String code;
 	private final String message;
