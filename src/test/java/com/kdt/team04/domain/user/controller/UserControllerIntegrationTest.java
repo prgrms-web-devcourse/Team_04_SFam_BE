@@ -1,11 +1,17 @@
 package com.kdt.team04.domain.user.controller;
 
+import static com.kdt.team04.domain.match.post.entity.MatchStatus.END;
+import static com.kdt.team04.domain.team.SportsCategory.BASEBALL;
+import static com.kdt.team04.domain.team.SportsCategory.SOCCER;
+import static com.kdt.team04.domain.teammember.entity.TeamMemberRole.LEADER;
+import static java.time.LocalDate.now;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.LongStream;
@@ -27,7 +33,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.domain.match.post.entity.Match;
+import com.kdt.team04.domain.match.post.entity.MatchType;
+import com.kdt.team04.domain.match.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.match.review.entity.MatchReview;
+import com.kdt.team04.domain.match.review.entity.MatchReviewValue;
 import com.kdt.team04.domain.security.WithMockJwtAuthentication;
+import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 
@@ -52,16 +66,59 @@ class UserControllerIntegrationTest {
 	@WithMockJwtAuthentication
 	void testFindProfile() throws Exception {
 		// given
-		User newUser = new User("test00", "nk-test00", passwordEncoder.encode("1234"));
-		entityManager.persist(newUser);
+		User findUser = new User("test00", "nk-test00", passwordEncoder.encode("$2a$12$/LTEq6Ip8SeC2HeQazQnQeJQm4ZF1GTxD8R9/lWyMC/jNPIwZ3YUa"));
+		User user = new User("test01", "nk-test01", passwordEncoder.encode("$2a$12$/LTEq6Ip8SeC2HeQazQnQeJQm4ZF1GTxD8R9/lWyMC/jNPIwZ3YUa"));
 
-		UserResponse.FindProfile userResponse = new UserResponse.FindProfile(newUser.getId(), newUser.getUsername(),
-			newUser.getNickname());
-		String response = objectMapper.writeValueAsString(new ApiResponse<>(userResponse));
+		Team findUserTeam1 = Team.builder().name("team00").description("desc-team00").sportsCategory(SOCCER).leader(findUser).build();
+		TeamMember findUserTeamMember1 = new TeamMember(findUserTeam1, findUser, LEADER);
+		Team findUserTeam2 = Team.builder().name("team01").description("desc-team01").sportsCategory(BASEBALL).leader(findUser).build();
+		TeamMember findUserTeamMember2 = new TeamMember(findUserTeam2, findUser, LEADER);
+
+		Team userTeam = Team.builder().name("team02").description("desc-team02").sportsCategory(SOCCER).leader(user).build();
+		TeamMember userTeamMember = new TeamMember(userTeam, user, LEADER);
+
+		Match match = Match.builder()
+			.title("축구 덤벼!")
+			.sportsCategory(SOCCER)
+			.matchType(MatchType.TEAM_MATCH)
+			.matchDate(now())
+			.content("축구 하실분?")
+			.status(END)
+			.user(findUser)
+			.team(findUserTeam1)
+			.build();
+		MatchReview review = MatchReview.builder()
+			.match(match)
+			.review(MatchReviewValue.BEST)
+			.user(user)
+			.team(userTeam)
+			.targetUser(findUser)
+			.targetTeam(findUserTeam1)
+			.build();
+
+		entityManager.persist(findUser);
+		entityManager.persist(user);
+		entityManager.persist(findUserTeam1);
+		entityManager.persist(findUserTeam2);
+		entityManager.persist(userTeam);
+		entityManager.persist(findUserTeamMember1);
+		entityManager.persist(findUserTeamMember2);
+		entityManager.persist(userTeamMember);
+		entityManager.persist(match);
+		entityManager.persist(review);
+
+		MatchReviewResponse.TotalCount reviewResponse = new MatchReviewResponse.TotalCount(1, 0, 0);
+		List<TeamResponse.SimpleResponse> teamResponses = Arrays.asList(
+			new TeamResponse.SimpleResponse(findUserTeam1.getId(), findUserTeam1.getName(), findUserTeam1.getSportsCategory()),
+			new TeamResponse.SimpleResponse(findUserTeam2.getId(), findUserTeam2.getName(), findUserTeam2.getSportsCategory())
+		);
+		UserResponse.FindProfile profileResponse = new UserResponse.FindProfile(findUser.getNickname(), reviewResponse, teamResponses);
+
+		String response = objectMapper.writeValueAsString(new ApiResponse<>(profileResponse));
 
 		// when
 		ResultActions result = mockMvc.perform(
-			get("/api/users/" + newUser.getId())
+			get("/api/users/" + findUser.getId())
 				.accept(MediaType.APPLICATION_JSON)
 		);
 

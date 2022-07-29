@@ -8,6 +8,7 @@ public enum ErrorCode {
 	NOT_FOUND_EXCEPTION("C0002", "Not found exception", HttpStatus.NOT_FOUND),
 	BIND_ERROR("C0003", "Binding Exception", HttpStatus.BAD_REQUEST),
 	RUNTIME_EXCEPTION("C004", "Runtime error", HttpStatus.BAD_REQUEST),
+	METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION("C005", "Method argument type mismatch exception", HttpStatus.BAD_REQUEST),
 
 	//VALIDATION
 	METHOD_ARGUMENT_NOT_VALID("V0001", "Validation error", HttpStatus.BAD_REQUEST),
@@ -21,6 +22,7 @@ public enum ErrorCode {
 
 	//USER
 	USER_NOT_FOUND("U0001", "Not found user", HttpStatus.NOT_FOUND),
+	LOCATION_UPDATE_FAIL("U0002", "user location update failed", HttpStatus.BAD_REQUEST),
 
 	//TEAM
 	TEAM_NOT_FOUND("T0001", "Not found team", HttpStatus.NOT_FOUND),

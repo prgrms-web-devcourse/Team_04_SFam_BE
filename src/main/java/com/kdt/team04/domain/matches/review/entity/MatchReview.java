@@ -18,6 +18,8 @@ import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
+import lombok.Builder;
+
 @Entity
 public class MatchReview extends BaseEntity {
 
@@ -50,6 +52,7 @@ public class MatchReview extends BaseEntity {
 
 	protected MatchReview() {/*no-op*/}
 
+	@Builder
 	public MatchReview(Long id, Match match, MatchReviewValue review, User user, Team team, User targetUser,
 		Team targetTeam) {
 		this.id = id;
