@@ -24,6 +24,7 @@ import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
+@Transactional
 @SpringBootTest
 class MatchServiceIntegrationTest {
 
@@ -37,7 +38,6 @@ class MatchServiceIntegrationTest {
 	private MatchService matchService;
 
 	@Test
-	@Transactional
 	@DisplayName("팀의 리더는 팀 매칭 공고를 생성할 수 있다.")
 	void testTeamCreateSuccess() {
 		//given
@@ -62,7 +62,6 @@ class MatchServiceIntegrationTest {
 	}
 
 	@Test
-	@Transactional
 	@DisplayName("사용자는 개인전 매칭 공고를 생성할 수 있다.")
 	void testIndividualCreateSuccess() {
 		//given
@@ -80,11 +79,10 @@ class MatchServiceIntegrationTest {
 	}
 
 	@Test
-	@Transactional
 	@DisplayName("개인전 매칭 공고는 참여 인원이 1명이 아닐경우 예외가 발생한다.")
 	void testIndividualCreateFail() {
 		//given
-		User user = new User("password", "username", "nickname");
+		User user = new User("username", "nickname", "password");
 		entityManager.persist(user);
 		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.INDIVIDUAL_MATCH,
@@ -95,12 +93,11 @@ class MatchServiceIntegrationTest {
 	}
 
 	@Test
-	@Transactional
 	@DisplayName("팀 매칭 공고를 생성하는 주체가 팀의 리더가 아닐 경우 예외가 발생한다.")
 	void testTeamCreateFail() {
 		//given
-		User leader = new User("password", "leader", "nickname");
-		User member = new User("password", "member", "nickname");
+		User leader = new User("leader", "leader", "password");
+		User member = new User("member", "member", "password");
 		entityManager.persist(leader);
 		Team team = Team.builder()
 			.name("team1")
@@ -118,7 +115,28 @@ class MatchServiceIntegrationTest {
 	}
 
 	@Test
-	@Transactional
+	@DisplayName("팀 매칭 공고 생성 시 request에 팀 id가 null이면 예외가 발생한다.")
+	void testTeamCreateFailByRequest() {
+		//given
+		User user = new User("username", "nickname", "password");
+		entityManager.persist(user);
+		Team team = Team.builder()
+			.name("team1")
+			.description("first team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(user)
+			.build();
+		entityManager.persist(team);
+		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
+			MatchType.TEAM_MATCH,
+			null, 3, SportsCategory.BADMINTON, "content");
+
+		//when, then
+		assertThatThrownBy(() -> matchService.create(user.getId(), request)).isInstanceOf(BusinessException.class);
+
+	}
+
+	@Test
 	@DisplayName("매칭 공고 단건 조회를 할 수 있다.")
 	void testFindByIdSuccess() {
 		//given
@@ -148,7 +166,6 @@ class MatchServiceIntegrationTest {
 	}
 
 	@Test
-	@Transactional
 	@DisplayName("존재하지 않은 매칭 공고 id의 경우 EntityNotFound 예외가 발생한다.")
 	void testFindByIdFail() {
 		//given
