@@ -17,6 +17,8 @@ import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationRequest;
 import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationResponse;
+import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
+import com.kdt.team04.domain.teaminvitation.entity.TeamInvitation;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.user.entity.User;
@@ -152,4 +154,40 @@ class TeamInvitationServiceTest {
 				() -> teamInvitationService.invite(-999L, team.getId(), teamInvitationRequest.targetUserId()))
 			.isInstanceOf(BusinessException.class);
 	}
+
+	@Test
+	@DisplayName("초대를 거절할 수 있다.")
+	void testInvitationRefused() {
+		//given
+		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+		entityManager.persist(userA);
+		entityManager.persist(userB);
+
+		Team team = Team.builder()
+			.name("teamA")
+			.description("description")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(userA)
+			.build();
+		entityManager.persist(team);
+
+		TeamMember teamMemberA = new TeamMember(team, userA, TeamMemberRole.LEADER);
+		entityManager.persist(teamMemberA);
+
+		TeamInvitation teamInvitation = new TeamInvitation(team, userB, InvitationStatus.WAITING);
+		entityManager.persist(teamInvitation);
+
+		// when
+		teamInvitationService.refuse(team.getId(), teamInvitation.getId());
+
+		entityManager.flush();
+		entityManager.clear();
+
+		// then
+		TeamInvitation result = entityManager.find(TeamInvitation.class, teamInvitation.getId());
+		Assertions.assertThat(result.getStatus())
+			.isEqualTo(InvitationStatus.REFUSED);
+	}
+
 }

@@ -3,6 +3,7 @@ package com.kdt.team04.domain.teaminvitation.controller;
 import javax.validation.Valid;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,6 @@ import com.kdt.team04.domain.teaminvitation.service.TeamInvitationService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -48,4 +48,11 @@ public class TeamInvitationController {
 
 		return new ApiResponse<>(teamInvitationService.invite(auth.id(), teamId, request.targetUserId()));
 	}
+
+	@PatchMapping("/{teamId}/invitation/{invitationId}")
+	@Operation(summary = "초대 거절", description = "팀 ID와 초대 ID를 받아 초대를 거절합니다.")
+	public void refuse(@PathVariable Long teamId, @PathVariable Long invitationId) {
+		teamInvitationService.refuse(teamId, invitationId);
+	}
+
 }
