@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
@@ -65,6 +66,14 @@ public class TeamInvitationService {
 		Long savedInvitationId = teamInvitationRepository.save(invitation).getId();
 
 		return new TeamInvitationResponse.InviteResponse(savedInvitationId);
+	}
+
+	@Transactional
+	public void refuse(Long teamId, Long invitationId) {
+		teamInvitationRepository.findByIdAndTeamId(invitationId, teamId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_INVITATION_NOT_FOUND,
+				MessageFormat.format("{0} is not team invitation id {1}", teamId, invitationId)))
+			.refuse();
 	}
 
 }

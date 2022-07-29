@@ -71,4 +71,8 @@ public class TeamInvitation {
 		this.status = InvitationStatus.ACCEPTED;
 	}
 
+	public void refuse() {
+		this.status = InvitationStatus.REFUSED;
+	}
+
 }
