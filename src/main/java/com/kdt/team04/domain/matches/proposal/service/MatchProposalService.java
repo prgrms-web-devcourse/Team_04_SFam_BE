@@ -1,5 +1,7 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
+import java.text.MessageFormat;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +54,7 @@ public class MatchProposalService {
 	public Long create(Long proposerId, Long matchId, MatchProposalRequest.ProposalCreate request) {
 		MatchResponse matchResponse = matchService.findById(matchId);
 
-		if (matchResponse.status() != MatchStatus.WAITING) {
+		if (isMatched(matchResponse.status())) {
 			throw new BusinessException(ErrorCode.INVALID_CREATE_REQUEST, "already matched");
 		}
 
@@ -104,5 +106,38 @@ public class MatchProposalService {
 			.content(request.content())
 			.status(MatchProposalStatus.WAITING)
 			.build();
+	}
+
+	@Transactional
+	public MatchProposalStatus react(Long matchId, Long id, MatchProposalStatus status) {
+		MatchResponse matchResponse = matchService.findById(matchId);
+		MatchProposal proposal = proposalRepository.findById(id)
+			.orElseThrow(() -> new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
+				MessageFormat.format("proposalId = {0}", id)));
+
+		verifyRequest(status, matchResponse, id);
+		proposal.updateStatus(status);
+
+		if (isApproved(status)) {
+			matchService.updateStatus(matchId, MatchStatus.IN_GAME);
+		}
+
+		return proposal.getStatus();
+	}
+
+	private void verifyRequest(MatchProposalStatus status, MatchResponse match, Long id) {
+		if (isMatched(match.status()) && isApproved(status)) {
+			throw new BusinessException(ErrorCode.INVALID_REACT,
+				MessageFormat.format("matchId = {0}, proposalId = {1}, proposalStatus = {2}, matchStatus = {3}",
+					match.id(), id, status, match.status()));
+		}
+	}
+
+	private boolean isMatched(MatchStatus status) {
+		return status != MatchStatus.WAITING;
+	}
+
+	private boolean isApproved(MatchProposalStatus status) {
+		return status == MatchProposalStatus.APPROVED;
 	}
 }

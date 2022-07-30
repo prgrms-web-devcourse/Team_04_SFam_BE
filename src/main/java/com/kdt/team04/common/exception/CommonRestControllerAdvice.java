@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,6 +40,15 @@ public class CommonRestControllerAdvice {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleMethodArgumentNotValidException(
 		MethodArgumentNotValidException e) {
+		this.log.warn(e.getMessage(), e);
+		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_NOT_VALID;
+
+		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+	}
+
+	@ExceptionHandler(MissingServletRequestParameterException.class)
+	public ResponseEntity<ErrorResponse<ErrorCode>> handleMissingServletRequestParameterException(
+		MissingServletRequestParameterException e) {
 		this.log.warn(e.getMessage(), e);
 		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_NOT_VALID;
 
