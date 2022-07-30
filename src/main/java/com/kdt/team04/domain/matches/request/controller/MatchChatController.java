@@ -14,6 +14,8 @@ import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.matches.request.dto.MatchChatRequest;
 import com.kdt.team04.domain.matches.request.service.MatchChatService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 @RequestMapping("/api/matches/proposals")
 public class MatchChatController {
@@ -25,6 +27,7 @@ public class MatchChatController {
 	}
 
 	@PostMapping("/{id}/chats")
+	@Operation(summary = "채팅 등록", description = "작성자와 승인된 신청자가 채팅을 등록한다.")
 	public void chat(
 		@AuthenticationPrincipal JwtAuthentication authentication,
 		@PathVariable Long id,
