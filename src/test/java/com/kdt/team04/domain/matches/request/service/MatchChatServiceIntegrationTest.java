@@ -136,6 +136,37 @@ class MatchChatServiceIntegrationTest {
 		});
 	}
 
+	@Test
+	@Transactional
+	@DisplayName("다른 확정된 매칭 상대가 있을 때 채팅 등록 시, 오류가 발생한다.")
+	void testFail_anotherFixedProposal() {
+		//given
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
+		User target = getUser("target");
+		Team targetTeam = getSoccerTeam("target", target);
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.IN_GAME, author, authorTeam);
+		MatchProposal matchProposal = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(target)
+			.team(targetTeam)
+			.status(MatchProposalStatus.APPROVED)
+			.build();
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+		entityManager.persist(target);
+		entityManager.persist(targetTeam);
+		entityManager.persist(match);
+		entityManager.persist(matchProposal);
+
+		//when, then
+		assertThrows(BusinessException.class, () -> {
+			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", LocalDateTime.now());
+		});
+	}
+
 	@Nested
 	@DisplayName("유효하지 않은 채팅 대상인")
 	class InCorrectChattingPartner {
