@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,7 +60,7 @@ public class UserController {
 	@Operation(summary = "회원 위치 정보 업데이트", description = "회원 위치 정보(위도, 경도)를 업데이트 한다.")
 	@PutMapping("/{id}/location")
 	public ApiResponse<UserResponse.UpdateLocationResponse> update(
-		@AuthenticationPrincipal JwtAuthentication auth, @Valid @NotNull UserRequest.UpdateLocationRequest request) {
+		@AuthenticationPrincipal JwtAuthentication auth, @RequestBody @Valid @NotNull UserRequest.UpdateLocationRequest request) {
 		if (auth == null) {
 			throw new NotAuthenticationException("not authenticated");
 		}
