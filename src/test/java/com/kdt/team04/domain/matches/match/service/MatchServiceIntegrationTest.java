@@ -33,7 +33,6 @@ import com.kdt.team04.domain.user.entity.User;
 
 @Transactional
 @SpringBootTest
-@Transactional
 class MatchServiceIntegrationTest {
 
 	@Autowired
