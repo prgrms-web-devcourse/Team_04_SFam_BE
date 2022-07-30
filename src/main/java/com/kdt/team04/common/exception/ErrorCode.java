@@ -38,7 +38,11 @@ public enum ErrorCode {
 
 	//MATCHES
 	MATCH_NOT_FOUND("M0001", "Not found match", HttpStatus.NOT_FOUND),
-	MATCH_PARTICIPANTS("M0002", "Invalid match participants", HttpStatus.BAD_REQUEST);
+	INVALID_PARTICIPANTS("M0002", "Invalid match participants", HttpStatus.BAD_REQUEST),
+	AUTHOR_NOT_MATCHED("M0003", "Author not matched", HttpStatus.BAD_REQUEST),
+
+	//MATCH_PROPOSAL
+	INVALID_CREATE_REQUEST("MP0002", "Invalid proposal request", HttpStatus.BAD_REQUEST);
 
 	private final String code;
 	private final String message;
