@@ -67,9 +67,9 @@ class UserControllerIntegrationTest {
 	void testFindProfile() throws Exception {
 		// given
 		User findUser = new User("test00", "nk-test00",
-			passwordEncoder.encode("$2a$12$/LTEq6Ip8SeC2HeQazQnQeJQm4ZF1GTxD8R9/lWyMC/jNPIwZ3YUa"));
+			passwordEncoder.encode("1234"));
 		User user = new User("test01", "nk-test01",
-			passwordEncoder.encode("$2a$12$/LTEq6Ip8SeC2HeQazQnQeJQm4ZF1GTxD8R9/lWyMC/jNPIwZ3YUa"));
+			passwordEncoder.encode("1234"));
 
 		Team findUserTeam1 = Team.builder()
 			.name("team00")
