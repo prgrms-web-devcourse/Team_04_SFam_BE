@@ -22,6 +22,7 @@ security:
         - /v3/api-docs/**
         - /swagger-ui/**
         - /swagger-ui.html/**
+        - /**
       POST:
         - /api/users/signin
         - /api/users/signup
@@ -29,7 +30,7 @@ security:
       PUT: [ ]
       DELETE: [ ]
     permit-all:
-      GET: [ ]
+      GET: ["/**"]
       POST: [ ]
       PATCH: [ ]
       PUT: [ ]
@@ -44,3 +45,12 @@ jwt:
   refreshToken:
     header: rtoken
     expiry-seconds: 120
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: basic
+
+division:
+  key: ${DIVISION_KEY:CEB52025-E065-364C-9DBA-44880E3B02B8}
+  domain: ${DIVISION_DOMAIN:http://localhost:8080}
