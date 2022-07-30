@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.matches.request.service;
+package com.kdt.team04.domain.matches.proposal.service;
 
 import java.text.MessageFormat;
 
@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.domain.matches.request.dto.MatchProposalQueryDto;
-import com.kdt.team04.domain.matches.request.repository.MatchProposalRepository;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
 
 @Service
 @Transactional(readOnly = true)

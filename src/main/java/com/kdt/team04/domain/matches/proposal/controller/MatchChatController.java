@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.matches.request.controller;
+package com.kdt.team04.domain.matches.proposal.controller;
 
 import javax.validation.Valid;
 
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.matches.request.dto.MatchChatRequest;
-import com.kdt.team04.domain.matches.request.service.MatchChatService;
+import com.kdt.team04.domain.matches.proposal.dto.MatchChatRequest;
+import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
 
 import io.swagger.v3.oas.annotations.Operation;
 

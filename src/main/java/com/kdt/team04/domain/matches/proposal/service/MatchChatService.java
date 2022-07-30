@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.matches.request.service;
+package com.kdt.team04.domain.matches.proposal.service;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.request.dto.MatchChatConverter;
-import com.kdt.team04.domain.matches.request.dto.MatchProposalQueryDto;
-import com.kdt.team04.domain.matches.request.entity.MatchChat;
-import com.kdt.team04.domain.matches.request.entity.MatchProposalStatus;
-import com.kdt.team04.domain.matches.request.repository.MatchChatRepository;
+import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
+import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
+import com.kdt.team04.domain.matches.proposal.dto.MatchChatConverter;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.repository.MatchChatRepository;
 
 @Service
 @Transactional(readOnly = true)

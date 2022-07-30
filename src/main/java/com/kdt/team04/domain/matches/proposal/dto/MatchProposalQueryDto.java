@@ -1,10 +1,10 @@
-package com.kdt.team04.domain.matches.request.dto;
+package com.kdt.team04.domain.matches.proposal.dto;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.request.entity.MatchProposalStatus;
+import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.querydsl.core.annotations.QueryProjection;
 
 public class MatchProposalQueryDto {

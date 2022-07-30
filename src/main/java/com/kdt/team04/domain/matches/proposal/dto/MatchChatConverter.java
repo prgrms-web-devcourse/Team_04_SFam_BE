@@ -1,11 +1,11 @@
-package com.kdt.team04.domain.matches.request.dto;
+package com.kdt.team04.domain.matches.proposal.dto;
 
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
-import com.kdt.team04.domain.matches.request.entity.MatchChat;
-import com.kdt.team04.domain.matches.request.entity.MatchProposal;
+import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
+import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.user.entity.User;
 
 @Component

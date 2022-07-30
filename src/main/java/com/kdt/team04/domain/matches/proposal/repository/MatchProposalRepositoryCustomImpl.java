@@ -1,14 +1,14 @@
-package com.kdt.team04.domain.matches.request.repository;
+package com.kdt.team04.domain.matches.proposal.repository;
 
 import static com.kdt.team04.domain.matches.match.entity.QMatch.match;
-import static com.kdt.team04.domain.matches.request.entity.QMatchProposal.matchProposal;
+import static com.kdt.team04.domain.matches.proposal.entity.QMatchProposal.matchProposal;
 
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
-import com.kdt.team04.domain.matches.request.dto.MatchProposalQueryDto;
-import com.kdt.team04.domain.matches.request.dto.QMatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.QMatchProposalQueryDto;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
