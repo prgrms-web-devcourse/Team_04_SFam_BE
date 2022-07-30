@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
+import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
 import com.kdt.team04.domain.matches.match.dto.MatchRequest;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.service.MatchService;
@@ -38,6 +40,16 @@ public class MatchController {
 		}
 
 		matchService.create(jwtAuthentication.id(), request);
+	}
+
+	@GetMapping
+	@Operation(summary = "매치 공고 리스트 조회", description = "매칭 상태별, 종목별 공고 리스트를 최신글 순으로 커서방식 페이징한다.")
+	public ApiResponse<PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor>> getWithCursorPaging(
+		@AuthenticationPrincipal JwtAuthentication auth, @Valid PageDto.MatchCursorPageRequest pageRequest) {
+		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> matches = matchService.findMatches(
+			auth.id(), pageRequest);
+
+		return new ApiResponse<>(matches);
 	}
 
 	@Operation(summary = "매치 공고 상세 조회", description = "매칭 공고의 세부 정보를 조회할 수 있다.")

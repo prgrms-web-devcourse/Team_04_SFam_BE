@@ -43,15 +43,16 @@ public class User extends BaseEntity {
 	}
 
 	public User(String username, String nickname, String password) {
-		this(null, password, username, nickname);
+		this(null, password, username, nickname, null);
 	}
 
 	@Builder
-	public User(Long id, String password, String username, String nickname) {
+	public User(Long id, String password, String username, String nickname, Location location) {
 		this.id = id;
 		this.password = password;
 		this.username = username;
 		this.nickname = nickname;
+		this.location = location;
 	}
 
 	public Long getId() {

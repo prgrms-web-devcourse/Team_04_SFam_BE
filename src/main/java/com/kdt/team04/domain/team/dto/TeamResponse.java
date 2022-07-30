@@ -43,7 +43,7 @@ public record TeamResponse(
 		Long id,
 
 		@Schema(description = "팀명")
-		String teamName,
+		String name,
 
 		@Schema(description = "스포츠 종목")
 		SportsCategory sportsCategory

@@ -4,12 +4,15 @@ import org.springframework.stereotype.Component;
 
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.entity.User;
 
 @Component
 public class MatchConverter {
 	public MatchResponse toMatchResponse(Match match, UserResponse.AuthorResponse user) {
 		return MatchResponse.builder()
+			.id(match.getId())
 			.title(match.getTitle())
 			.status(match.getStatus())
 			.sportsCategory(match.getSportsCategory())
@@ -24,6 +27,7 @@ public class MatchConverter {
 	public MatchResponse toMatchResponse(Match match, UserResponse.AuthorResponse user,
 		TeamResponse.SimpleResponse team) {
 		return MatchResponse.builder()
+			.id(match.getId())
 			.title(match.getTitle())
 			.status(match.getStatus())
 			.sportsCategory(match.getSportsCategory())
@@ -34,5 +38,36 @@ public class MatchConverter {
 			.matchType(match.getMatchType())
 			.content(match.getContent())
 			.build();
+	}
+
+	public Match toMatch(MatchResponse matchResponse, User user) {
+		return Match.builder()
+			.id(matchResponse.id())
+			.title(matchResponse.title())
+			.status(matchResponse.status())
+			.sportsCategory(matchResponse.sportsCategory())
+			.user(user)
+			.content(matchResponse.content())
+			.matchDate(matchResponse.matchDate())
+			.matchType(matchResponse.matchType())
+			.participants(matchResponse.participants())
+			.build();
+
+	}
+
+	public Match toMatch(MatchResponse matchResponse, User user, Team team) {
+		return Match.builder()
+			.id(matchResponse.id())
+			.title(matchResponse.title())
+			.status(matchResponse.status())
+			.sportsCategory(matchResponse.sportsCategory())
+			.user(user)
+			.team(team)
+			.content(matchResponse.content())
+			.matchDate(matchResponse.matchDate())
+			.matchType(matchResponse.matchType())
+			.participants(matchResponse.participants())
+			.build();
+
 	}
 }

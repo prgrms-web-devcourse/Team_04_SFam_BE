@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.matches.request.entity;
+package com.kdt.team04.domain.matches.proposal.entity;
 
 import java.time.LocalDateTime;
 

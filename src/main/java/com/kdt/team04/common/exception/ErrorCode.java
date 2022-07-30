@@ -23,6 +23,7 @@ public enum ErrorCode {
 	//USER
 	USER_NOT_FOUND("U0001", "Not found user", HttpStatus.NOT_FOUND),
 	LOCATION_UPDATE_FAIL("U0002", "user location update failed", HttpStatus.BAD_REQUEST),
+	LOCATION_NOT_FOUND("U0003", "Not found location data", HttpStatus.BAD_REQUEST),
 
 	//TEAM
 	TEAM_NOT_FOUND("T0001", "Not found team", HttpStatus.NOT_FOUND),
@@ -37,12 +38,15 @@ public enum ErrorCode {
 
 	//MATCHES
 	MATCH_NOT_FOUND("M0001", "Not found match", HttpStatus.NOT_FOUND),
-	MATCH_PARTICIPANTS("M0002", "Invalid match participants", HttpStatus.BAD_REQUEST),
+	MATCH_PARTICIPANTS("M0003", "Invalid match participants", HttpStatus.BAD_REQUEST),
+	INVALID_PARTICIPANTS("M0004", "Invalid match participants", HttpStatus.BAD_REQUEST),
+	AUTHOR_NOT_MATCHED("M0005", "Author not matched", HttpStatus.BAD_REQUEST),
 
 	//MATCH_PROPOSAL
 	MATCH_PROPOSAL_NOT_FOUND("MP0001", "Not found match proposal", HttpStatus.NOT_FOUND),
-	MATCH_PROPOSAL_NOT_APPROVED("MP0002", "The request is not approved.", HttpStatus.BAD_REQUEST),
-	ANOTHER_MATCH_PROPOSAL_ALREADY_FIXED("MP0003", "Fixed another proposal already exists.", HttpStatus.BAD_REQUEST),
+	INVALID_CREATE_REQUEST("MP0002", "Invalid proposal request", HttpStatus.BAD_REQUEST),
+	MATCH_PROPOSAL_NOT_APPROVED("MP0003", "The request is not approved.", HttpStatus.BAD_REQUEST),
+	ANOTHER_MATCH_PROPOSAL_ALREADY_FIXED("MP0004", "Fixed another proposal already exists.", HttpStatus.BAD_REQUEST),
 
 	//MATCH_CHAT
 	MATCH_CHAT_NOT_CORRECT_CHAT_PARTNER("MC0002", "The chat partner is incorrect.", HttpStatus.BAD_REQUEST);

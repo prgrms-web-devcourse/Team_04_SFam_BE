@@ -57,7 +57,7 @@ class AuthServiceTest {
 		//given
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname");
+		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null);
 		List<GrantedAuthority> authorities = new ArrayList<>(
 			Collections.singleton(new SimpleGrantedAuthority("USER")));
 		Jwt.Claims claims = Jwt.Claims.builder()
@@ -97,11 +97,12 @@ class AuthServiceTest {
 		//given
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname");
+		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null);
 		given(userService.findByUsername(userResponse.username())).willReturn(userResponse);
 		given(passwordEncoder.matches(password, encodedPassword)).willReturn(false);
 		//when, then
-		assertThatThrownBy(()->authService.signIn(userResponse.username(), password)).isInstanceOf(BusinessException.class);
+		assertThatThrownBy(() -> authService.signIn(userResponse.username(), password)).isInstanceOf(
+			BusinessException.class);
 
 		verify(userService, times(1)).findByUsername(userResponse.username());
 		verify(passwordEncoder, times(1)).matches(password, encodedPassword);
@@ -113,11 +114,12 @@ class AuthServiceTest {
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
 		String notExistUsername = "noname";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname");
+		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null);
 		given(userService.findByUsername(notExistUsername)).willThrow(EntityNotFoundException.class);
 		//when, then
-		assertThatThrownBy(()->authService.signIn("noname", password)).isInstanceOf(BusinessException.class).hasMessageContaining(
-			MessageFormat.format("username : {0} not found", notExistUsername));
+		assertThatThrownBy(() -> authService.signIn("noname", password)).isInstanceOf(BusinessException.class)
+			.hasMessageContaining(
+				MessageFormat.format("username : {0} not found", notExistUsername));
 
 		verify(userService, times(1)).findByUsername(notExistUsername);
 	}
