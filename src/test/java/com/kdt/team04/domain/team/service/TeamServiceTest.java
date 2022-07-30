@@ -62,9 +62,9 @@ class TeamServiceTest {
 	@Mock
 	private MatchReviewGiverService matchReviewGiver;
 
-	private final User USER = new User(1L, "password", "username", "nickname");
+	private final User USER = new User(1L, "password", "username", "nickname", null);
 	private final UserResponse USER_RESPONSE = new UserResponse(USER.getId(), USER.getUsername(), USER.getPassword(),
-		USER.getNickname());
+		USER.getNickname(), null);
 	private final TeamRequest.CreateRequest CREATE_REQUEST = new TeamRequest.CreateRequest("team1", "first team",
 		SportsCategory.BADMINTON);
 	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),

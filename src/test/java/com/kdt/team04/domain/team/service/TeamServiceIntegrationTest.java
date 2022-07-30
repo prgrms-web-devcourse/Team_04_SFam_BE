@@ -38,7 +38,7 @@ class TeamServiceIntegrationTest {
 	@DisplayName("해당 사용자는 팀을 생성할 수 있고, 해당 팀의 리더가 된다.")
 	void testCreateSuccess() {
 		//given
-		User user = new User("password", "username", "nickname");
+		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(user);
 		TeamRequest.CreateRequest CREATE_REQUEST = new TeamRequest.CreateRequest("team1", "first team",
 			SportsCategory.BADMINTON);
@@ -56,7 +56,7 @@ class TeamServiceIntegrationTest {
 	@DisplayName("팀의 id로 해당 팀 프로필을 조회할 수 있다.")
 	void testFindByIdSuccess() {
 		//given
-		User user = new User("password", "username", "nickname");
+		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(user);
 		Team team = Team.builder()
 			.name("team1")
@@ -88,7 +88,7 @@ class TeamServiceIntegrationTest {
 	@DisplayName("해당 사용자가 리더인 팀 목록을 조회할 수 있다.")
 	void testFindByLeaderIdSuccess() {
 		//given
-		User user = new User("password", "username", "nickname");
+		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(user);
 		Team team = Team.builder()
 			.name("team1")

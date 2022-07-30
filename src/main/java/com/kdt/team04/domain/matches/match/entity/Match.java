@@ -22,6 +22,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.kdt.team04.domain.BaseEntity;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 
 import lombok.Builder;
@@ -59,12 +60,14 @@ public class Match extends BaseEntity {
 	@JoinColumn(name = "team_id")
 	private Team team;
 
+	private Location location;
+
 	protected Match() {/*no-op*/}
 
 	@Builder
 	public Match(
 		Long id, String title, SportsCategory sportsCategory, MatchType matchType, LocalDate matchDate,
-		String content, int participants, MatchStatus status, User user, Team team
+		String content, int participants, MatchStatus status, User user, Team team, Location location
 	) {
 		this.id = id;
 		this.title = title;
@@ -76,6 +79,7 @@ public class Match extends BaseEntity {
 		this.status = defaultIfNull(status, WAITING);
 		this.user = user;
 		this.team = team;
+		this.location = location;
 	}
 
 	public Long getId() {
@@ -116,6 +120,10 @@ public class Match extends BaseEntity {
 
 	public Team getTeam() {
 		return team;
+	}
+
+	public Location getLocation() {
+		return location;
 	}
 
 	@Override

@@ -57,7 +57,7 @@ class UserServiceTest {
 	void testCreateSuccess() {
 		//given
 		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
-		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()));
+		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null);
 		given(userRepository.save(any(User.class))).willReturn(user);
 		//when
 		Long userId = userService.create(request);
@@ -72,7 +72,7 @@ class UserServiceTest {
 	void testFindByUsernameSuccess() {
 		//given
 		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
-		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()));
+		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null);
 		given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.of(user));
 
 		//when
@@ -93,7 +93,7 @@ class UserServiceTest {
 		List<User> users = LongStream.range(1, 6)
 			.mapToObj(id ->
 				new User(id, passwordEncoder.encode("12345"),
-					"test0" + id, "test0" + id)
+					"test0" + id, "test0" + id, null)
 			)
 			.toList();
 		List<UserResponse.UserFindResponse> responses = LongStream.range(1, 6)
@@ -118,7 +118,7 @@ class UserServiceTest {
 		// given
 		Long requestId = 1L;
 
-		User user = new User(requestId, passwordEncoder.encode("1234"), "test00", "nk-test00");
+		User user = new User(requestId, passwordEncoder.encode("1234"), "test00", "nk-test00", null);
 
 		MatchReviewResponse.TotalCount review = new MatchReviewResponse.TotalCount(1, 1, 1);
 		List<TeamResponse.SimpleResponse> teams = Arrays.asList(
@@ -157,7 +157,7 @@ class UserServiceTest {
 	void testFindByIdSuccess() {
 		//given
 		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
-		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()));
+		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null);
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
 		//when
