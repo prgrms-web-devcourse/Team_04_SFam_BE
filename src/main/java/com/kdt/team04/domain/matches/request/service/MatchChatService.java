@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.request.dto.MatchChatConverter;
 import com.kdt.team04.domain.matches.request.dto.MatchProposalQueryDto;
 import com.kdt.team04.domain.matches.request.entity.MatchChat;
@@ -38,7 +39,15 @@ public class MatchChatService {
 		MatchProposalQueryDto matchProposalDto = matchProposalGiver.findSimpleProposalById(proposalId);
 
 		if (matchProposalDto.getStatus() != MatchProposalStatus.APPROVED) {
-			throw new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_APPROVED,
+			throw new BusinessException(
+				ErrorCode.MATCH_PROPOSAL_NOT_APPROVED,
+				MessageFormat.format("proposalId = {0}", proposalId));
+		}
+
+		if (matchProposalDto.getMatchStatus() != MatchStatus.WAITING
+			&& matchProposalDto.getStatus() != MatchProposalStatus.FIXED
+		) {
+			throw new BusinessException(ErrorCode.ANOTHER_MATCH_PROPOSAL_ALREADY_FIXED,
 				MessageFormat.format("proposalId = {0}", proposalId));
 		}
 

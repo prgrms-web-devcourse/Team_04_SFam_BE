@@ -42,6 +42,7 @@ public enum ErrorCode {
 	//MATCH_PROPOSAL
 	MATCH_PROPOSAL_NOT_FOUND("MP0001", "Not found match proposal", HttpStatus.NOT_FOUND),
 	MATCH_PROPOSAL_NOT_APPROVED("MP0002", "The request is not approved.", HttpStatus.BAD_REQUEST),
+	ANOTHER_MATCH_PROPOSAL_ALREADY_FIXED("MP0003", "Fixed another proposal already exists.", HttpStatus.BAD_REQUEST),
 
 	//MATCH_CHAT
 	MATCH_CHAT_NOT_CORRECT_CHAT_PARTNER("MC0002", "The chat partner is incorrect.", HttpStatus.BAD_REQUEST);

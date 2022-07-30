@@ -28,7 +28,8 @@ public class MatchProposalRepositoryCustomImpl implements MatchProposalRepositor
 				Expressions.asNumber(id).as("id"),
 				matchProposal.status,
 				matchProposal.user.id,
-				match.user.id
+				match.user.id,
+				match.status
 			))
 			.from(matchProposal)
 			.join(match).on(matchProposal.match.id.eq(match.id))
