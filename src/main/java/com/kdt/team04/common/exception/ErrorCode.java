@@ -38,11 +38,18 @@ public enum ErrorCode {
 
 	//MATCHES
 	MATCH_NOT_FOUND("M0001", "Not found match", HttpStatus.NOT_FOUND),
-	INVALID_PARTICIPANTS("M0002", "Invalid match participants", HttpStatus.BAD_REQUEST),
-	AUTHOR_NOT_MATCHED("M0003", "Author not matched", HttpStatus.BAD_REQUEST),
+	MATCH_PARTICIPANTS("M0003", "Invalid match participants", HttpStatus.BAD_REQUEST),
+	INVALID_PARTICIPANTS("M0004", "Invalid match participants", HttpStatus.BAD_REQUEST),
+	AUTHOR_NOT_MATCHED("M0005", "Author not matched", HttpStatus.BAD_REQUEST),
 
 	//MATCH_PROPOSAL
-	INVALID_CREATE_REQUEST("MP0002", "Invalid proposal request", HttpStatus.BAD_REQUEST);
+	MATCH_PROPOSAL_NOT_FOUND("MP0001", "Not found match proposal", HttpStatus.NOT_FOUND),
+	INVALID_CREATE_REQUEST("MP0002", "Invalid proposal request", HttpStatus.BAD_REQUEST),
+	MATCH_PROPOSAL_NOT_APPROVED("MP0003", "The request is not approved.", HttpStatus.BAD_REQUEST),
+	ANOTHER_MATCH_PROPOSAL_ALREADY_FIXED("MP0004", "Fixed another proposal already exists.", HttpStatus.BAD_REQUEST),
+
+	//MATCH_CHAT
+	MATCH_CHAT_NOT_CORRECT_CHAT_PARTNER("MC0002", "The chat partner is incorrect.", HttpStatus.BAD_REQUEST);
 
 	private final String code;
 	private final String message;
