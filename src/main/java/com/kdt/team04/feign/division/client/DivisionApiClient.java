@@ -1,0 +1,16 @@
+package com.kdt.team04.feign.division.client;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.kdt.team04.feign.division.dto.DivisionApiResponse;
+
+@FeignClient(name = "division", url = "https://api.vworld.kr/req/data")
+public interface DivisionApiClient {
+
+	@GetMapping("?request=getfeature&size=1000&page=1&geometry=false&attribute=true&crs=EPSG:3857")
+	DivisionApiResponse getDivisions(@RequestParam String domain, @RequestParam String key, @RequestParam String data,
+		@RequestParam(required = false) String attrfilter, @RequestParam String geomfilter);
+
+}

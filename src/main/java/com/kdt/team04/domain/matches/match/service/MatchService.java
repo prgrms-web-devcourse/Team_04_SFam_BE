@@ -1,7 +1,6 @@
 package com.kdt.team04.domain.matches.match.service;
 
 import java.text.MessageFormat;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
-import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
@@ -126,15 +124,6 @@ public class MatchService {
 			location.getLatitude(), location.getLongitude(), request);
 
 		return foundMatches;
-	}
-
-	private Boolean hasNext(LocalDateTime createdAtCursor, Long idCursor, SportsCategory sportsCategory) {
-		if (createdAtCursor == null || idCursor == null) {
-			return false;
-		}
-
-		return this.matchRepository.existsByCreatedAtLessThanEqualAndIdLessThanAndSportsCategory(createdAtCursor,
-			idCursor, sportsCategory);
 	}
 
 	public MatchResponse findById(Long id) {
