@@ -157,6 +157,8 @@ public class MatchService {
 
 		return new MatchResponse.MatchAuthorResponse(
 			foundMatch.getId(),
+			foundMatch.getTitle(),
+			foundMatch.getStatus(),
 			authorResponse
 		);
 	}

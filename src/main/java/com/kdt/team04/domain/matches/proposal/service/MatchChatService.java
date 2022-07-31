@@ -18,9 +18,11 @@ import com.kdt.team04.domain.matches.proposal.dto.MatchChatConverter;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatPartitionByProposalIdQueryDto;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchChatRepository;
+import com.kdt.team04.domain.user.dto.UserResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -94,5 +96,25 @@ public class MatchChatService {
 			));
 
 		return lastChats;
+	}
+
+	public MatchChatResponse.Chats findChatsByProposalId(Long proposalId, Long userId) {
+		MatchProposalResponse.ChatMatch match
+			= matchProposalGiver.findChatMatchByProposalId(proposalId, userId);
+
+		List<MatchChat> matchChats = matchChatRepository.findAllByProposalId(proposalId);
+		List<MatchChatResponse.Chat> chats = matchChats.stream()
+			.map(chat -> {
+				UserResponse.ChatWriterProfile writer = new UserResponse.ChatWriterProfile(chat.getUser().getId());
+
+				return new MatchChatResponse.Chat(
+					chat.getContent(),
+					chat.getChattedAt(),
+					writer
+				);
+			})
+			.toList();
+
+		return new MatchChatResponse.Chats(match, chats);
 	}
 }
