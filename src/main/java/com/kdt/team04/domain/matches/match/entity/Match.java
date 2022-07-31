@@ -64,10 +64,6 @@ public class Match extends BaseEntity {
 	@Embedded
 	private Location location;
 
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-
 	protected Match() {/*no-op*/}
 
 	@Builder
@@ -86,10 +82,6 @@ public class Match extends BaseEntity {
 		this.user = user;
 		this.team = team;
 		this.location = location;
-	}
-
-	public void updateStatus(MatchStatus status) {
-		this.status = status;
 	}
 
 	public Long getId() {

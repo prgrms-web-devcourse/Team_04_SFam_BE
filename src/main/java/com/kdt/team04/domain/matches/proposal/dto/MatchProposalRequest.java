@@ -1,7 +1,10 @@
 package com.kdt.team04.domain.matches.proposal.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -16,4 +19,6 @@ public record MatchProposalRequest() {
 		String content
 	) {
 	}
+
+	public record ProposalReact(@NotNull MatchProposalStatus status) {}
 }

@@ -15,7 +15,6 @@ import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
 import com.kdt.team04.domain.matches.match.dto.MatchRequest;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.team.dto.TeamConverter;
@@ -149,12 +148,5 @@ public class MatchService {
 			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
 				MessageFormat.format("teamId = {0} , userId = {1}", teamId, userId));
 		}
-	}
-
-	public void updateStatus(Long id, MatchStatus status) {
-		Match match = matchRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
-				MessageFormat.format("matchId = {0}", id)));
-		match.updateStatus(status);
 	}
 }
