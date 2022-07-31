@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
@@ -43,6 +44,10 @@ public class TeamInvitationService {
 		this.userConverter = userConverter;
 		this.teamMemberGiverService = teamMemberGiverService;
 		this.teamService = teamService;
+	}
+
+	public PageDto.CursorResponse getInvitations(Long targetId, PageDto.TeamInvitationCursorPageRequest request) {
+		return teamInvitationRepository.getInvitations(targetId, request);
 	}
 
 	@Transactional

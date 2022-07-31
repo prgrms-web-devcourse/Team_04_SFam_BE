@@ -39,6 +39,38 @@ public class PageDto {
 		}
 	}
 
+	public static class TeamInvitationCursorPageRequest {
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+		@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+		@Parameter(description = "초대받은 일자 (yyyy-MM-dd HH:mm:ss)")
+		private LocalDateTime createdAt;
+
+		@Parameter(description = "마지막 조회 ID")
+		private Long id;
+
+		@NotNull
+		@Parameter(description = "페이징 사이즈")
+		private Integer size;
+
+		public TeamInvitationCursorPageRequest(LocalDateTime createdAt, Long id, Integer size) {
+			this.createdAt = createdAt;
+			this.id = id;
+			this.size = size;
+		}
+
+		public LocalDateTime getCreatedAt() {
+			return createdAt;
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public Integer getSize() {
+			return size;
+		}
+	}
+
 	public static class MatchCursorPageRequest {
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 		@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

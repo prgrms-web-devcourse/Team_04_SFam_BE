@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.kdt.team04.domain.BaseEntity;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
@@ -19,7 +20,7 @@ import lombok.Builder;
 
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "team_id", "target_id" }) })
-public class TeamInvitation {
+public class TeamInvitation extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
