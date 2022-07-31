@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 
-public interface MatchChatRepository extends JpaRepository<MatchChat, Long> {
+public interface MatchChatRepository extends JpaRepository<MatchChat, Long>, MatchChatRepositoryCustom {
 }

@@ -41,6 +41,7 @@ public enum ErrorCode {
 	MATCH_PARTICIPANTS("M0003", "Invalid match participants", HttpStatus.BAD_REQUEST),
 	INVALID_PARTICIPANTS("M0004", "Invalid match participants", HttpStatus.BAD_REQUEST),
 	AUTHOR_NOT_MATCHED("M0005", "Author not matched", HttpStatus.BAD_REQUEST),
+	MATCH_ACCESS_DENIED("M0006", "Don't have permission to access match", HttpStatus.FORBIDDEN),
 
 	//MATCH_PROPOSAL
 	MATCH_PROPOSAL_NOT_FOUND("MP0001", "Not found proposal", HttpStatus.NOT_FOUND),

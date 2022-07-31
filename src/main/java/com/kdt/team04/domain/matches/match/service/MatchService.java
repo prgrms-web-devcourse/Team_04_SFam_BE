@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.matches.match.service;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -144,5 +145,26 @@ public class MatchService {
 		}
 
 		return matchConverter.toMatchResponse(foundMatch, authorResponse);
+	}
+
+	public MatchResponse.MatchAuthorResponse findMatchAuthorById(Long id) {
+		Match foundMatch = matchRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
+				MessageFormat.format("matchId = {0}", id)));
+
+		UserResponse author = userService.findById(foundMatch.getUser().getId());
+		UserResponse.AuthorResponse authorResponse = new UserResponse.AuthorResponse(author.id(), author.nickname());
+
+		return new MatchResponse.MatchAuthorResponse(
+			foundMatch.getId(),
+			authorResponse
+		);
+	}
+
+	private void verifyLeader(Long userId, Long teamId, Long leaderId) {
+		if (!Objects.equals(userId, leaderId)) {
+			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
+				MessageFormat.format("teamId = {0} , userId = {1}", teamId, userId));
+		}
 	}
 }

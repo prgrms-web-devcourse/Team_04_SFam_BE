@@ -2,11 +2,17 @@ package com.kdt.team04.domain.matches.request.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,6 +29,7 @@ import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
@@ -271,6 +278,75 @@ class MatchChatServiceIntegrationTest {
 				matchChatService.chat(matchProposal.getId(), invalidAuthorId, invalidTargetId, "hi", LocalDateTime.now());
 			});
 		}
+	}
+
+	@Test
+	@DisplayName("여러 매칭 신청 ID로 각각 매칭의 마지막 채팅 내용을 조회한다.")
+	void test_findAllLastChats() {
+		//given
+		String lastChat = "마지막 채팅";
+
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
+		User target = getUser("target");
+		Team targetTeam = getSoccerTeam("target", target);
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.WAITING, author, authorTeam);
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+		entityManager.persist(target);
+		entityManager.persist(targetTeam);
+		entityManager.persist(match);
+
+		List<MatchProposal> proposals = new ArrayList<>();
+		IntStream.range(1, 3)
+			.forEach(id -> {
+				MatchProposal matchProposal = MatchProposal.builder()
+					.match(match)
+					.content("덤벼라! 나는 " + id)
+					.user(target)
+					.team(targetTeam)
+					.status(MatchProposalStatus.APPROVED)
+					.build();
+
+				proposals.add(matchProposal);
+				entityManager.persist(matchProposal);
+			});
+
+		List<MatchChat> chats = new ArrayList<>();
+		proposals.forEach(proposal -> {
+			IntStream.range(1, 5)
+				.forEach(id -> {
+					MatchChat chat = MatchChat.builder()
+						.proposal(proposal)
+						.user(author)
+						.target(target)
+						.content(id == 4 ? lastChat + proposal.getId() : "칫챗")
+						.chattedAt(LocalDateTime.now())
+						.build();
+					chats.add(chat);
+					entityManager.persist(chat);
+				});
+		});
+
+		Map<Long, MatchChatResponse.LastChat> expected = new HashMap<>();
+		proposals.forEach(proposal -> {
+			expected.put(proposal.getId(), new MatchChatResponse.LastChat(lastChat + proposal.getId()));
+		});
+
+		List<Long> matchProposalIds = proposals.stream()
+			.map(MatchProposal::getId)
+			.toList();
+
+		//when
+		Map<Long, MatchChatResponse.LastChat> foundChats = matchChatService.findAllLastChats(matchProposalIds);
+
+		//then
+		assertThat(foundChats.size(), is(2));
+		proposals.forEach(proposal -> {
+			assertThat(foundChats.containsKey(proposal.getId()), is(true));
+			assertThat(foundChats.get(proposal.getId()).content(), is(expected.get(proposal.getId()).content()));
+		});
 	}
 
 	private static User getUser(String name) {
