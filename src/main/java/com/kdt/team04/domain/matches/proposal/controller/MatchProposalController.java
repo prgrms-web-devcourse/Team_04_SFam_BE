@@ -44,8 +44,18 @@ public class MatchProposalController {
 
 	@GetMapping
 	@Operation(summary = "신청 목록 조회", description = "해당 대결의 신청 목록이 조회된다.")
-	public ApiResponse<List<MatchProposalResponse.Chat>> findAllChats(@PathVariable Long matchId) {
-		List<MatchProposalResponse.Chat> proposals = matchProposalService.findAllProposals(matchId);
+	public ApiResponse<List<MatchProposalResponse.Chat>> findAllChats(
+		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
+		@PathVariable Long matchId
+	) {
+		if (jwtAuthentication == null) {
+			throw new NotAuthenticationException("Not Authenticated");
+		}
+
+		List<MatchProposalResponse.Chat> proposals = matchProposalService.findAllProposals(
+			matchId,
+			jwtAuthentication.id()
+		);
 
 		return new ApiResponse<>(proposals);
 	}

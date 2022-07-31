@@ -1,5 +1,6 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -113,8 +114,13 @@ public class MatchProposalService {
 			.build();
 	}
 
-	public List<MatchProposalResponse.Chat> findAllProposals(Long matchId) {
-		List<MatchProposal> matchProposals = proposalRepository.findAllByMatchId(matchId);
+	public List<MatchProposalResponse.Chat> findAllProposals(Long matchId, Long authorId) {
+		List<MatchProposal> matchProposals = proposalRepository.findAllByMatchId(matchId, authorId);
+		if (matchProposals.isEmpty()) {
+			throw new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
+				MessageFormat.format("Match proposal not found with matchId={0}, authorId={1}", matchId, authorId));
+		}
+
 		List<Long> matchProposalIds = matchProposals.stream()
 			.map(MatchProposal::getId)
 			.toList();
