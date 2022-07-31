@@ -115,7 +115,14 @@ public class MatchProposalService {
 	}
 
 	public List<MatchProposalResponse.Chat> findAllProposals(Long matchId, Long authorId) {
-		List<MatchProposal> matchProposals = proposalRepository.findAllByMatchId(matchId, authorId);
+		MatchResponse.MatchAuthorResponse matchAuthor = matchService.findMatchAuthorById(matchId);
+		if (matchAuthor.author().id() != authorId) {
+			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
+				MessageFormat.format("Don't have permission to access match with matchId={0}, authorId={1}, userId={2}",
+					matchId, matchAuthor.author().id(), authorId));
+		}
+
+		List<MatchProposal> matchProposals = proposalRepository.findAllByMatchId(matchId);
 		if (matchProposals.isEmpty()) {
 			throw new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
 				MessageFormat.format("Match proposal not found with matchId={0}, authorId={1}", matchId, authorId));
