@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +41,13 @@ public class MatchProposalController {
 		}
 
 		matchProposalService.create(jwtAuthentication.id(), matchId, request);
+	}
+
+	@PatchMapping("/{id}")
+	@Operation(summary = "신청 수락 및 거절", description = "대결 공고자는 대결 신청을 수락 또는 거절 할 수 있다.")
+	public void proposeReact(@PathVariable Long matchId, @PathVariable Long id,
+		@RequestBody @Valid MatchProposalRequest.ProposalReact request) {
+		matchProposalService.react(matchId, id, request.status());
 	}
 
 	@GetMapping

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -62,6 +63,7 @@ public class AuthController {
 			.httpOnly(true)
 			.secure(true)
 			.maxAge(tokenDto.expirySecond())
+			.sameSite("none")
 			.build();
 	}
 

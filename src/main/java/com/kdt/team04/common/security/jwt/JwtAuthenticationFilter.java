@@ -1,5 +1,7 @@
 package com.kdt.team04.common.security.jwt;
 
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -81,6 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			cookie.setPath("/");
 			cookie.setMaxAge(0);
 			cookie.setHttpOnly(true);
+			cookie.setSecure(true);
 			response.addCookie(cookie);
 			this.log.warn(exception.getMessage());
 			refreshAuthentication(accessToken, request, response);
@@ -112,11 +116,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				JwtAuthenticationToken authentication = createAuthenticationToken(reIssuedClaims, request,
 					reIssuedAccessToken);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
-				Cookie cookie = new Cookie(this.jwt.accessTokenProperties().header(), reIssuedAccessToken);
-				cookie.setHttpOnly(true);
-				cookie.setPath("/");
-				cookie.setMaxAge(this.jwt.accessTokenProperties().expirySeconds());
-				response.addCookie(cookie);
+				ResponseCookie cookie = ResponseCookie.from(this.jwt.accessTokenProperties().header(), reIssuedAccessToken)
+					.path("/")
+					.httpOnly(true)
+					.sameSite("none")
+					.secure(true)
+					.maxAge(this.jwt.accessTokenProperties().expirySeconds())
+					.build();
+				response.addHeader(SET_COOKIE, cookie.toString());
 			} else {
 				log.warn("refreshToken expired");
 			}

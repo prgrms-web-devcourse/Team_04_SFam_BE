@@ -1,5 +1,9 @@
 package com.kdt.team04.domain.teaminvitation.service;
 
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
@@ -11,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
@@ -93,7 +98,8 @@ class TeamInvitationServiceTest {
 		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
 
 		//when, then
-		Assertions.assertThatThrownBy(() -> teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId()))
+		Assertions.assertThatThrownBy(
+				() -> teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId()))
 			.isInstanceOf(BusinessException.class);
 	}
 
@@ -188,6 +194,90 @@ class TeamInvitationServiceTest {
 		TeamInvitation result = entityManager.find(TeamInvitation.class, teamInvitation.getId());
 		Assertions.assertThat(result.getStatus())
 			.isEqualTo(InvitationStatus.REFUSED);
+	}
+
+	@Test
+	@DisplayName("팀 초대 목록을 20개중 10개씩 조회한다.")
+	void testFindInvitationsLimit10() {
+		// given
+		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+		entityManager.persist(userA);
+		entityManager.persist(userB);
+
+		List<Team> teams = LongStream.range(1, 21)
+			.mapToObj(
+				index -> Team.builder()
+					.name("teamName" + index)
+					.description("description" + index)
+					.sportsCategory(SportsCategory.SOCCER)
+					.leader(userA)
+					.build()
+			).peek(entityManager::persist)
+			.toList();
+
+		List<TeamInvitation> teamInvitations = IntStream.range(0, 20)
+			.mapToObj(
+				index -> TeamInvitation.builder()
+					.team(teams.get(index))
+					.target(userB)
+					.status(InvitationStatus.WAITING)
+					.build()
+			).peek(entityManager::persist)
+			.toList();
+
+		entityManager.flush();
+		entityManager.clear();
+
+		// when
+		PageDto.TeamInvitationCursorPageRequest request = new PageDto.TeamInvitationCursorPageRequest(null, null, 10, InvitationStatus.WAITING);
+		PageDto.CursorResponse invites = teamInvitationService.getInvitations(userB.getId(), request);
+
+		// then
+		Assertions.assertThat(invites.values()).hasSize(10);
+		Assertions.assertThat(invites.hasNext()).isTrue();
+	}
+
+	@Test
+	@DisplayName("팀 초대 목록을 20개중 20개씩 조회한다.")
+	void testFindInvitationsLimit20() {
+		// given
+		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+		entityManager.persist(userA);
+		entityManager.persist(userB);
+
+		List<Team> teams = LongStream.range(1, 21)
+			.mapToObj(
+				index -> Team.builder()
+					.name("teamName" + index)
+					.description("description" + index)
+					.sportsCategory(SportsCategory.SOCCER)
+					.leader(userA)
+					.build()
+			).peek(entityManager::persist)
+			.toList();
+
+		List<TeamInvitation> teamInvitations = IntStream.range(0, 20)
+			.mapToObj(
+				index -> TeamInvitation.builder()
+					.team(teams.get(index))
+					.target(userB)
+					.status(InvitationStatus.WAITING)
+					.build()
+			).peek(entityManager::persist)
+			.toList();
+
+		entityManager.flush();
+		entityManager.clear();
+
+		// when
+		PageDto.TeamInvitationCursorPageRequest request = new PageDto.TeamInvitationCursorPageRequest(null, null, 20, InvitationStatus.WAITING);
+		PageDto.CursorResponse invites = teamInvitationService.getInvitations(userB.getId(), request);
+
+		// then
+		Assertions.assertThat(invites.values()).hasSize(20);
+		Assertions.assertThat(invites.hasNext()).isFalse();
 	}
 
 }

@@ -2,10 +2,12 @@ package com.kdt.team04.domain.team.service;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.team.dto.TeamConverter;
@@ -44,5 +46,12 @@ public class TeamGiverService {
 					team.getId(), team.getName(), team.getSportsCategory()
 				)
 			).toList();
+	}
+
+	public void verifyLeader(Long userId, Long teamId, Long leaderId) {
+		if (!Objects.equals(userId, leaderId)) {
+			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
+				MessageFormat.format("teamId = {0} , userId = {1}", teamId, userId));
+		}
 	}
 }

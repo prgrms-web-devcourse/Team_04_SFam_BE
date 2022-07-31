@@ -4,6 +4,8 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
+import java.text.MessageFormat;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +14,6 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.service.MatchService;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
@@ -25,6 +26,7 @@ import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamGiverService;
+import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -37,30 +39,40 @@ public class MatchProposalService {
 	private final MatchProposalRepository proposalRepository;
 	private final MatchService matchService;
 	private final UserService userService;
-	private final TeamGiverService teamGiverService;
+	private final TeamGiverService teamGiver;
+	private final TeamMemberGiverService teamMemberGiver;
 	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
 	private final MatchChatService matchChatService;
 
-	public MatchProposalService(MatchProposalRepository proposalRepository, MatchService matchService,
-		UserService userService, TeamGiverService teamGiverService, MatchConverter matchConverter,
-		TeamConverter teamConverter, UserConverter userConverter, MatchChatService matchChatService) {
+	public MatchProposalService(
+		MatchProposalRepository proposalRepository,
+		MatchService matchService,
+		UserService userService,
+		TeamGiverService teamGiver,
+		TeamMemberGiverService teamMemberGiver,
+		MatchChatService matchChatService,
+		MatchConverter matchConverter,
+		TeamConverter teamConverter,
+		UserConverter userConverter
+	) {
 		this.proposalRepository = proposalRepository;
 		this.matchService = matchService;
 		this.userService = userService;
-		this.teamGiverService = teamGiverService;
+		this.teamGiver = teamGiver;
+		this.teamMemberGiver = teamMemberGiver;
+		this.matchChatService = matchChatService;
 		this.matchConverter = matchConverter;
 		this.teamConverter = teamConverter;
 		this.userConverter = userConverter;
-		this.matchChatService = matchChatService;
 	}
 
 	@Transactional
 	public Long create(Long proposerId, Long matchId, MatchProposalRequest.ProposalCreate request) {
 		MatchResponse matchResponse = matchService.findById(matchId);
 
-		if (matchResponse.status() != MatchStatus.WAITING) {
+		if (matchResponse.status().isMatched()) {
 			throw new BusinessException(ErrorCode.INVALID_CREATE_REQUEST, "already matched");
 		}
 
@@ -97,13 +109,15 @@ public class MatchProposalService {
 			throw new BusinessException(ErrorCode.METHOD_ARGUMENT_NOT_VALID, "Request team is null");
 		}
 
-		TeamResponse teamResponse = teamGiverService.findById(matchResponse.team().id());
+		TeamResponse teamResponse = teamGiver.findById(matchResponse.team().id());
 		Team team = teamConverter.toTeam(teamResponse, author);
-
-		TeamResponse proposeTeamResponse = teamGiverService.findById(request.teamId());
-		Team proposerTeam = teamConverter.toTeam(proposeTeamResponse, proposer);
-
 		Match match = matchConverter.toMatch(matchResponse, author, team);
+
+		TeamResponse proposeTeamResponse = teamGiver.findById(request.teamId());
+		teamGiver.verifyLeader(proposer.getId(), request.teamId(), proposeTeamResponse.leader().id());
+		teamMemberGiver.hasEnoughMemberCount(match.getParticipants(), request.teamId());
+
+		Team proposerTeam = teamConverter.toTeam(proposeTeamResponse, proposer);
 
 		return MatchProposal.builder()
 			.match(match)
@@ -112,6 +126,24 @@ public class MatchProposalService {
 			.content(request.content())
 			.status(MatchProposalStatus.WAITING)
 			.build();
+	}
+
+	@Transactional
+	public MatchProposalStatus react(Long matchId, Long id, MatchProposalStatus status) {
+		MatchResponse match = matchService.findById(matchId);
+		MatchProposal proposal = proposalRepository.findById(id)
+			.orElseThrow(() -> new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
+				MessageFormat.format("proposalId = {0}", id)));
+
+		if (match.status().isMatched() || proposal.getStatus().isApproved()) {
+			throw new BusinessException(ErrorCode.INVALID_REACT,
+				MessageFormat.format("matchId = {0}, proposalId = {1}, proposalStatus = {2}, matchStatus = {3}",
+					match.id(), id, status, match.status()));
+		}
+
+		proposal.updateStatus(status);
+
+		return proposal.getStatus();
 	}
 
 	public List<MatchProposalResponse.Chat> findAllProposals(Long matchId, Long authorId) {

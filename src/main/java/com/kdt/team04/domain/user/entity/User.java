@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.user.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -37,6 +38,7 @@ public class User extends BaseEntity {
 	@Column(unique = true)
 	private String nickname;
 
+	@Embedded
 	private Location location;
 
 	protected User() {
