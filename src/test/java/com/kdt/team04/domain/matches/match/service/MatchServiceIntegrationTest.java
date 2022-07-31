@@ -564,4 +564,50 @@ class MatchServiceIntegrationTest {
 		assertThat(foundMatches.values().get(4).id()).isEqualTo(matches.get(matches.size() - 5).getId());
 		assertThat(foundMatches.hasNext()).isTrue();
 	}
+
+	@Test
+	@DisplayName("매칭 공고자는 매칭 공고를 삭제할 수 있다.")
+	void testDeleteSuccess() {
+		//given
+		User user = new User("password", "username", "nickname");
+		entityManager.persist(user);
+
+		Match savedMatch = matchRepository.save(Match.builder()
+			.title("match")
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(user)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build());
+
+		//when
+		matchService.delete(user.getId(), savedMatch.getId());
+
+		//then
+		assertThat(matchRepository.findById(savedMatch.getId())).isEmpty();
+
+	}
+
+	@Test
+	@DisplayName("매칭 공고자가 아니면 매칭 공고를 삭제시 예외가 발생한다.")
+	void testDeleteFail() {
+		//given
+		User user = new User("password", "username", "nickname");
+		entityManager.persist(user);
+
+		Match savedMatch = matchRepository.save(Match.builder()
+			.title("match")
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(user)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build());
+
+		//when, then
+		assertThatThrownBy(() -> matchService.delete(1000L, savedMatch.getId()));
+	}
 }
