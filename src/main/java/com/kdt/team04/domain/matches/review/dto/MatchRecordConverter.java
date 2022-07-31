@@ -1,0 +1,26 @@
+package com.kdt.team04.domain.matches.review.dto;
+
+import org.springframework.stereotype.Component;
+
+import com.kdt.team04.domain.matches.match.entity.Match;
+import com.kdt.team04.domain.matches.review.entity.MatchRecord;
+import com.kdt.team04.domain.matches.review.entity.MatchRecordValue;
+import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.user.entity.User;
+
+@Component
+public class MatchRecordConverter {
+
+	public MatchRecord toRecord(Long matchId, Long userId, Long teamId, MatchRecordValue result) {
+		Match match = Match.builder().id(matchId).build();
+		User user = User.builder().id(userId).build();
+		Team team = Team.builder().id(teamId).build();
+
+		return MatchRecord.builder()
+			.match(match)
+			.user(user)
+			.team(team)
+			.result(result)
+			.build();
+	}
+}
