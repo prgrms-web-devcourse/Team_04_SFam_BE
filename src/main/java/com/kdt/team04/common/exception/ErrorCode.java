@@ -42,6 +42,9 @@ public enum ErrorCode {
 	INVALID_PARTICIPANTS("M0004", "Invalid match participants", HttpStatus.BAD_REQUEST),
 	AUTHOR_NOT_MATCHED("M0005", "Author not matched", HttpStatus.BAD_REQUEST),
 	MATCH_ACCESS_DENIED("M0006", "Don't have permission to access match", HttpStatus.FORBIDDEN),
+	MATCH_ALREADY_CHANGED_STATUS("M0007", "Already been changed to that state.", HttpStatus.BAD_REQUEST),
+	MATCH_ENDED("M0008", "Match Already ended.", HttpStatus.BAD_REQUEST),
+	MATCH_CANNOT_UPDATE_END("M0009", "Match cannot update to end.", HttpStatus.BAD_REQUEST),
 
 	//MATCH_PROPOSAL
 	MATCH_PROPOSAL_NOT_FOUND("MP0001", "Not found proposal", HttpStatus.NOT_FOUND),

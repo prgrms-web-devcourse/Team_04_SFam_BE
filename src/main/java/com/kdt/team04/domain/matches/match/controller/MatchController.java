@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,5 +57,19 @@ public class MatchController {
 	@GetMapping("/{id}")
 	public ApiResponse<MatchResponse> getById(@PathVariable Long id) {
 		return new ApiResponse<>(matchService.findById(id));
+	}
+
+	@Operation(summary = "매치 모집 완료 및 취소", description = "매치 공고를 모집 완료 또는 모집 중으로 상태를 변경한다.")
+	@PatchMapping("/{id}")
+	public void updateStatus(
+		@AuthenticationPrincipal JwtAuthentication authentication,
+		@PathVariable Long id,
+		@Valid @RequestBody MatchRequest.MatchStatusUpdateRequest request
+	) {
+		if (authentication == null) {
+			throw new NotAuthenticationException("Not Authenticated");
+		}
+
+		matchService.updateStatusExceptEnd(id, authentication.id(), request.status());
 	}
 }
