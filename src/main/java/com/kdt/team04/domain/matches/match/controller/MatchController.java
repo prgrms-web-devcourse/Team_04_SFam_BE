@@ -62,6 +62,10 @@ public class MatchController {
 	@Operation(summary = "매칭 공고 삭제", description = "매칭 공고를 삭제할 수 있다.")
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id, @AuthenticationPrincipal JwtAuthentication auth) {
+		if (auth == null) {
+			throw new NotAuthenticationException("Not Authenticated");
+		}
+
 		matchService.delete(auth.id(), id);
 	}
 }
