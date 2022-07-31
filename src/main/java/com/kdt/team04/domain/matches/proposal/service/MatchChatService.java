@@ -2,6 +2,7 @@ package com.kdt.team04.domain.matches.proposal.service;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -10,10 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
-import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatConverter;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
+import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
+import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
+import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchChatRepository;
 
 @Service
@@ -22,7 +25,6 @@ public class MatchChatService {
 
 	private final MatchChatRepository matchChatRepository;
 	private final MatchProposalGiverService matchProposalGiver;
-
 	private final MatchChatConverter matchChatConverter;
 
 	public MatchChatService(
@@ -51,16 +53,18 @@ public class MatchChatService {
 				MessageFormat.format("proposalId = {0}", proposalId));
 		}
 
-		checkCorrectChatPartner(matchProposalDto.getMatchProposerId(), matchProposalDto.getMatchAuthorId(), writerId, targetId);
+		checkCorrectChatPartner(matchProposalDto.getMatchProposerId(), matchProposalDto.getMatchAuthorId(), writerId,
+			targetId);
 
-		MatchChat matchChat = matchChatConverter.toMatchChat(matchProposalDto.getId(), writerId, targetId, content, chattedAt);
+		MatchChat matchChat = matchChatConverter.toMatchChat(matchProposalDto.getId(), writerId, targetId, content,
+			chattedAt);
 		matchChatRepository.save(matchChat);
 	}
 
 	private void checkCorrectChatPartner(Long proposerId, Long matchAuthorId, Long writerId, Long targetId) {
 		if (
 			(Objects.equals(proposerId, writerId) && Objects.equals(matchAuthorId, targetId))
-			|| (Objects.equals(matchAuthorId, writerId) && Objects.equals(proposerId, targetId))
+				|| (Objects.equals(matchAuthorId, writerId) && Objects.equals(proposerId, targetId))
 		) {
 			return;
 		}
@@ -74,5 +78,15 @@ public class MatchChatService {
 				targetId
 			)
 		);
+	}
+
+	@Transactional
+	public void deleteAllByProposals(List<MatchProposalResponse.SimpleProposal> proposalResponses) {
+		List<MatchProposal> proposals = proposalResponses.stream()
+			.map((proposal -> MatchProposal.builder()
+				.id(proposal.id())
+				.build())).toList();
+
+		matchChatRepository.deleteAllByProposalIn(proposals);
 	}
 }

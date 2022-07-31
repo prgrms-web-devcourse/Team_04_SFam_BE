@@ -48,6 +48,7 @@ public enum ErrorCode {
 	MATCH_PROPOSAL_NOT_APPROVED("MP0003", "The request is not approved.", HttpStatus.BAD_REQUEST),
 	ANOTHER_MATCH_PROPOSAL_ALREADY_FIXED("MP0004", "Fixed another proposal already exists.", HttpStatus.BAD_REQUEST),
 	INVALID_REACT("MP0005", "Invalid react", HttpStatus.BAD_REQUEST),
+	INVALID_DELETE_REQUEST("MP0006","Invalid delete request", HttpStatus.BAD_REQUEST),
 
 	//MATCH_CHAT
 	MATCH_CHAT_NOT_CORRECT_CHAT_PARTNER("MC0002", "The chat partner is incorrect.", HttpStatus.BAD_REQUEST);

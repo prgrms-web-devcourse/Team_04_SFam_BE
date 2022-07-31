@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,8 +12,9 @@ import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
-import com.kdt.team04.domain.matches.match.service.MatchService;
+import com.kdt.team04.domain.matches.match.service.MatchGiverService;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalRequest;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
@@ -31,21 +33,24 @@ import com.kdt.team04.domain.user.service.UserService;
 public class MatchProposalService {
 
 	private final MatchProposalRepository proposalRepository;
-	private final MatchService matchService;
 	private final UserService userService;
+	private final MatchChatService matchChatService;
+	private final MatchGiverService matchGiver;
 	private final TeamGiverService teamGiver;
 	private final TeamMemberGiverService teamMemberGiver;
 	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
 
-	public MatchProposalService(MatchProposalRepository proposalRepository, MatchService matchService,
-		UserService userService, TeamGiverService teamGiver, TeamMemberGiverService teamMemberGiver,
+	public MatchProposalService(MatchProposalRepository proposalRepository, MatchGiverService matchGiver,
+		UserService userService, MatchChatService matchChatService, TeamGiverService teamGiver,
+		TeamMemberGiverService teamMemberGiver,
 		MatchConverter matchConverter,
 		TeamConverter teamConverter, UserConverter userConverter) {
 		this.proposalRepository = proposalRepository;
-		this.matchService = matchService;
+		this.matchGiver = matchGiver;
 		this.userService = userService;
+		this.matchChatService = matchChatService;
 		this.teamGiver = teamGiver;
 		this.teamMemberGiver = teamMemberGiver;
 		this.matchConverter = matchConverter;
@@ -55,7 +60,7 @@ public class MatchProposalService {
 
 	@Transactional
 	public Long create(Long proposerId, Long matchId, MatchProposalRequest.ProposalCreate request) {
-		MatchResponse matchResponse = matchService.findById(matchId);
+		MatchResponse matchResponse = matchGiver.findById(matchId);
 
 		if (matchResponse.status().isMatched()) {
 			throw new BusinessException(ErrorCode.INVALID_CREATE_REQUEST, "already matched");
@@ -115,7 +120,7 @@ public class MatchProposalService {
 
 	@Transactional
 	public MatchProposalStatus react(Long matchId, Long id, MatchProposalStatus status) {
-		MatchResponse match = matchService.findById(matchId);
+		MatchResponse match = matchGiver.findById(matchId);
 		MatchProposal proposal = proposalRepository.findById(id)
 			.orElseThrow(() -> new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
 				MessageFormat.format("proposalId = {0}", id)));
@@ -129,5 +134,15 @@ public class MatchProposalService {
 		proposal.updateStatus(status);
 
 		return proposal.getStatus();
+	}
+
+	@Transactional
+	public void deleteByMatches(Long matchId) {
+		List<MatchProposal> foundProposals = proposalRepository.findByMatchId(matchId);
+		List<MatchProposalResponse.SimpleProposal> proposalResponses = foundProposals.stream()
+			.map(response -> new MatchProposalResponse.SimpleProposal(response.getId()))
+			.toList();
+		matchChatService.deleteAllByProposals(proposalResponses);
+		proposalRepository.deleteAllByMatchId(matchId);
 	}
 }

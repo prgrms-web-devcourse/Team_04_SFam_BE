@@ -3,6 +3,7 @@ package com.kdt.team04.domain.matches.match.controller;
 import javax.validation.Valid;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,5 +57,11 @@ public class MatchController {
 	@GetMapping("/{id}")
 	public ApiResponse<MatchResponse> getById(@PathVariable Long id) {
 		return new ApiResponse<>(matchService.findById(id));
+	}
+
+	@Operation(summary = "매칭 공고 삭제", description = "매칭 공고를 삭제할 수 있다.")
+	@DeleteMapping("/{id}")
+	public void delete(@PathVariable Long id, @AuthenticationPrincipal JwtAuthentication auth) {
+		matchService.delete(auth.id(), id);
 	}
 }

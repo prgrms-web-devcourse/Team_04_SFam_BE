@@ -17,4 +17,8 @@ public class MatchRecordGiverService {
 	public MatchRecordResponse.TotalCount findByTeamTotalRecord(Long id) {
 		return matchRecordRepository.getTeamTotalCount(id);
 	}
+
+	public void deleteByMatchId(Long matchId) {
+		matchRecordRepository.deleteAllByMatchId(matchId);
+	}
 }
