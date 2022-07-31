@@ -23,6 +23,9 @@ import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.teammember.entity.TeamMember;
+import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
+import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 
 @Transactional
@@ -72,23 +75,32 @@ class MatchProposalServiceIntegrationTest {
 	void testTeamProposerCreateSuccess() {
 		//given
 		User author = new User("author", "author", "aA1234!");
-		User proposer = new User("proposer", "proposer", "aA1234!");
 		Team authorTeam = Team.builder()
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(proposer)
+			.leader(author)
 			.build();
+		entityManager.persist(authorTeam);
+		entityManager.persist(author);
+
+		User proposer = new User("proposer", "proposer", "aA1234!");
+		User user1 = new User("member1", "member1", "password");
+		User user2 = new User("member2", "member2", "password");
+		entityManager.persist(proposer);
+		entityManager.persist(user1);
+		entityManager.persist(user2);
+		proposer.updateLocation(new Location(1.1, 1.2));
 		Team proposerTeam = Team.builder()
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
-		entityManager.persist(authorTeam);
 		entityManager.persist(proposerTeam);
-		entityManager.persist(author);
-		entityManager.persist(proposer);
+		entityManager.persist(new TeamMember(proposerTeam, user1, TeamMemberRole.LEADER));
+		entityManager.persist(new TeamMember(proposerTeam, user1, TeamMemberRole.MEMBER));
+		entityManager.persist(new TeamMember(proposerTeam, user2, TeamMemberRole.MEMBER));
 
 		Match match = Match.builder()
 			.title("match")
@@ -110,6 +122,51 @@ class MatchProposalServiceIntegrationTest {
 
 		//then
 		assertThat(createdProposer).isNotNull();
+	}
+
+	@Test
+	@DisplayName("팀전 매칭 신청시 신청자 팀원수보다 매칭 인원이 많으면 예외가 발생한다.")
+	void testTeamProposerCreateFailByTeamMember() {
+		//given
+		User author = new User("author", "author", "aA1234!");
+		Team authorTeam = Team.builder()
+			.name("team1")
+			.description("first team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(author)
+			.build();
+		entityManager.persist(authorTeam);
+		entityManager.persist(author);
+
+		User proposer = new User("proposer", "proposer", "aA1234!");
+		entityManager.persist(proposer);
+		proposer.updateLocation(new Location(1.1, 1.2));
+		Team proposerTeam = Team.builder()
+			.name("team1")
+			.description("first team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(proposer)
+			.build();
+		entityManager.persist(proposerTeam);
+
+		Match match = Match.builder()
+			.title("match")
+			.status(MatchStatus.WAITING)
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.TEAM_MATCH)
+			.participants(3)
+			.user(author)
+			.team(authorTeam)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build();
+		entityManager.persist(match);
+		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(proposerTeam.getId(),
+			"팀전 신청합니다.");
+
+		//when, then
+		assertThatThrownBy(() -> matchProposalService.create(proposer.getId(), match.getId(), request)).isInstanceOf(
+			BusinessException.class);
 	}
 
 	@Test

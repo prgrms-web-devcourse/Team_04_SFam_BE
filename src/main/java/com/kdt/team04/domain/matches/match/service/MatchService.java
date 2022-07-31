@@ -1,7 +1,6 @@
 package com.kdt.team04.domain.matches.match.service;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +20,7 @@ import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamGiverService;
+import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.Location;
@@ -34,16 +34,18 @@ public class MatchService {
 	private final MatchRepository matchRepository;
 	private final UserService userService;
 	private final TeamGiverService teamGiver;
+	private final TeamMemberGiverService teamMemberGiver;
 	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
 
 	public MatchService(MatchRepository matchRepository, UserService userService, TeamGiverService teamGiver,
-		MatchConverter matchConverter, TeamConverter teamConverter,
+		TeamMemberGiverService teamMemberGiver, MatchConverter matchConverter, TeamConverter teamConverter,
 		UserConverter userConverter) {
 		this.matchRepository = matchRepository;
 		this.userService = userService;
 		this.teamGiver = teamGiver;
+		this.teamMemberGiver = teamMemberGiver;
 		this.matchConverter = matchConverter;
 		this.teamConverter = teamConverter;
 		this.userConverter = userConverter;
@@ -89,7 +91,8 @@ public class MatchService {
 		}
 
 		TeamResponse teamResponse = teamGiver.findById(request.teamId());
-		verifyLeader(userId, request.teamId(), teamResponse.leader().id());
+		teamGiver.verifyLeader(userId, request.teamId(), teamResponse.leader().id());
+		teamMemberGiver.hasEnoughMemberCount(request.participants(), request.teamId());
 
 		User teamLeader = userConverter.toUser(teamResponse.leader());
 		Team team = teamConverter.toTeam(teamResponse, teamLeader);
@@ -141,12 +144,5 @@ public class MatchService {
 		}
 
 		return matchConverter.toMatchResponse(foundMatch, authorResponse);
-	}
-
-	private void verifyLeader(Long userId, Long teamId, Long leaderId) {
-		if (!Objects.equals(userId, leaderId)) {
-			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
-				MessageFormat.format("teamId = {0} , userId = {1}", teamId, userId));
-		}
 	}
 }

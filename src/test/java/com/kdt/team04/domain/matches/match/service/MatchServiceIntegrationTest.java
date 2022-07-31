@@ -28,6 +28,8 @@ import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.teammember.entity.TeamMember;
+import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 
@@ -48,22 +50,30 @@ class MatchServiceIntegrationTest {
 	@DisplayName("팀의 리더는 팀 매칭 공고를 생성할 수 있다.")
 	void testTeamCreateSuccess() {
 		//given
-		User user = new User("password", "username", "nickname");
-		entityManager.persist(user);
-		user.updateLocation(new Location(1.1, 1.2));
+		User leader = new User("leader", "leader", "password");
+		User user1 = new User("member1", "member1", "password");
+		User user2 = new User("member2", "member2", "password");
+		User user3 = new User("member3", "member3", "password");
+		entityManager.persist(leader);
+		entityManager.persist(user1);
+		entityManager.persist(user2);
+		leader.updateLocation(new Location(1.1, 1.2));
 		Team team = Team.builder()
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(user)
+			.leader(leader)
 			.build();
 		entityManager.persist(team);
+		entityManager.persist(new TeamMember(team, user1, TeamMemberRole.LEADER));
+		entityManager.persist(new TeamMember(team, user1, TeamMemberRole.MEMBER));
+		entityManager.persist(new TeamMember(team, user2, TeamMemberRole.MEMBER));
 		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.TEAM_MATCH,
 			team.getId(), 3, SportsCategory.BADMINTON, "content");
 
 		//when
-		Long createdMatch = matchService.create(user.getId(), request);
+		Long createdMatch = matchService.create(leader.getId(), request);
 
 		//then
 		assertThat(createdMatch).isNotNull();
@@ -128,6 +138,28 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("팀 매칭 공고 생성 시 request에 팀 id가 null이면 예외가 발생한다.")
 	void testTeamCreateFailByRequest() {
+		//given
+		User user = new User("username", "nickname", "password");
+		entityManager.persist(user);
+		Team team = Team.builder()
+			.name("team1")
+			.description("first team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(user)
+			.build();
+		entityManager.persist(team);
+		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
+			MatchType.TEAM_MATCH,
+			null, 3, SportsCategory.BADMINTON, "content");
+
+		//when, then
+		assertThatThrownBy(() -> matchService.create(user.getId(), request)).isInstanceOf(BusinessException.class);
+
+	}
+
+	@Test
+	@DisplayName("팀 매칭 공고 생성 시 자신이 선택한 팀의 팀원보다 매칭 참여 인원수가 많으면 예외가 발생한다.")
+	void testTeamCreateFailByTeamMemberCount() {
 		//given
 		User user = new User("username", "nickname", "password");
 		entityManager.persist(user);

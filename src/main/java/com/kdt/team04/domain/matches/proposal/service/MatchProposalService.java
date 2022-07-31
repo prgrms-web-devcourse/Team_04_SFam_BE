@@ -20,6 +20,7 @@ import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamGiverService;
+import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -32,18 +33,21 @@ public class MatchProposalService {
 	private final MatchProposalRepository proposalRepository;
 	private final MatchService matchService;
 	private final UserService userService;
-	private final TeamGiverService teamGiverService;
+	private final TeamGiverService teamGiver;
+	private final TeamMemberGiverService teamMemberGiver;
 	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
 
 	public MatchProposalService(MatchProposalRepository proposalRepository, MatchService matchService,
-		UserService userService, TeamGiverService teamGiverService, MatchConverter matchConverter,
+		UserService userService, TeamGiverService teamGiver, TeamMemberGiverService teamMemberGiver,
+		MatchConverter matchConverter,
 		TeamConverter teamConverter, UserConverter userConverter) {
 		this.proposalRepository = proposalRepository;
 		this.matchService = matchService;
 		this.userService = userService;
-		this.teamGiverService = teamGiverService;
+		this.teamGiver = teamGiver;
+		this.teamMemberGiver = teamMemberGiver;
 		this.matchConverter = matchConverter;
 		this.teamConverter = teamConverter;
 		this.userConverter = userConverter;
@@ -90,13 +94,15 @@ public class MatchProposalService {
 			throw new BusinessException(ErrorCode.METHOD_ARGUMENT_NOT_VALID, "Request team is null");
 		}
 
-		TeamResponse teamResponse = teamGiverService.findById(matchResponse.team().id());
+		TeamResponse teamResponse = teamGiver.findById(matchResponse.team().id());
 		Team team = teamConverter.toTeam(teamResponse, author);
-
-		TeamResponse proposeTeamResponse = teamGiverService.findById(request.teamId());
-		Team proposerTeam = teamConverter.toTeam(proposeTeamResponse, proposer);
-
 		Match match = matchConverter.toMatch(matchResponse, author, team);
+
+		TeamResponse proposeTeamResponse = teamGiver.findById(request.teamId());
+		teamGiver.verifyLeader(proposer.getId(), request.teamId(), proposeTeamResponse.leader().id());
+		teamMemberGiver.hasEnoughMemberCount(match.getParticipants(), request.teamId());
+
+		Team proposerTeam = teamConverter.toTeam(proposeTeamResponse, proposer);
 
 		return MatchProposal.builder()
 			.match(match)
