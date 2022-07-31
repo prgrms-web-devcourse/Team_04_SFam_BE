@@ -10,7 +10,6 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.service.MatchService;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalRequest;
@@ -54,7 +53,7 @@ public class MatchProposalService {
 	public Long create(Long proposerId, Long matchId, MatchProposalRequest.ProposalCreate request) {
 		MatchResponse matchResponse = matchService.findById(matchId);
 
-		if (isMatched(matchResponse.status())) {
+		if (matchResponse.status().isMatched()) {
 			throw new BusinessException(ErrorCode.INVALID_CREATE_REQUEST, "already matched");
 		}
 
@@ -110,34 +109,19 @@ public class MatchProposalService {
 
 	@Transactional
 	public MatchProposalStatus react(Long matchId, Long id, MatchProposalStatus status) {
-		MatchResponse matchResponse = matchService.findById(matchId);
+		MatchResponse match = matchService.findById(matchId);
 		MatchProposal proposal = proposalRepository.findById(id)
 			.orElseThrow(() -> new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
 				MessageFormat.format("proposalId = {0}", id)));
 
-		verifyRequest(status, matchResponse, id);
-		proposal.updateStatus(status);
-
-		if (isApproved(status)) {
-			matchService.updateStatus(matchId, MatchStatus.IN_GAME);
-		}
-
-		return proposal.getStatus();
-	}
-
-	private void verifyRequest(MatchProposalStatus status, MatchResponse match, Long id) {
-		if (isMatched(match.status()) && isApproved(status)) {
+		if (match.status().isMatched() || proposal.getStatus().isApproved()) {
 			throw new BusinessException(ErrorCode.INVALID_REACT,
 				MessageFormat.format("matchId = {0}, proposalId = {1}, proposalStatus = {2}, matchStatus = {3}",
 					match.id(), id, status, match.status()));
 		}
-	}
 
-	private boolean isMatched(MatchStatus status) {
-		return status != MatchStatus.WAITING;
-	}
+		proposal.updateStatus(status);
 
-	private boolean isApproved(MatchProposalStatus status) {
-		return status == MatchProposalStatus.APPROVED;
+		return proposal.getStatus();
 	}
 }

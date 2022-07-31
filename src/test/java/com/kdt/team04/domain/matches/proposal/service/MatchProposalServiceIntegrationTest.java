@@ -155,45 +155,6 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("매칭 작성자가 매칭 신청을 수락하면 신청 상태는 APPROVE, 매칭 상태는 IN_GAME으로 변경된다.")
-	void testApproveReactSuccess() {
-		//given
-		User author = new User("author", "author", "aA1234!");
-		User proposer = new User("proposer", "proposer", "aA1234!");
-		entityManager.persist(author);
-		entityManager.persist(proposer);
-
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.INDIVIDUAL_MATCH)
-			.participants(1)
-			.user(author)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
-		entityManager.persist(match);
-		MatchProposal proposal = MatchProposal.builder()
-			.user(proposer)
-			.team(null)
-			.match(match)
-			.content("content")
-			.status(MatchProposalStatus.WAITING)
-			.build();
-		MatchProposal savedProposal = matchProposalRepository.save(proposal);
-
-		//when
-		MatchProposalStatus react = matchProposalService.react(match.getId(), savedProposal.getId(),
-			MatchProposalStatus.APPROVED);
-
-		//then
-		assertThat(react).isEqualTo(MatchProposalStatus.APPROVED);
-		assertThat(match.getStatus()).isEqualTo(MatchStatus.IN_GAME);
-
-	}
-
-	@Test
 	@DisplayName("매칭 작성자가 매칭 신청을 거절하면 신청 상태가 REFUSE로 변경된다.")
 	void testRefuseReactSuccess() {
 		//given
