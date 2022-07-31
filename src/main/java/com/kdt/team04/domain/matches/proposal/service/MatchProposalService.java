@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamGiverService;
+import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -33,17 +35,20 @@ public class MatchProposalService {
 	private final MatchService matchService;
 	private final UserService userService;
 	private final TeamGiverService teamGiverService;
+	private final TeamMemberGiverService teamMemberGiver;
 	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
 
 	public MatchProposalService(MatchProposalRepository proposalRepository, MatchService matchService,
-		UserService userService, TeamGiverService teamGiverService, MatchConverter matchConverter,
+		UserService userService, TeamGiverService teamGiverService, TeamMemberGiverService teamMemberGiver,
+		MatchConverter matchConverter,
 		TeamConverter teamConverter, UserConverter userConverter) {
 		this.proposalRepository = proposalRepository;
 		this.matchService = matchService;
 		this.userService = userService;
 		this.teamGiverService = teamGiverService;
+		this.teamMemberGiver = teamMemberGiver;
 		this.matchConverter = matchConverter;
 		this.teamConverter = teamConverter;
 		this.userConverter = userConverter;
@@ -92,11 +97,13 @@ public class MatchProposalService {
 
 		TeamResponse teamResponse = teamGiverService.findById(matchResponse.team().id());
 		Team team = teamConverter.toTeam(teamResponse, author);
+		Match match = matchConverter.toMatch(matchResponse, author, team);
 
 		TeamResponse proposeTeamResponse = teamGiverService.findById(request.teamId());
-		Team proposerTeam = teamConverter.toTeam(proposeTeamResponse, proposer);
+		verifyLeader(proposer.getId(), request.teamId(), proposeTeamResponse.leader().id());
+		verifyTeamMemberCount(match.getParticipants(), request.teamId());
 
-		Match match = matchConverter.toMatch(matchResponse, author, team);
+		Team proposerTeam = teamConverter.toTeam(proposeTeamResponse, proposer);
 
 		return MatchProposal.builder()
 			.match(match)
@@ -123,5 +130,22 @@ public class MatchProposalService {
 		proposal.updateStatus(status);
 
 		return proposal.getStatus();
+	}
+
+	private void verifyLeader(Long userId, Long teamId, Long leaderId) {
+		if (!Objects.equals(userId, leaderId)) {
+			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
+				MessageFormat.format("teamId = {0} , userId = {1}", teamId, userId));
+		}
+	}
+
+	private void verifyTeamMemberCount(int participants, Long teamId) {
+		int teamMemberCount = teamMemberGiver.countByTeamId(teamId);
+
+		if (teamMemberCount < participants) {
+			throw new BusinessException(ErrorCode.INVALID_PARTICIPANTS,
+				MessageFormat.format("TeamMemberCount = {0} participants = {1}",
+					teamMemberCount, participants));
+		}
 	}
 }

@@ -46,4 +46,7 @@ public class TeamMemberGiverService {
 		teamMemberRepository.save(teamMember);
 	}
 
+	public int countByTeamId(Long teamId){
+		return teamMemberRepository.countAllByTeamId(teamId);
+	}
 }

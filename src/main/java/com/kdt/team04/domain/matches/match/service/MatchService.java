@@ -21,6 +21,7 @@ import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamGiverService;
+import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.Location;
@@ -34,16 +35,18 @@ public class MatchService {
 	private final MatchRepository matchRepository;
 	private final UserService userService;
 	private final TeamGiverService teamGiver;
+	private final TeamMemberGiverService teamMemberGiver;
 	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
 
 	public MatchService(MatchRepository matchRepository, UserService userService, TeamGiverService teamGiver,
-		MatchConverter matchConverter, TeamConverter teamConverter,
+		TeamMemberGiverService teamMemberGiver, MatchConverter matchConverter, TeamConverter teamConverter,
 		UserConverter userConverter) {
 		this.matchRepository = matchRepository;
 		this.userService = userService;
 		this.teamGiver = teamGiver;
+		this.teamMemberGiver = teamMemberGiver;
 		this.matchConverter = matchConverter;
 		this.teamConverter = teamConverter;
 		this.userConverter = userConverter;
@@ -90,6 +93,7 @@ public class MatchService {
 
 		TeamResponse teamResponse = teamGiver.findById(request.teamId());
 		verifyLeader(userId, request.teamId(), teamResponse.leader().id());
+		verifyTeamMemberCount(request.participants(), request.teamId());
 
 		User teamLeader = userConverter.toUser(teamResponse.leader());
 		Team team = teamConverter.toTeam(teamResponse, teamLeader);
@@ -147,6 +151,16 @@ public class MatchService {
 		if (!Objects.equals(userId, leaderId)) {
 			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
 				MessageFormat.format("teamId = {0} , userId = {1}", teamId, userId));
+		}
+	}
+
+	private void verifyTeamMemberCount(int participants, Long teamId) {
+		int teamMemberCount = teamMemberGiver.countByTeamId(teamId);
+
+		if (teamMemberCount < participants) {
+			throw new BusinessException(ErrorCode.INVALID_PARTICIPANTS,
+				MessageFormat.format("TeamMemberCount = {0} participants = {1}",
+					teamMemberCount, participants));
 		}
 	}
 }
