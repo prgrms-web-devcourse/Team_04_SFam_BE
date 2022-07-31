@@ -79,6 +79,9 @@ dependencies {
 	//JASYPT
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
 
+	//QLRM
+	implementation 'org.qlrm:qlrm:3.0.4'
+
 	// ANNOTATION PROCESSOR
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
