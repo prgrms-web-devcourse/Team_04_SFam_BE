@@ -84,6 +84,11 @@ public class Match extends BaseEntity {
 		this.location = location;
 	}
 
+	//== 비지니스 로직 ==//
+	public void updateStatus(MatchStatus status) {
+		this.status = status;
+	}
+
 	public Long getId() {
 		return id;
 	}
