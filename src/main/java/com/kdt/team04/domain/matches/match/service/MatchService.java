@@ -1,7 +1,6 @@
 package com.kdt.team04.domain.matches.match.service;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,8 +91,8 @@ public class MatchService {
 		}
 
 		TeamResponse teamResponse = teamGiver.findById(request.teamId());
-		verifyLeader(userId, request.teamId(), teamResponse.leader().id());
-		verifyTeamMemberCount(request.participants(), request.teamId());
+		teamGiver.verifyLeader(userId, request.teamId(), teamResponse.leader().id());
+		teamMemberGiver.hasEnoughMemberCount(request.participants(), request.teamId());
 
 		User teamLeader = userConverter.toUser(teamResponse.leader());
 		Team team = teamConverter.toTeam(teamResponse, teamLeader);
@@ -145,22 +144,5 @@ public class MatchService {
 		}
 
 		return matchConverter.toMatchResponse(foundMatch, authorResponse);
-	}
-
-	private void verifyLeader(Long userId, Long teamId, Long leaderId) {
-		if (!Objects.equals(userId, leaderId)) {
-			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
-				MessageFormat.format("teamId = {0} , userId = {1}", teamId, userId));
-		}
-	}
-
-	private void verifyTeamMemberCount(int participants, Long teamId) {
-		int teamMemberCount = teamMemberGiver.countByTeamId(teamId);
-
-		if (teamMemberCount < participants) {
-			throw new BusinessException(ErrorCode.INVALID_PARTICIPANTS,
-				MessageFormat.format("TeamMemberCount = {0} participants = {1}",
-					teamMemberCount, participants));
-		}
 	}
 }
