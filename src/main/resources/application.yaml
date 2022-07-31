@@ -23,7 +23,6 @@ security:
         - /v3/api-docs/**
         - /swagger-ui/**
         - /swagger-ui.html/**
-        - /**
       POST:
         - /api/users/signin
         - /api/users/signup
@@ -31,7 +30,7 @@ security:
       PUT: [ ]
       DELETE: [ ]
     permit-all:
-      GET: ["/**"]
+      GET: [ ]
       POST: [ ]
       PATCH: [ ]
       PUT: [ ]

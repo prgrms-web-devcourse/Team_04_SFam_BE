@@ -21,7 +21,6 @@ public class DivisionApiController {
 
 	@GetMapping("/api/divisions")
 	public ApiResponse<List<DivisionApiResponse.Feature>> getDivisions(DivisionRequest divisionRequest) {
-		System.out.println(divisionRequest);
 		return new ApiResponse<>(divisionService.getDivisions(divisionRequest)
 			.response()
 			.result()
