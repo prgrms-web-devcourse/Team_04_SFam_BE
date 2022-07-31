@@ -25,16 +25,16 @@ public class TeamInvitationRepositoryImpl implements TeamInvitationRepositoryCus
 	}
 
 	@Override
-	public PageDto.CursorResponse getInvitations(Long targetId, PageDto.TeamInvitationCursorPageRequest request) {
+	public PageDto.CursorResponse<TeamInvitationResponse.InvitesResponse, TeamInvitationCursor> getInvitations(Long targetId, PageDto.TeamInvitationCursorPageRequest request) {
 		Long lastId = request.getId();
 		LocalDateTime createdAt = request.getCreatedAt();
 
 		BooleanBuilder builder = new BooleanBuilder();
 
 		BooleanExpression fixCondition = teamInvitation.target.id.eq(targetId)
-			.and(teamInvitation.status.eq(InvitationStatus.WAITING));
+			.and(teamInvitation.status.eq(request.getStatus()));
 
-		BooleanExpression cursorCondition = (createdAt == null && lastId == null) ? null
+		BooleanExpression cursorCondition = (createdAt == null || lastId == null) ? null
 			: teamInvitation
 				.createdAt.lt(asDateTime(createdAt))
 				.or(
@@ -70,7 +70,7 @@ public class TeamInvitationRepositoryImpl implements TeamInvitationRepositoryCus
 	}
 
 	private Boolean hasNext(LocalDateTime createdAt, Long lastId, Long targetId) {
-		if (createdAt == null && lastId == null) {
+		if (createdAt == null || lastId == null) {
 			return false;
 		}
 

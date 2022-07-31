@@ -230,7 +230,7 @@ class TeamInvitationServiceTest {
 		entityManager.clear();
 
 		// when
-		PageDto.TeamInvitationCursorPageRequest request = new PageDto.TeamInvitationCursorPageRequest(null, null, 10);
+		PageDto.TeamInvitationCursorPageRequest request = new PageDto.TeamInvitationCursorPageRequest(null, null, 10, InvitationStatus.WAITING);
 		PageDto.CursorResponse invites = teamInvitationService.getInvitations(userB.getId(), request);
 
 		// then
@@ -272,7 +272,7 @@ class TeamInvitationServiceTest {
 		entityManager.clear();
 
 		// when
-		PageDto.TeamInvitationCursorPageRequest request = new PageDto.TeamInvitationCursorPageRequest(null, null, 20);
+		PageDto.TeamInvitationCursorPageRequest request = new PageDto.TeamInvitationCursorPageRequest(null, null, 20, InvitationStatus.WAITING);
 		PageDto.CursorResponse invites = teamInvitationService.getInvitations(userB.getId(), request);
 
 		// then

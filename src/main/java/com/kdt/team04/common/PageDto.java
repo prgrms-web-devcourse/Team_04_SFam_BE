@@ -21,6 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.team.SportsCategory;
+import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Builder;
@@ -48,14 +49,23 @@ public class PageDto {
 		@Parameter(description = "마지막 조회 ID")
 		private Long id;
 
-		@NotNull
+		@NotNull(message = "사이즈는 필수입니다.")
 		@Parameter(description = "페이징 사이즈")
 		private Integer size;
 
-		public TeamInvitationCursorPageRequest(LocalDateTime createdAt, Long id, Integer size) {
+		@NotNull(message = "초대 상태 값은 필수입니다.")
+		private InvitationStatus status;
+
+		public TeamInvitationCursorPageRequest(LocalDateTime createdAt, Long id, Integer size,
+			InvitationStatus status) {
 			this.createdAt = createdAt;
 			this.id = id;
 			this.size = size;
+			this.status = status;
+		}
+
+		public InvitationStatus getStatus() {
+			return status;
 		}
 
 		public LocalDateTime getCreatedAt() {
