@@ -5,6 +5,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import java.time.LocalDate;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -60,6 +61,7 @@ public class Match extends BaseEntity {
 	@JoinColumn(name = "team_id")
 	private Team team;
 
+	@Embedded
 	private Location location;
 
 	protected Match() {/*no-op*/}

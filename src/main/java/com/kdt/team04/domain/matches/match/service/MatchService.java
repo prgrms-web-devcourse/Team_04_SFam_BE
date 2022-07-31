@@ -120,10 +120,8 @@ public class MatchService {
 		}
 		Location location = foundUser.location();
 
-		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchRepository.findByLocationPaging(
+		return matchRepository.findByLocationPaging(
 			location.getLatitude(), location.getLongitude(), request);
-
-		return foundMatches;
 	}
 
 	public MatchResponse findById(Long id) {

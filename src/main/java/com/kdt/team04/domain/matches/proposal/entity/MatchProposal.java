@@ -59,6 +59,10 @@ public class MatchProposal extends BaseEntity {
 		this.status = defaultIfNull(status, WAITING);
 	}
 
+	public void updateStatus(MatchProposalStatus status) {
+		this.status = status;
+	}
+
 	public Long getId() {
 		return id;
 	}

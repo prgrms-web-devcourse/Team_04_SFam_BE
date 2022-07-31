@@ -1,5 +1,7 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
+import java.text.MessageFormat;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,7 +10,6 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.service.MatchService;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalRequest;
@@ -52,7 +53,7 @@ public class MatchProposalService {
 	public Long create(Long proposerId, Long matchId, MatchProposalRequest.ProposalCreate request) {
 		MatchResponse matchResponse = matchService.findById(matchId);
 
-		if (matchResponse.status() != MatchStatus.WAITING) {
+		if (matchResponse.status().isMatched()) {
 			throw new BusinessException(ErrorCode.INVALID_CREATE_REQUEST, "already matched");
 		}
 
@@ -104,5 +105,23 @@ public class MatchProposalService {
 			.content(request.content())
 			.status(MatchProposalStatus.WAITING)
 			.build();
+	}
+
+	@Transactional
+	public MatchProposalStatus react(Long matchId, Long id, MatchProposalStatus status) {
+		MatchResponse match = matchService.findById(matchId);
+		MatchProposal proposal = proposalRepository.findById(id)
+			.orElseThrow(() -> new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
+				MessageFormat.format("proposalId = {0}", id)));
+
+		if (match.status().isMatched() || proposal.getStatus().isApproved()) {
+			throw new BusinessException(ErrorCode.INVALID_REACT,
+				MessageFormat.format("matchId = {0}, proposalId = {1}, proposalStatus = {2}, matchStatus = {3}",
+					match.id(), id, status, match.status()));
+		}
+
+		proposal.updateStatus(status);
+
+		return proposal.getStatus();
 	}
 }
