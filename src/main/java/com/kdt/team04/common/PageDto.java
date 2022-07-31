@@ -21,6 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.team.SportsCategory;
+import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Builder;
@@ -36,6 +37,47 @@ public class PageDto {
 						  @Range(min = 5, max = 10, message = "목록 단위는 5 ~ 10까지 가능합니다.") Integer size) {
 		public Pageable getPageable(Sort sort) {
 			return PageRequest.of(page - 1, size, sort);
+		}
+	}
+
+	public static class TeamInvitationCursorPageRequest {
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+		@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+		@Parameter(description = "초대받은 일자 (yyyy-MM-dd HH:mm:ss)")
+		private LocalDateTime createdAt;
+
+		@Parameter(description = "마지막 조회 ID")
+		private Long id;
+
+		@NotNull(message = "사이즈는 필수입니다.")
+		@Parameter(description = "페이징 사이즈")
+		private Integer size;
+
+		@NotNull(message = "초대 상태 값은 필수입니다.")
+		private InvitationStatus status;
+
+		public TeamInvitationCursorPageRequest(LocalDateTime createdAt, Long id, Integer size,
+			InvitationStatus status) {
+			this.createdAt = createdAt;
+			this.id = id;
+			this.size = size;
+			this.status = status;
+		}
+
+		public InvitationStatus getStatus() {
+			return status;
+		}
+
+		public LocalDateTime getCreatedAt() {
+			return createdAt;
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public Integer getSize() {
+			return size;
 		}
 	}
 
