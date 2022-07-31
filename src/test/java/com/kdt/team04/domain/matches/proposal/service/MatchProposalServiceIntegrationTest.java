@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
@@ -283,5 +284,42 @@ class MatchProposalServiceIntegrationTest {
 		assertThatThrownBy(() -> matchProposalService.react(match.getId(), savedProposal.getId(),
 			MatchProposalStatus.APPROVED)).isInstanceOf(BusinessException.class);
 
+	}
+
+	@Test
+	@DisplayName("매칭 공고의 모든 매칭 신청이 삭제된다.")
+	void testDeleteByMatchesSuccess() {
+		//given
+		User author = new User("author", "author", "aA1234!");
+		User proposer = new User("proposer", "proposer", "aA1234!");
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+
+		Match match = Match.builder()
+			.title("match")
+			.status(MatchStatus.WAITING)
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(author)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build();
+		entityManager.persist(match);
+		MatchProposal proposal = MatchProposal.builder()
+			.user(proposer)
+			.team(null)
+			.match(match)
+			.content("content")
+			.status(MatchProposalStatus.WAITING)
+			.build();
+		entityManager.persist(proposal);
+
+		//when
+		matchProposalService.deleteByMatches(match.getId());
+
+		//then
+		Optional<MatchProposal> deletedProposal = matchProposalRepository.findById(proposal.getId());
+		assertThat(deletedProposal).isEmpty();
 	}
 }
