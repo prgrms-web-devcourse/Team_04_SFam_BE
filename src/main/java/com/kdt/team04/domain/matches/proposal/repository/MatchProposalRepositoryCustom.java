@@ -2,8 +2,8 @@ package com.kdt.team04.domain.matches.proposal.repository;
 
 import java.util.Optional;
 
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
 
 public interface MatchProposalRepositoryCustom {
-	Optional<MatchProposalQueryDto> findSimpleProposalById(Long id);
+	Optional<MatchProposalSimpleQueryDto> findSimpleProposalById(Long id);
 }

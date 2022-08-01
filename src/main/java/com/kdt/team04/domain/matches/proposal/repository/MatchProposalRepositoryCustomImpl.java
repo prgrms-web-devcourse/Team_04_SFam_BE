@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.QMatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.QMatchProposalSimpleQueryDto;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -22,9 +22,9 @@ public class MatchProposalRepositoryCustomImpl implements MatchProposalRepositor
 	}
 
 	@Override
-	public Optional<MatchProposalQueryDto> findSimpleProposalById(Long id) {
-		MatchProposalQueryDto matchProposalDto = queryFactory
-			.select(new QMatchProposalQueryDto(
+	public Optional<MatchProposalSimpleQueryDto> findSimpleProposalById(Long id) {
+		MatchProposalSimpleQueryDto matchProposalDto = queryFactory
+			.select(new QMatchProposalSimpleQueryDto(
 				Expressions.asNumber(id).as("id"),
 				matchProposal.status,
 				matchProposal.user.id,

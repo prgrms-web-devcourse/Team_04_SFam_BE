@@ -7,15 +7,15 @@ import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.querydsl.core.annotations.QueryProjection;
 
-public class MatchProposalQueryDto {
-	Long id;
-	MatchProposalStatus status;
-	Long matchProposerId;
-	Long matchAuthorId;
-	MatchStatus matchStatus;
+public class MatchProposalSimpleQueryDto {
+	private Long id;
+	private MatchProposalStatus status;
+	private Long matchProposerId;
+	private Long matchAuthorId;
+	private MatchStatus matchStatus;
 
 	@QueryProjection
-	public MatchProposalQueryDto(
+	public MatchProposalSimpleQueryDto(
 		Long id,
 		MatchProposalStatus status,
 		Long matchProposerId,
