@@ -11,9 +11,9 @@ import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 
 public interface MatchProposalRepository extends JpaRepository<MatchProposal, Long>, MatchProposalRepositoryCustom {
 
-	@Query("SELECT mp FROM MatchProposal mp JOIN FETCH User u ON mp.user.id = u.id INNER JOIN Match m ON mp.match.id = m.id WHERE mp.match.id = :matchId")
+	@Query("SELECT mp FROM MatchProposal mp JOIN FETCH mp.user INNER JOIN FETCH mp.match WHERE mp.match.id = :matchId")
 	List<MatchProposal> findAllByMatchId(@Param("matchId") Long matchId);
 
-	@Query("SELECT mp FROM MatchProposal mp JOIN FETCH User u ON mp.user.id = u.id LEFT JOIN Team t ON mp.team.id = t.id WHERE mp.id = :id")
+	@Query("SELECT mp FROM MatchProposal mp JOIN FETCH mp.user LEFT JOIN FETCH mp.team WHERE mp.id = :id")
 	Optional<MatchProposal> findProposalById(@Param("id") Long id);
 }
