@@ -68,7 +68,7 @@ public class MatchService {
 
 	private Match individualMatchCreate(Long userId, MatchRequest.MatchCreateRequest request) {
 		if (request.participants() != 1) {
-			throw new BusinessException(ErrorCode.INVALID_PARTICIPANTS,
+			throw new BusinessException(ErrorCode.MATCH_INVALID_PARTICIPANTS,
 				MessageFormat.format("userId = {0}, participants = {1}", userId, request.participants()));
 		}
 
@@ -159,7 +159,7 @@ public class MatchService {
 				MessageFormat.format("matchId = {0}", id)));
 
 		if (match.getStatus().isMatched()) {
-			throw new BusinessException(ErrorCode.INVALID_DELETE_REQUEST, MessageFormat.format("matchId = {0}", id));
+			throw new BusinessException(ErrorCode.PROPOSAL_INVALID_DELETE_REQUEST, MessageFormat.format("matchId = {0}", id));
 		}
 
 		if (!Objects.equals(match.getUser().getId(), userId)) {

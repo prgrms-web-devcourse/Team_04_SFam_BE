@@ -55,7 +55,7 @@ public class TeamMemberService {
 		if (!teamInvitationGiverService.existsTeamInvitation(
 			teamId, registerRequest.userId(), InvitationStatus.WAITING)
 		) {
-			throw new BusinessException(ErrorCode.INVALID_INVITATION);
+			throw new BusinessException(ErrorCode.MATCH_INVALID_PARTICIPANTS);
 		}
 
 		UserResponse userResponse = userService.findById(registerRequest.userId());

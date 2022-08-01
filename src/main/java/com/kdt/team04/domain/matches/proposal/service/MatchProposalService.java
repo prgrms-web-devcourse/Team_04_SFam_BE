@@ -71,7 +71,7 @@ public class MatchProposalService {
 		MatchResponse matchResponse = matchGiver.findById(matchId);
 
 		if (matchResponse.status().isMatched()) {
-			throw new BusinessException(ErrorCode.INVALID_CREATE_REQUEST, "already matched");
+			throw new BusinessException(ErrorCode.PROPOSAL_INVALID_CREATE_REQUEST, "already matched");
 		}
 
 		UserResponse authorResponse = userService.findById(matchResponse.author().id());
@@ -134,7 +134,7 @@ public class MatchProposalService {
 				MessageFormat.format("proposalId = {0}", id)));
 
 		if (match.status().isMatched() || proposal.getStatus().isApproved()) {
-			throw new BusinessException(ErrorCode.INVALID_REACT,
+			throw new BusinessException(ErrorCode.PROPOSAL_INVALID_REACT,
 				MessageFormat.format("matchId = {0}, proposalId = {1}, proposalStatus = {2}, matchStatus = {3}",
 					match.id(), id, status, match.status()));
 		}
