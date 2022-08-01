@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
@@ -40,6 +41,11 @@ public class MatchProposalGiverService {
 		MatchProposal matchProposal = matchProposalRepository.findProposalById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
 				MessageFormat.format("matchProposalId = {0}", id)));
+
+		if (matchProposal.getStatus() != MatchProposalStatus.APPROVED) {
+			throw new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_APPROVED,
+				MessageFormat.format("proposerId = {0}, status = {1}", matchProposal.getId(), matchProposal.getStatus()));
+		}
 
 		matchProposal.updateStatus(MatchProposalStatus.FIXED);
 
