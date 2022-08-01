@@ -29,12 +29,14 @@ import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
-import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
 import com.kdt.team04.domain.matches.proposal.repository.MatchChatRepository;
+import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
+import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
@@ -208,7 +210,8 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), author.getId(), invalidTargetId, "hi", LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), author.getId(), invalidTargetId, "hi",
+					LocalDateTime.now());
 			});
 		}
 
@@ -241,7 +244,8 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), invalidAuthorId, target.getId(), "hi", LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), invalidAuthorId, target.getId(), "hi",
+					LocalDateTime.now());
 			});
 		}
 
@@ -275,9 +279,89 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), invalidAuthorId, invalidTargetId, "hi", LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), invalidAuthorId, invalidTargetId, "hi",
+					LocalDateTime.now());
 			});
 		}
+	}
+
+	@Test
+	@Transactional
+	@DisplayName("해당하는 모든 매칭 신청들의 메시지를 삭제할 수 있다.")
+	void testDeleteAllByProposals() {
+		//given
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
+		User target1 = getUser("target1");
+		User target2 = getUser("target2");
+		Team targetTeam1 = getSoccerTeam("target1", target1);
+		Team targetTeam2 = getSoccerTeam("target2", target2);
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.WAITING, author, authorTeam);
+
+		MatchProposal matchProposal1 = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(target1)
+			.team(targetTeam1)
+			.status(MatchProposalStatus.APPROVED)
+			.build();
+
+		MatchProposal matchProposal2 = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(target2)
+			.team(targetTeam2)
+			.status(MatchProposalStatus.APPROVED)
+			.build();
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+		entityManager.persist(target1);
+		entityManager.persist(targetTeam1);
+		entityManager.persist(target2);
+		entityManager.persist(targetTeam2);
+		entityManager.persist(match);
+		entityManager.persist(matchProposal1);
+		entityManager.persist(matchProposal2);
+
+		MatchChat chat1 = MatchChat.builder()
+			.proposal(matchProposal1)
+			.user(author)
+			.target(target1)
+			.content("hi")
+			.chattedAt(LocalDateTime.now())
+			.build();
+
+		MatchChat chat2 = MatchChat.builder()
+			.proposal(matchProposal1)
+			.user(target1)
+			.target(author)
+			.content("hello")
+			.chattedAt(LocalDateTime.now())
+			.build();
+
+		MatchChat chat3 = MatchChat.builder()
+			.proposal(matchProposal1)
+			.user(target2)
+			.target(author)
+			.content("hello")
+			.chattedAt(LocalDateTime.now())
+			.build();
+
+		matchChatRepository.save(chat1);
+		matchChatRepository.save(chat2);
+		matchChatRepository.save(chat3);
+
+		List<MatchProposalResponse.SimpleProposal> proposals = List.of(
+			new MatchProposalResponse.SimpleProposal(matchProposal1.getId()),
+			new MatchProposalResponse.SimpleProposal(matchProposal2.getId()));
+		//when
+		matchChatService.deleteAllByProposals(proposals);
+
+		//then
+		assertThat(matchChatRepository.findById(chat1.getId()).isEmpty(), is(true));
+		assertThat(matchChatRepository.findById(chat2.getId()).isEmpty(), is(true));
+		assertThat(matchChatRepository.findById(chat3.getId()).isEmpty(), is(true));
 	}
 
 	@Test

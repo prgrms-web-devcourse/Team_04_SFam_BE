@@ -792,4 +792,74 @@ class MatchServiceIntegrationTest {
 			}).isInstanceOf(BusinessException.class);
 		}
 	}
+
+	@Test
+	@DisplayName("매칭 공고자는 매칭 공고를 삭제할 수 있다.")
+	void testDeleteSuccess() {
+		//given
+		User user = new User("password", "username", "nickname");
+		entityManager.persist(user);
+
+		Match savedMatch = matchRepository.save(Match.builder()
+			.title("match")
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(user)
+			.status(MatchStatus.WAITING)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build());
+
+		//when
+		matchService.delete(user.getId(), savedMatch.getId());
+
+		//then
+		assertThat(matchRepository.findById(savedMatch.getId())).isEmpty();
+
+	}
+
+	@Test
+	@DisplayName("매칭 공고자가 아니면 매칭 공고를 삭제시 예외가 발생한다.")
+	void testDeleteFail() {
+		//given
+		User user = new User("username", "nickname", "password");
+		entityManager.persist(user);
+
+		Match savedMatch = matchRepository.save(Match.builder()
+			.title("match")
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(user)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.status(MatchStatus.WAITING)
+			.content("content")
+			.build());
+
+		//when, then
+		assertThatThrownBy(() -> matchService.delete(1000L, savedMatch.getId()));
+	}
+
+	@Test
+	@DisplayName("매칭 공고의 상태가 모집 중이 아닐 경우 예외가 발생한다.")
+	void testDeleteFailByStatus() {
+		//given
+		User user = new User("username", "nickname", "password");
+		entityManager.persist(user);
+
+		Match savedMatch = matchRepository.save(Match.builder()
+			.title("match")
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(user)
+			.status(MatchStatus.IN_GAME)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build());
+
+		//when, then
+		assertThatThrownBy(() -> matchService.delete(user.getId(), savedMatch.getId()));
+	}
 }

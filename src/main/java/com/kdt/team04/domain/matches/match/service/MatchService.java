@@ -18,6 +18,7 @@ import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
+import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
@@ -35,17 +36,20 @@ public class MatchService {
 
 	private final MatchRepository matchRepository;
 	private final UserService userService;
+	private final MatchProposalService matchProposalService;
 	private final TeamGiverService teamGiver;
 	private final TeamMemberGiverService teamMemberGiver;
 	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
 
-	public MatchService(MatchRepository matchRepository, UserService userService, TeamGiverService teamGiver,
+	public MatchService(MatchRepository matchRepository, UserService userService,
+		MatchProposalService matchProposalService, TeamGiverService teamGiver,
 		TeamMemberGiverService teamMemberGiver, MatchConverter matchConverter, TeamConverter teamConverter,
 		UserConverter userConverter) {
 		this.matchRepository = matchRepository;
 		this.userService = userService;
+		this.matchProposalService = matchProposalService;
 		this.teamGiver = teamGiver;
 		this.teamMemberGiver = teamMemberGiver;
 		this.matchConverter = matchConverter;
@@ -149,6 +153,24 @@ public class MatchService {
 	}
 
 	@Transactional
+	public void delete(Long userId, Long id) {
+		Match match = matchRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
+				MessageFormat.format("matchId = {0}", id)));
+
+		if (match.getStatus().isMatched()) {
+			throw new BusinessException(ErrorCode.INVALID_DELETE_REQUEST, MessageFormat.format("matchId = {0}", id));
+		}
+
+		if (!Objects.equals(match.getUser().getId(), userId)) {
+			throw new BusinessException(ErrorCode.AUTHOR_NOT_MATCHED,
+				MessageFormat.format("userId = {0}, matchId = {1}", userId, match.getId()));
+		}
+		matchProposalService.deleteByMatches(id);
+		matchRepository.delete(match);
+	}
+
+	@Transactional
 	public void updateStatusExceptEnd(Long id, Long userId, MatchStatus status) {
 		if (Objects.equals(status, MatchStatus.END)) {
 			throw new BusinessException(ErrorCode.MATCH_CANNOT_UPDATE_END,
@@ -175,26 +197,5 @@ public class MatchService {
 		}
 
 		match.updateStatus(status);
-	}
-
-	public MatchResponse.MatchAuthorResponse findMatchAuthorById(Long id) {
-		Match foundMatch = matchRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
-				MessageFormat.format("matchId = {0}", id)));
-
-		UserResponse author = userService.findById(foundMatch.getUser().getId());
-		UserResponse.AuthorResponse authorResponse = new UserResponse.AuthorResponse(author.id(), author.nickname());
-
-		return new MatchResponse.MatchAuthorResponse(
-			foundMatch.getId(),
-			authorResponse
-		);
-	}
-
-	private void verifyLeader(Long userId, Long teamId, Long leaderId) {
-		if (!Objects.equals(userId, leaderId)) {
-			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
-				MessageFormat.format("teamId = {0} , userId = {1}", teamId, userId));
-		}
 	}
 }
