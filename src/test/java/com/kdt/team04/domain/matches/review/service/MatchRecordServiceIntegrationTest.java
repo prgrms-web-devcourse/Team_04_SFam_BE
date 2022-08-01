@@ -4,6 +4,7 @@ import static com.kdt.team04.domain.matches.review.entity.MatchRecordValue.LOSE;
 import static com.kdt.team04.domain.matches.review.entity.MatchRecordValue.WIN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.review.entity.MatchRecord;
+import com.kdt.team04.domain.matches.review.repository.MatchRecordRepository;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
@@ -35,6 +37,9 @@ class MatchRecordServiceIntegrationTest {
 
 	@Autowired
 	private EntityManager entityManager;
+
+	@Autowired
+	private MatchRecordRepository matchRecordRepository;
 
 	@Test
 	@Transactional
@@ -111,24 +116,20 @@ class MatchRecordServiceIntegrationTest {
 		matchRecordService.endGame(match.getId(), matchProposal.getId(), WIN, author.getId());
 
 		//then
+		List<MatchRecord> records = matchRecordRepository.findAll();
 
-		// TODO 경기 결과 - 개인전 데이터 검증
-		// org.hibernate.TransientPropertyValueException: object references an unsaved transient instance - save the transient instance before flushing : com.kdt.team04.domain.matches.review.entity.MatchRecord.team -> com.kdt.team04.domain.team.entity.Team
-		//
-		// List<MatchRecord> records = matchRecordRepository.findAll();
-		//
-		// assertThat(records.isEmpty(), is(false));
-		// records.forEach(record -> {
-		// 	if (record.getResult() == WIN) {
-		// 		assertThat(record.getUser().getId(), is(author.getId()));
-		// 		assertThat(record.getTeam(), nullValue());
-		// 		assertThat(record.getResult(), is(WIN));
-		// 	} else if (record.getResult() == LOSE) {
-		// 		assertThat(record.getUser().getId(), is(author.getId()));
-		// 		assertThat(record.getTeam(), nullValue());
-		// 		assertThat(record.getResult(), is(LOSE));
-		// 	}
-		// });
+		assertThat(records.isEmpty(), is(false));
+		records.forEach(record -> {
+			if (record.getResult() == WIN) {
+				assertThat(record.getUser().getId(), is(author.getId()));
+				assertThat(record.getTeam(), nullValue());
+				assertThat(record.getResult(), is(WIN));
+			} else if (record.getResult() == LOSE) {
+				assertThat(record.getUser().getId(), is(target.getId()));
+				assertThat(record.getTeam(), nullValue());
+				assertThat(record.getResult(), is(LOSE));
+			}
+		});
 	}
 
 

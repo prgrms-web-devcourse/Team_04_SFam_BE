@@ -23,4 +23,15 @@ public class MatchRecordConverter {
 			.result(result)
 			.build();
 	}
+
+	public MatchRecord toRecord(Long matchId, Long userId, MatchRecordValue result) {
+		Match match = Match.builder().id(matchId).build();
+		User user = User.builder().id(userId).build();
+
+		return MatchRecord.builder()
+			.match(match)
+			.user(user)
+			.result(result)
+			.build();
+	}
 }

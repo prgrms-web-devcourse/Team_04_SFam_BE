@@ -59,8 +59,8 @@ public class MatchRecordService {
 			records.add(authorRecord);
 			records.add(proposalRecord);
 		} else if (match.matchType() == MatchType.INDIVIDUAL_MATCH) {
-			MatchRecord authorRecord = matchRecordConverter.toRecord(matchId, author.id(), null, result);
-			MatchRecord proposalRecord = matchRecordConverter.toRecord(matchId, proposer.id(), null, result.getReverseResult());
+			MatchRecord authorRecord = matchRecordConverter.toRecord(matchId, author.id(), result);
+			MatchRecord proposalRecord = matchRecordConverter.toRecord(matchId, proposer.id(), result.getReverseResult());
 
 			records.add(authorRecord);
 			records.add(proposalRecord);
