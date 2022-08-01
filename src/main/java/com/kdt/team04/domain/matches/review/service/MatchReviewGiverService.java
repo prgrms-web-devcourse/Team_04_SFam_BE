@@ -21,8 +21,4 @@ public class MatchReviewGiverService {
 	public MatchReviewResponse.TotalCount findTotalReviewByUserId(Long userId) {
 		return matchReviewRepository.getTeamTotalCountByUserId(userId);
 	}
-
-	public void deleteByMatchId(Long matchId) {
-		matchReviewRepository.deleteAllByMatchId(matchId);
-	}
 }

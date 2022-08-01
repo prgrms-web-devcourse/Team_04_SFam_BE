@@ -18,8 +18,6 @@ import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
-import com.kdt.team04.domain.matches.review.service.MatchRecordGiverService;
-import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
@@ -40,24 +38,19 @@ public class MatchService {
 	private final MatchProposalService matchProposalService;
 	private final TeamGiverService teamGiver;
 	private final TeamMemberGiverService teamMemberGiver;
-	private final MatchRecordGiverService matchRecordGiver;
-	private final MatchReviewGiverService matchReviewGiver;
 	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
 
 	public MatchService(MatchRepository matchRepository, UserService userService,
 		MatchProposalService matchProposalService, TeamGiverService teamGiver,
-		TeamMemberGiverService teamMemberGiver, MatchRecordGiverService matchRecordGiver,
-		MatchReviewGiverService matchReviewGiver, MatchConverter matchConverter, TeamConverter teamConverter,
+		TeamMemberGiverService teamMemberGiver, MatchConverter matchConverter, TeamConverter teamConverter,
 		UserConverter userConverter) {
 		this.matchRepository = matchRepository;
 		this.userService = userService;
 		this.matchProposalService = matchProposalService;
 		this.teamGiver = teamGiver;
 		this.teamMemberGiver = teamMemberGiver;
-		this.matchRecordGiver = matchRecordGiver;
-		this.matchReviewGiver = matchReviewGiver;
 		this.matchConverter = matchConverter;
 		this.teamConverter = teamConverter;
 		this.userConverter = userConverter;
@@ -173,8 +166,6 @@ public class MatchService {
 				MessageFormat.format("userId = {0}, matchId = {1}", userId, match.getId()));
 		}
 		matchProposalService.deleteByMatches(id);
-		matchRecordGiver.deleteByMatchId(id);
-		matchReviewGiver.deleteByMatchId(id);
 		matchRepository.delete(match);
 	}
 }
