@@ -102,4 +102,12 @@ public class UserService {
 
 		return new UserResponse.UpdateLocationResponse(request.latitude(), request.longitude());
 	}
+
+	public Boolean usernameDuplicationCheck(String username) {
+		return userRepository.existsByUsername(username);
+	}
+
+	public Boolean nicknameDuplicationCheck(String nickname) {
+		return userRepository.existsByNickname(nickname);
+	}
 }
