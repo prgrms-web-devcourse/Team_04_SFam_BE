@@ -1,17 +1,12 @@
 package com.kdt.team04.domain.matches.review.service;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kdt.team04.common.exception.BusinessException;
-import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
@@ -65,7 +60,6 @@ public class MatchRecordService {
 			records.add(authorRecord);
 			records.add(proposalRecord);
 		}
-
 
 		matchRecordRepository.saveAll(records);
 	}
