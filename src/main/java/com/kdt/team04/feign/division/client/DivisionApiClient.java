@@ -10,7 +10,11 @@ import com.kdt.team04.feign.division.dto.DivisionApiResponse;
 public interface DivisionApiClient {
 
 	@GetMapping("?request=getfeature&size=1000&page=1&geometry=false&attribute=true&crs=EPSG:3857")
-	DivisionApiResponse getDivisions(@RequestParam String domain, @RequestParam String key, @RequestParam String data,
-		@RequestParam(required = false) String attrfilter, @RequestParam String geomfilter);
+	DivisionApiResponse getDivisions(
+		@RequestParam(name = "domain") String domain,
+		@RequestParam(name = "key") String key,
+		@RequestParam(name = "data") String data,
+		@RequestParam(name = "attrfilter", required = false) String attrfilter,
+		@RequestParam(name = "geomfilter") String geomfilter);
 
 }

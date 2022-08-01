@@ -15,6 +15,7 @@ import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
 import com.kdt.team04.domain.matches.match.dto.MatchRequest;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
+import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
@@ -167,5 +168,34 @@ public class MatchService {
 		}
 		matchProposalService.deleteByMatches(id);
 		matchRepository.delete(match);
+	}
+
+	@Transactional
+	public void updateStatusExceptEnd(Long id, Long userId, MatchStatus status) {
+		if (Objects.equals(status, MatchStatus.END)) {
+			throw new BusinessException(ErrorCode.MATCH_CANNOT_UPDATE_END,
+				MessageFormat.format("matchId = {0}, userId = {1}, status = {2}", id, userId, status));
+		}
+
+		Match match = matchRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
+				MessageFormat.format("matchId = {0}", id)));
+
+		if (!Objects.equals(match.getUser().getId(), userId)) {
+			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
+				MessageFormat.format("matchId = {0} , userId = {1}", id, userId));
+		}
+
+		if (Objects.equals(match.getStatus(), status)) {
+			throw new BusinessException(ErrorCode.MATCH_ALREADY_CHANGED_STATUS,
+				MessageFormat.format("matchId = {0} , status = {1}", id, status));
+		}
+
+		if (Objects.equals(match.getStatus(), MatchStatus.END)) {
+			throw new BusinessException(ErrorCode.MATCH_ENDED,
+				MessageFormat.format("matchId = {0} , status = {1}", id, status));
+		}
+
+		match.updateStatus(status);
 	}
 }

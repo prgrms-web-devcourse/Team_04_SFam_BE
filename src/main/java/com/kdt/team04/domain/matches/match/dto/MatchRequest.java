@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.team.SportsCategory;
 
@@ -47,4 +48,10 @@ public record MatchRequest() {
 		@Schema(description = "매칭 내용, 2자 이상 100자 이하", required = true)
 		String content) {
 	}
+
+	public record MatchStatusUpdateRequest(
+		@NotNull
+		@Schema(description = "매칭 상태")
+		MatchStatus status
+	) { }
 }

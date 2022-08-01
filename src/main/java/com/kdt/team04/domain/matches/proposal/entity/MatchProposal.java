@@ -59,6 +59,7 @@ public class MatchProposal extends BaseEntity {
 		this.status = defaultIfNull(status, WAITING);
 	}
 
+	//== 비지니스 로직 ==//
 	public void updateStatus(MatchProposalStatus status) {
 		this.status = status;
 	}

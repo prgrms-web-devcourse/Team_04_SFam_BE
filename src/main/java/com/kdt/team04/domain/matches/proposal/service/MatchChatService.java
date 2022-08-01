@@ -1,8 +1,11 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -12,6 +15,8 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatConverter;
+import com.kdt.team04.domain.matches.proposal.dto.MatchChatPartitionByProposalIdQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
@@ -78,6 +83,20 @@ public class MatchChatService {
 				targetId
 			)
 		);
+	}
+
+	public Map<Long, MatchChatResponse.LastChat> findAllLastChats(List<Long> matchProposalIds) {
+		List<MatchChatPartitionByProposalIdQueryDto> chatQueryDtos
+			= matchChatRepository.findAllPartitionByProposalIdOrderByChattedAtDesc(matchProposalIds);
+
+		Map<Long, MatchChatResponse.LastChat> lastChats = chatQueryDtos.stream()
+			.filter(chat -> chat.getRowNumber() == 1L)
+			.collect(toMap(
+				MatchChatPartitionByProposalIdQueryDto::getMatchProposalId,
+				chat -> new MatchChatResponse.LastChat(chat.getLastChat())
+			));
+
+		return lastChats;
 	}
 
 	@Transactional
