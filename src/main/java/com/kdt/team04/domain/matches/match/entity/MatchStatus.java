@@ -6,4 +6,8 @@ public enum MatchStatus {
 	public boolean isMatched() {
 		return this != MatchStatus.WAITING;
 	}
+
+	public boolean isEnded() {
+		return this == MatchStatus.END;
+	}
 }

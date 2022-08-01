@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
 
@@ -24,6 +25,14 @@ public class MatchProposalGiverService {
 		MatchProposalSimpleQueryDto matchProposal = matchProposalRepository.findSimpleProposalById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
 				MessageFormat.format("matchProposalId = {0}", id)));
+
+		return matchProposal;
+	}
+
+	public MatchProposalQueryDto findFixedProposalByMatchId(Long matchId) {
+		MatchProposalQueryDto matchProposal = matchProposalRepository.findFixedProposalByMatchId(matchId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
+				MessageFormat.format("matchId = {0}", matchId)));
 
 		return matchProposal;
 	}

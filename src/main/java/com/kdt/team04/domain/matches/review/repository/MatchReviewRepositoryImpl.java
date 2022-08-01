@@ -43,4 +43,17 @@ public class MatchReviewRepositoryImpl implements MatchReviewRepositoryCustom {
 			.where(matchReview.targetUser.id.eq(userId))
 			.fetchOne();
 	}
+
+	@Override
+	public boolean existsByMatchIdAndUserId(Long matchId, Long userId) {
+		Integer exists = jpaQueryFactory
+			.selectOne()
+			.from(matchReview)
+			.where(
+				matchReview.match.id.eq(matchId),
+				matchReview.user.id.eq(userId)
+			).fetchFirst();
+
+		return exists != null;
+	}
 }
