@@ -78,14 +78,17 @@ class MatchRecordServiceIntegrationTest {
 
 		assertThat(records.isEmpty(), is(false));
 		records.forEach(record -> {
-			if (record.getResult() == WIN) {
-				assertThat(record.getUser().getId(), is(author.getId()));
-				assertThat(record.getTeam().getId(), is(authorTeam.getId()));
-				assertThat(record.getResult(), is(WIN));
-			} else if (record.getResult() == LOSE) {
-				assertThat(record.getUser().getId(), is(target.getId()));
-				assertThat(record.getTeam().getId(), is(targetTeam.getId()));
-				assertThat(record.getResult(), is(LOSE));
+			switch (record.getResult()) {
+				case WIN -> {
+					assertThat(record.getUser().getId(), is(author.getId()));
+					assertThat(record.getTeam().getId(), is(authorTeam.getId()));
+					assertThat(record.getResult(), is(WIN));
+				}
+				case LOSE -> {
+					assertThat(record.getUser().getId(), is(target.getId()));
+					assertThat(record.getTeam().getId(), is(targetTeam.getId()));
+					assertThat(record.getResult(), is(LOSE));
+				}
 			}
 		});
 	}
@@ -97,13 +100,12 @@ class MatchRecordServiceIntegrationTest {
 		//given
 		User author = getUser("author");
 		User target = getUser("target");
-		Match match = getSoccerIndividualMatch("축구 하실?", 1, MatchStatus.IN_GAME, author, null);
+		Match match = getSoccerIndividualMatch("축구 하실?", MatchStatus.IN_GAME, author);
 
 		MatchProposal matchProposal = MatchProposal.builder()
 			.match(match)
 			.content("덤벼라!")
 			.user(target)
-			.team(null)
 			.status(MatchProposalStatus.APPROVED)
 			.build();
 
@@ -120,14 +122,17 @@ class MatchRecordServiceIntegrationTest {
 
 		assertThat(records.isEmpty(), is(false));
 		records.forEach(record -> {
-			if (record.getResult() == WIN) {
-				assertThat(record.getUser().getId(), is(author.getId()));
-				assertThat(record.getTeam(), nullValue());
-				assertThat(record.getResult(), is(WIN));
-			} else if (record.getResult() == LOSE) {
-				assertThat(record.getUser().getId(), is(target.getId()));
-				assertThat(record.getTeam(), nullValue());
-				assertThat(record.getResult(), is(LOSE));
+			switch (record.getResult()) {
+				case WIN -> {
+					assertThat(record.getUser().getId(), is(author.getId()));
+					assertThat(record.getTeam(), nullValue());
+					assertThat(record.getResult(), is(WIN));
+				}
+				case LOSE -> {
+					assertThat(record.getUser().getId(), is(target.getId()));
+					assertThat(record.getTeam(), nullValue());
+					assertThat(record.getResult(), is(LOSE));
+				}
 			}
 		});
 	}
@@ -151,16 +156,15 @@ class MatchRecordServiceIntegrationTest {
 			.build();
 	}
 
-	private static Match  getSoccerIndividualMatch(String title, int participants, MatchStatus status, User user, Team team) {
+	private static Match  getSoccerIndividualMatch(String title, MatchStatus status, User user) {
 		return Match.builder()
 			.title(title)
 			.sportsCategory(SportsCategory.SOCCER)
 			.matchType(MatchType.INDIVIDUAL_MATCH)
 			.matchDate(LocalDate.now())
-			.participants(participants)
+			.participants(1)
 			.status(status)
 			.user(user)
-			.team(team)
 			.build();
 	}
 
