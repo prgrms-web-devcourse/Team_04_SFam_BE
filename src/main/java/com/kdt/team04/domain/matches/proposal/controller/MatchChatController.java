@@ -51,7 +51,7 @@ public class MatchChatController {
 
 	@GetMapping("/{id}/chats")
 	@Operation(summary = "채팅 조회", description = "채팅 기록을 조회할 수 있다.")
-	public ApiResponse<MatchChatResponse.Chats> chat(
+	public ApiResponse<MatchChatResponse.Chatting> chat(
 		@AuthenticationPrincipal JwtAuthentication authentication,
 		@PathVariable Long id
 	) {
@@ -59,7 +59,7 @@ public class MatchChatController {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
 
-		MatchChatResponse.Chats chats = matchChatService.findChatsByProposalId(id, authentication.id());
+		MatchChatResponse.Chatting chats = matchChatService.findChatsByProposalId(id, authentication.id());
 
 		return new ApiResponse<>(chats);
 	}

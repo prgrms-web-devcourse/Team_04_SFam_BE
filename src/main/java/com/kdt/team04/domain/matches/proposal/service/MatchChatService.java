@@ -98,7 +98,7 @@ public class MatchChatService {
 		return lastChats;
 	}
 
-	public MatchChatResponse.Chats findChatsByProposalId(Long proposalId, Long userId) {
+	public MatchChatResponse.Chatting findChatsByProposalId(Long proposalId, Long userId) {
 		MatchProposalResponse.ChatMatch match
 			= matchProposalGiver.findChatMatchByProposalId(proposalId, userId);
 
@@ -115,6 +115,6 @@ public class MatchChatService {
 			})
 			.toList();
 
-		return new MatchChatResponse.Chats(match, chats);
+		return new MatchChatResponse.Chatting(match, chats);
 	}
 }

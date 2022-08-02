@@ -389,7 +389,7 @@ class MatchChatServiceIntegrationTest {
 			.toList();
 
 		//when
-		MatchChatResponse.Chats response
+		MatchChatResponse.Chatting response
 			= matchChatService.findChatsByProposalId(proposal.getId(), author.getId());
 
 		//then

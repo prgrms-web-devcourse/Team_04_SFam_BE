@@ -15,7 +15,7 @@ public record MatchChatResponse() {
 		UserResponse.ChatWriterProfile writer
 	) { }
 
-	public record Chats(
+	public record Chatting(
 		MatchProposalResponse.ChatMatch match,
 		List<Chat> chats
 	) {}

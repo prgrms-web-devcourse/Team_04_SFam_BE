@@ -38,16 +38,14 @@ public class MatchProposalGiverService {
 	}
 
 	public MatchProposalResponse.ChatMatch findChatMatchByProposalId(Long id, Long userId) {
-		MatchProposal matchProposal = matchProposalRepository.findMatchProposalById(id)
+		MatchProposal matchProposal = matchProposalRepository.findProposalWithUserById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
 				MessageFormat.format("matchProposalId = {0}", id)));
 
 		MatchResponse.MatchAuthorResponse match
 			= matchService.findMatchAuthorById(matchProposal.getMatch().getId());
 
-		if (!Objects.equals(matchProposal.getUser().getId(), userId)
-			&& !Objects.equals(match.author().id(), userId)
-		) {
+		if (isAuthorOrProposer(match, matchProposal, userId)) {
 			throw new BusinessException(ErrorCode.MATCH_PROPOSAL_ACCESS_DENIED,
 				MessageFormat.format("matchId = {0}, proposalId = {1}, userId = {1}", match.id(), id, userId));
 		}
@@ -61,5 +59,10 @@ public class MatchProposalGiverService {
 			match.status(),
 			new UserResponse.ChatTargetProfile(targetNickname)
 		);
+	}
+
+	private boolean isAuthorOrProposer(MatchResponse.MatchAuthorResponse match, MatchProposal proposal, Long userId) {
+		return !Objects.equals(proposal.getUser().getId(), userId)
+			&& !Objects.equals(match.author().id(), userId);
 	}
 }
