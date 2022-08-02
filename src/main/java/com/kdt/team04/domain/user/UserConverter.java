@@ -10,7 +10,7 @@ public class UserConverter {
 
 	public User toUser(UserResponse userResponse) {
 		return new User(userResponse.id(), userResponse.password(), userResponse.username(), userResponse.nickname(),
-			userResponse.location());
+			userResponse.location(), null);
 	}
 
 	public UserResponse toUserResponse(User user) {

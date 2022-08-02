@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.common.file.ImagePath;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.dto.TeamResponse;
@@ -25,12 +28,14 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final MatchReviewGiverService matchReviewGiver;
 	private final TeamGiverService teamGiver;
+	private final S3Uploader s3Uploader;
 
 	public UserService(UserRepository userRepository, MatchReviewGiverService matchReviewGiver,
-		TeamGiverService teamGiver) {
+		TeamGiverService teamGiver, S3Uploader s3Uploader) {
 		this.userRepository = userRepository;
 		this.matchReviewGiver = matchReviewGiver;
 		this.teamGiver = teamGiver;
+		this.s3Uploader = s3Uploader;
 	}
 
 	public UserResponse findByUsername(String username) {
@@ -102,4 +107,20 @@ public class UserService {
 
 		return new UserResponse.UpdateLocationResponse(request.latitude(), request.longitude());
 	}
+
+	@Transactional
+	public void uploadProfile(Long id, MultipartFile file) {
+		User foundUser = this.userRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
+				MessageFormat.format("UserId = {0}", id)));
+
+		if (foundUser.getProfileImageUrl() != null) {
+			s3Uploader.delete(foundUser.getProfileImageUrl());
+		}
+
+		String key = s3Uploader.upload(file.getResource(), ImagePath.USERS_PROFILES);
+
+		foundUser.updateImageUrl(key);
+	}
+
 }
