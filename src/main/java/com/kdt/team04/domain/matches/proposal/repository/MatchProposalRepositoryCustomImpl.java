@@ -12,7 +12,6 @@ import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
 import com.kdt.team04.domain.matches.proposal.dto.QMatchProposalQueryDto;
 import com.kdt.team04.domain.matches.proposal.dto.QMatchProposalSimpleQueryDto;
-import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 

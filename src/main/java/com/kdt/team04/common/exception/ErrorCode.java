@@ -45,7 +45,8 @@ public enum ErrorCode {
 	MATCH_ALREADY_CHANGED_STATUS("M0007", "Already been changed to that state.", HttpStatus.BAD_REQUEST),
 	MATCH_ENDED("M0008", "Match Already ended.", HttpStatus.BAD_REQUEST),
 	MATCH_CANNOT_UPDATE_END("M0009", "Match cannot update to end.", HttpStatus.BAD_REQUEST),
-	MATCH_NOT_ENDED("M0010", "Match not ended", HttpStatus.BAD_REQUEST),
+	MATCH_NOT_IN_GAME("M0010", "Match is not in game.", HttpStatus.BAD_REQUEST),
+	MATCH_NOT_ENDED("M0011", "Match not ended", HttpStatus.BAD_REQUEST),
 
 	//MATCH_PROPOSAL
 	MATCH_PROPOSAL_NOT_FOUND("MP0001", "Not found proposal", HttpStatus.NOT_FOUND),
@@ -53,6 +54,7 @@ public enum ErrorCode {
 	MATCH_PROPOSAL_NOT_APPROVED("MP0003", "The request is not approved.", HttpStatus.BAD_REQUEST),
 	ANOTHER_MATCH_PROPOSAL_ALREADY_FIXED("MP0004", "Fixed another proposal already exists.", HttpStatus.BAD_REQUEST),
 	INVALID_REACT("MP0005", "Invalid react", HttpStatus.BAD_REQUEST),
+	INVALID_DELETE_REQUEST("MP0006","Invalid delete request", HttpStatus.BAD_REQUEST),
 
 	//MATCH_CHAT
 	MATCH_CHAT_NOT_CORRECT_CHAT_PARTNER("MC0002", "The chat partner is incorrect.", HttpStatus.BAD_REQUEST),
