@@ -46,20 +46,22 @@ public class AuthController {
 		signInResponse.jwtAuthenticationToken().setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 		SecurityContextHolder.getContext().setAuthentication(signInResponse.jwtAuthenticationToken());
 
-		ResponseCookie accessTokenCookie = createSecureCookie(signInResponse.accessToken());
-		ResponseCookie refreshTokenCookie = createSecureCookie(signInResponse.refreshToken());
+		TokenDto accessToken = signInResponse.accessToken();
+		TokenDto refreshToken = signInResponse.refreshToken();
+		ResponseCookie accessTokenCookie = createSecureCookie(accessToken.header(), accessToken.token(), refreshToken.expirySecond());
+		ResponseCookie refreshTokenCookie = createSecureCookie(refreshToken.header(), refreshToken.token(), refreshToken.expirySecond());
 		response.setHeader(SET_COOKIE, accessTokenCookie.toString());
 		response.addHeader(SET_COOKIE, refreshTokenCookie.toString());
 
 		return new ApiResponse<>(signInResponse);
 	}
 
-	private ResponseCookie createSecureCookie(TokenDto tokenDto) {
-		return ResponseCookie.from(tokenDto.header(), tokenDto.token())
+	private ResponseCookie createSecureCookie(String header, String token, int expirySecond) {
+		return ResponseCookie.from(header, token)
 			.path("/")
 			.httpOnly(true)
 			.secure(true)
-			.maxAge(tokenDto.expirySecond())
+			.maxAge(expirySecond)
 			.sameSite("none")
 			.build();
 	}

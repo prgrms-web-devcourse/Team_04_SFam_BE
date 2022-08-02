@@ -50,6 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			authenticate(getAccessToken(request), request, response);
 		} catch (JwtTokenNotFoundException e) {
 			this.log.warn(e.getMessage());
+			refreshAuthentication(getAccessToken(request), request, response);
 		}
 		filterChain.doFilter(request, response);
 	}
@@ -80,12 +81,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			JwtAuthenticationToken authentication = createAuthenticationToken(claims, request, accessToken);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		} catch (TokenExpiredException exception) {
-			Cookie cookie = new Cookie(jwt.accessTokenProperties().header(), "");
-			cookie.setPath("/");
-			cookie.setMaxAge(0);
-			cookie.setHttpOnly(true);
-			cookie.setSecure(true);
-			response.addCookie(cookie);
 			this.log.warn(exception.getMessage());
 			refreshAuthentication(accessToken, request, response);
 		} catch (JWTVerificationException exception) {
@@ -110,24 +105,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private void refreshAuthentication(String accessToken, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String refreshToken = getRefreshToken(request);
-			if (isValidRefreshToken(refreshToken, accessToken)) {
-				String reIssuedAccessToken = accessTokenReIssue(accessToken);
-				Jwt.Claims reIssuedClaims = verify(reIssuedAccessToken);
-				JwtAuthenticationToken authentication = createAuthenticationToken(reIssuedClaims, request,
-					reIssuedAccessToken);
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-				ResponseCookie cookie = ResponseCookie.from(this.jwt.accessTokenProperties().header(), reIssuedAccessToken)
-					.path("/")
-					.httpOnly(true)
-					.sameSite("none")
-					.secure(true)
-					.maxAge(this.jwt.accessTokenProperties().expirySeconds())
-					.build();
-				response.addHeader(SET_COOKIE, cookie.toString());
-			} else {
-				log.warn("refreshToken expired");
-			}
-		} catch (JwtTokenNotFoundException | JWTVerificationException e) {
+			verifyRefreshToken(accessToken, refreshToken);
+			String reIssuedAccessToken = accessTokenReIssue(accessToken);
+			Jwt.Claims reIssuedClaims = verify(reIssuedAccessToken);
+			JwtAuthenticationToken authentication = createAuthenticationToken(reIssuedClaims, request,
+				reIssuedAccessToken);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			ResponseCookie cookie = ResponseCookie.from(this.jwt.accessTokenProperties().header(),
+					reIssuedAccessToken)
+				.path("/")
+				.httpOnly(true)
+				.sameSite("none")
+				.secure(true)
+				.maxAge(this.jwt.refreshTokenProperties().expirySeconds())
+				.build();
+			response.addHeader(SET_COOKIE, cookie.toString());
+
+		} catch (EntityNotFoundException | JwtTokenNotFoundException | JWTVerificationException e) {
 			this.log.warn(e.getMessage());
 		}
 	}
@@ -144,21 +138,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 	}
 
-	private boolean isValidRefreshToken(String refreshToken, String accessToken) {
-		try {
-			TokenResponse foundRefreshToken = this.tokenService.findByToken(refreshToken);
-			Long userId = this.jwt.decode(accessToken).userId;
-			if (userId.equals(foundRefreshToken.userId())) {
-				this.jwt.verify(foundRefreshToken.token());
+	private void verifyRefreshToken(String accessToken, String refreshToken) {
+		this.jwt.verify(refreshToken);
+		TokenResponse token = tokenService.findByToken(refreshToken);
+		Long userId = this.jwt.decode(accessToken).userId;
 
-				return true;
-			}
-		} catch (EntityNotFoundException | JWTVerificationException e) {
-			log.warn(e.getMessage());
-
-			return false;
+		if (!userId.equals(token.userId())) {
+			throw new JWTVerificationException("Invalid refresh token.");
 		}
-		return false;
 	}
 
 	private String accessTokenReIssue(String accessToken) {

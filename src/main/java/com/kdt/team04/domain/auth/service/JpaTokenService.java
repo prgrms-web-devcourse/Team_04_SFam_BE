@@ -26,12 +26,12 @@ public class JpaTokenService implements TokenService {
 		Token foundToken = tokenRepository.findById(token).orElseThrow(() -> new EntityNotFoundException(
 			ErrorCode.TOKEN_NOT_FOUND, MessageFormat.format("Token = {0}", token)));
 
-		return new TokenResponse(foundToken.token(), foundToken.getUserId());
+		return new TokenResponse(foundToken.getToken(), foundToken.getUserId());
 	}
 
 	@Override
 	@Transactional
 	public String save(String refreshToken, Long userId) {
-		return this.tokenRepository.save(new Token(refreshToken, userId)).token();
+		return this.tokenRepository.save(new Token(refreshToken, userId)).getToken();
 	}
 }

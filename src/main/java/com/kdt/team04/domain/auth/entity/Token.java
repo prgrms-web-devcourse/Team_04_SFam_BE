@@ -20,7 +20,7 @@ public class Token extends BaseEntity {
 		this.userId = userId;
 	}
 
-	public String token() {
+	public String getToken() {
 		return token;
 	}
 
