@@ -29,7 +29,7 @@ cloud:
       url: ENC(Jd8ikLEflOap/jQTEMu+1XNBiVKqNzrug+Sek472b6SfG25fHEJ5nk1Q2afrDow2v7dxxhLquS/0nOsVeNWzZg==)
     stack:
       auto: false
-    region: ap-northeast-2
+    region: ENC(j+O+c8Y9xPJqzEO38J5lTKH9E2orZwm1)
 
 encryptor:
   key: ${ENCRYPTOR_KEY}

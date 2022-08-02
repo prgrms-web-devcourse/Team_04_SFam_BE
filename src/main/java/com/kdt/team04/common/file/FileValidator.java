@@ -33,6 +33,7 @@ public class FileValidator {
 
 		return true;
 	}
+
 	public String getExtension(String fileName) {
 		return fileName
 			.substring(fileName.indexOf(".") + 1)
