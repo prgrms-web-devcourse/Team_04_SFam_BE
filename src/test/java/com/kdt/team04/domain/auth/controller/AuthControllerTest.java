@@ -68,8 +68,10 @@ class AuthControllerTest {
 			username,
 			encodedPassword,
 			"nickName",
+			null,
 			null
 		);
+
 		AuthRequest.SignInRequest signInRequest = new AuthRequest.SignInRequest(username, password);
 		List<GrantedAuthority> authorities = new ArrayList<>();
 		SimpleGrantedAuthority role_anonymous = new SimpleGrantedAuthority("ROLE_MEMBER");
@@ -116,6 +118,7 @@ class AuthControllerTest {
 			username,
 			encodedPassword,
 			"nickName",
+			null,
 			null
 		);
 		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, password, user.getNickname());
@@ -152,6 +155,7 @@ class AuthControllerTest {
 			username,
 			encodedPassword,
 			"nickName",
+			null,
 			null
 		);
 		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(null, password, user.getNickname());
