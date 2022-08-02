@@ -6,6 +6,7 @@ import java.net.URLConnection;
 import java.text.MessageFormat;
 import java.util.UUID;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -19,17 +20,17 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.FileValidator;
 import com.kdt.team04.common.file.ImagePath;
-import com.kdt.team04.common.file.config.S3;
+import com.kdt.team04.common.file.config.S3ConfigProperties;
 
 @Component
+@Profile({"dev", "real"})
 public class S3Uploader implements FileStorage {
 
 	private final AmazonS3 amazonS3;
-	private final S3 s3;
+	private final S3ConfigProperties s3;
 	private final FileValidator fileValidator;
 
-	public S3Uploader(AmazonS3 amazonS3, FileValidator fileValidator,
-		S3 s3) {
+	public S3Uploader(AmazonS3 amazonS3, FileValidator fileValidator, S3ConfigProperties s3) {
 		this.amazonS3 = amazonS3;
 		this.fileValidator = fileValidator;
 		this.s3 = s3;
@@ -52,7 +53,7 @@ public class S3Uploader implements FileStorage {
 
 			amazonS3.putObject(
 				new PutObjectRequest(
-					s3.getBucket(),
+					s3.bucket(),
 					key,
 					inputStream,
 					metadata)
@@ -66,7 +67,7 @@ public class S3Uploader implements FileStorage {
 				"AWS S3에 저장하는 작업에 실패했습니다.");
 		}
 
-		return s3.getUrl() + key;
+		return s3.url() + key;
 	}
 
 	@Override
@@ -74,8 +75,8 @@ public class S3Uploader implements FileStorage {
 		try {
 			amazonS3.deleteObject(
 				new DeleteObjectRequest(
-					s3.getBucket(),
-					key.substring(s3.getUrl().length())
+					s3.bucket(),
+					key.substring(s3.url().length())
 				)
 			);
 		} catch (AmazonClientException e) {

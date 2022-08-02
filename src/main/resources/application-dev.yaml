@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    username: ENC(nSSFICyQak/cBulXEeOEmlMHgdGIUy+L)
-    password: ENC(JajXE4ahsIVgOBsyZ7BGrPQ3UZTJ0bIo)
-    url: ENC(9d/4bHB1HmtQc/9cqFnK/mWXll5mHPVs1V1JBqNjyCTNZzj2CE62LTe7mWKNhCW1FK8Zh0JPGiFj8ICXRlCl65pco0f/r7TTLqJGYKeMDln1QkZRmttdcg==)
+    username: ${MYSQL_USERNAME:ENC(nSSFICyQak/cBulXEeOEmlMHgdGIUy+L)}
+    password: ${MYSQL_PASSWORD:ENC(JajXE4ahsIVgOBsyZ7BGrPQ3UZTJ0bIo)}
+    url: ${MYSQL_URL:ENC(9d/4bHB1HmtQc/9cqFnK/mWXll5mHPVs1V1JBqNjyCTNZzj2CE62LTe7mWKNhCW1FK8Zh0JPGiFj8ICXRlCl65pco0f/r7TTLqJGYKeMDln1QkZRmttdcg==)}
   jpa:
     show-sql: false
 cors:
@@ -18,8 +18,6 @@ logging:
     org.hibernate.type.descriptor.sql: INFO
 jwt:
   client-secret: ENC(vaOuavM8/QZzrntUSL/CLC3Q47399EsR)
-encryptor:
-  key: ${ENCRYPTOR_KEY}
 
 cloud:
   aws:
@@ -29,7 +27,11 @@ cloud:
     s3:
       bucket: ENC(YvPOdxAd97kzKfrsHEWhMafiIQufIo7b)
       url: ENC(Jd8ikLEflOap/jQTEMu+1XNBiVKqNzrug+Sek472b6SfG25fHEJ5nk1Q2afrDow2v7dxxhLquS/0nOsVeNWzZg==)
-    region:
-      static: ENC(WGH0CPvngxeIX0bpp8fLTnrAWMtglKek)
     stack:
       auto: false
+    region: ap-northeast-2
+
+encryptor:
+  key: ${ENCRYPTOR_KEY}
+
+
