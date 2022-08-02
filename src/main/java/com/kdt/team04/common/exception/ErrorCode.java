@@ -45,6 +45,7 @@ public enum ErrorCode {
 	MATCH_ALREADY_CHANGED_STATUS("M0007", "Already been changed to that state.", HttpStatus.BAD_REQUEST),
 	MATCH_ENDED("M0008", "Match Already ended.", HttpStatus.BAD_REQUEST),
 	MATCH_CANNOT_UPDATE_END("M0009", "Match cannot update to end.", HttpStatus.BAD_REQUEST),
+	MATCH_NOT_IN_GAME("M0010", "Match is not in game.", HttpStatus.BAD_REQUEST),
 
 	//MATCH_PROPOSAL
 	MATCH_PROPOSAL_NOT_FOUND("MP0001", "Not found proposal", HttpStatus.NOT_FOUND),
