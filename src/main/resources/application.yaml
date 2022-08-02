@@ -25,6 +25,8 @@ security:
         - /v3/api-docs/**
         - /swagger-ui/**
         - /swagger-ui.html/**
+        - /api/users/nickname/duplication
+        - /api/users/username/duplication
       POST:
         - /api/users/signin
         - /api/users/signup

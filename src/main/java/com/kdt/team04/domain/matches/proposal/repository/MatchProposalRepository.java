@@ -10,6 +10,9 @@ import org.springframework.data.repository.query.Param;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 
 public interface MatchProposalRepository extends JpaRepository<MatchProposal, Long>, MatchProposalRepositoryCustom {
+	void deleteAllByMatchId(Long id);
+
+	List<MatchProposal> findByMatchId(Long matchId);
 
 	@Query("SELECT mp FROM MatchProposal mp JOIN FETCH mp.user INNER JOIN FETCH mp.match WHERE mp.match.id = :matchId")
 	List<MatchProposal> findAllByMatchId(@Param("matchId") Long matchId);

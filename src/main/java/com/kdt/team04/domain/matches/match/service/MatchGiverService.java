@@ -37,6 +37,39 @@ public class MatchGiverService {
 		this.matchConverter = matchConverter;
 	}
 
+	public MatchResponse findById(Long id) {
+		Match foundMatch = matchRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
+				MessageFormat.format("matchId = {0}", id)));
+
+		UserResponse author = userService.findById(foundMatch.getUser().getId());
+		UserResponse.AuthorResponse authorResponse = new UserResponse.AuthorResponse(author.id(), author.nickname());
+
+		if (foundMatch.getMatchType() == MatchType.TEAM_MATCH) {
+			Team team = foundMatch.getTeam();
+			TeamResponse.SimpleResponse teamResponse = new TeamResponse.SimpleResponse(team.getId(), team.getName(),
+				team.getSportsCategory());
+
+			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);
+		}
+
+		return matchConverter.toMatchResponse(foundMatch, authorResponse);
+	}
+
+	public MatchResponse.MatchAuthorResponse findMatchAuthorById(Long id) {
+		Match foundMatch = matchRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
+				MessageFormat.format("matchId = {0}", id)));
+
+		UserResponse author = userService.findById(foundMatch.getUser().getId());
+		UserResponse.AuthorResponse authorResponse = new UserResponse.AuthorResponse(author.id(), author.nickname());
+
+		return new MatchResponse.MatchAuthorResponse(
+			foundMatch.getId(),
+			authorResponse
+		);
+	}
+
 	@Transactional
 	public MatchResponse endGame(Long id, Long userId) {
 		Match foundMatch = matchRepository.findById(id)

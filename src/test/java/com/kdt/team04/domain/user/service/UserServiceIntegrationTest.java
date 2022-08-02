@@ -1,5 +1,7 @@
 package com.kdt.team04.domain.user.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javax.persistence.EntityManager;
 
 import org.assertj.core.api.Assertions;
@@ -7,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.domain.user.dto.UserRequest;
@@ -27,6 +30,9 @@ public class UserServiceIntegrationTest {
 
 	@Autowired
 	UserRepository userRepository;
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	@Test
 	@DisplayName("새로운 유저는 위치정보가 처음엔 null이다.")
@@ -60,5 +66,89 @@ public class UserServiceIntegrationTest {
 		Assertions.assertThat(foundUser.getLocation().getLatitude()).isEqualTo(location.getLatitude());
 		Assertions.assertThat(response.latitude()).isEqualTo(location.getLatitude());
 		Assertions.assertThat(response.longitude()).isEqualTo(location.getLongitude());
+	}
+
+	@Test
+	@DisplayName("nickname이 중복되면 true를 반환한다.")
+	void testNicknameDuplicationCheckTrue() {
+		//given
+		String password = "@test1234!";
+		String encodedPassword = passwordEncoder.encode(password);
+
+		User userA = User.builder()
+			.username("test1234")
+			.nickname("nickname1234")
+			.password(encodedPassword)
+			.build();
+		entityManager.persist(userA);
+
+		//when
+		Boolean isDuplicated = userService.nicknameDuplicationCheck(userA.getNickname());
+
+		//then
+		assertThat(isDuplicated).isTrue();
+	}
+
+	@Test
+	@DisplayName("nickname이 중복되지 않으면 false를 반환한다.")
+	void testNicknameDuplicationCheckFalse() {
+		//given
+		String password = "@test1234!";
+		String encodedPassword = passwordEncoder.encode(password);
+
+		User userA = User.builder()
+			.username("test1234")
+			.nickname("nickname1235")
+			.password(encodedPassword)
+			.build();
+		entityManager.persist(userA);
+
+		//when
+		Boolean isDuplicated = userService.nicknameDuplicationCheck("nickname1234");
+
+		//then
+		assertThat(isDuplicated).isFalse();
+	}
+
+	@Test
+	@DisplayName("username이 중복되면 true를 반환한다.")
+	void testUsernameDuplicationCheckTrue() {
+		//given
+		String password = "@test1234!";
+		String encodedPassword = passwordEncoder.encode(password);
+
+		User userA = User.builder()
+			.username("test1234")
+			.nickname("nickname1234")
+			.password(encodedPassword)
+			.build();
+		entityManager.persist(userA);
+
+		//when
+		Boolean isDuplicated = userService.usernameDuplicationCheck(userA.getUsername());
+
+		//then
+		assertThat(isDuplicated).isTrue();
+	}
+
+	@Test
+	@DisplayName("username이 중복되지 않으면 false를 반환한다.")
+	void testUsernameDuplicationCheckFalse() {
+		//given
+		String password = "@test1234!";
+		String encodedPassword = passwordEncoder.encode(password);
+
+		User userA = User.builder()
+			.username("test1234")
+			.nickname("nickname1235")
+			.password(encodedPassword)
+			.build();
+		entityManager.persist(userA);
+
+		//when
+		Boolean isDuplicated = userService.usernameDuplicationCheck("test123456");
+
+		//then
+		assertThat(isDuplicated).isFalse();
 	}
 }

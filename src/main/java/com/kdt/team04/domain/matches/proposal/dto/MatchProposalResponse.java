@@ -25,5 +25,9 @@ public record MatchProposalResponse() {
 
 		@Schema(description = "마지막 채팅 정보")
 		MatchChatResponse.LastChat lastChat
-	) {}
+	) {
+	}
+
+	public record SimpleProposal(Long id) {
+	}
 }
