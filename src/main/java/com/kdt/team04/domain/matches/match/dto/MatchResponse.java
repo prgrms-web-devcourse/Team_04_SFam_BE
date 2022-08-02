@@ -47,6 +47,8 @@ public record MatchResponse(
 
 	public record MatchAuthorResponse(
 		Long id,
+		String title,
+		MatchStatus status,
 		UserResponse.AuthorResponse author
 	) {}
 
