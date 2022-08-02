@@ -50,7 +50,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			authenticate(getAccessToken(request), request, response);
 		} catch (JwtTokenNotFoundException e) {
 			this.log.warn(e.getMessage());
-			refreshAuthentication(getAccessToken(request), request, response);
 		}
 		filterChain.doFilter(request, response);
 	}
