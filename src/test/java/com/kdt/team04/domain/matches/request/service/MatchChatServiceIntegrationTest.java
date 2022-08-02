@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.matches.request.service;
 
 import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.APPROVED;
+import static java.time.LocalDateTime.now;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
@@ -81,7 +82,7 @@ class MatchChatServiceIntegrationTest {
 		entityManager.persist(matchProposal);
 
 		String content = "hi";
-		LocalDateTime chattedAt = LocalDateTime.now();
+		LocalDateTime chattedAt = now();
 
 		//when
 		matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), content, chattedAt);
@@ -111,7 +112,7 @@ class MatchChatServiceIntegrationTest {
 
 		//when, then
 		assertThrows(EntityNotFoundException.class, () -> {
-			matchChatService.chat(invalidId, author.getId(), target.getId(), "hi", LocalDateTime.now());
+			matchChatService.chat(invalidId, author.getId(), target.getId(), "hi", now());
 		});
 	}
 
@@ -142,7 +143,7 @@ class MatchChatServiceIntegrationTest {
 
 		//when, then
 		assertThrows(BusinessException.class, () -> {
-			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", LocalDateTime.now());
+			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", now());
 		});
 	}
 
@@ -173,7 +174,7 @@ class MatchChatServiceIntegrationTest {
 
 		//when, then
 		assertThrows(BusinessException.class, () -> {
-			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", LocalDateTime.now());
+			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", now());
 		});
 	}
 
@@ -210,7 +211,7 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), author.getId(), invalidTargetId, "hi", LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), author.getId(), invalidTargetId, "hi", now());
 			});
 		}
 
@@ -243,7 +244,7 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), invalidAuthorId, target.getId(), "hi", LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), invalidAuthorId, target.getId(), "hi", now());
 			});
 		}
 
@@ -277,9 +278,88 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), invalidAuthorId, invalidTargetId, "hi", LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), invalidAuthorId, invalidTargetId, "hi", now());
 			});
 		}
+	}
+
+	@Test
+	@Transactional
+	@DisplayName("해당하는 모든 매칭 신청들의 메시지를 삭제할 수 있다.")
+	void testDeleteAllByProposals() {
+		//given
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
+		User target1 = getUser("target1");
+		User target2 = getUser("target2");
+		Team targetTeam1 = getSoccerTeam("target1", target1);
+		Team targetTeam2 = getSoccerTeam("target2", target2);
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.WAITING, author, authorTeam);
+
+		MatchProposal matchProposal1 = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(target1)
+			.team(targetTeam1)
+			.status(MatchProposalStatus.APPROVED)
+			.build();
+
+		MatchProposal matchProposal2 = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(target2)
+			.team(targetTeam2)
+			.status(MatchProposalStatus.APPROVED)
+			.build();
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+		entityManager.persist(target1);
+		entityManager.persist(targetTeam1);
+		entityManager.persist(target2);
+		entityManager.persist(targetTeam2);
+		entityManager.persist(match);
+		entityManager.persist(matchProposal1);
+		entityManager.persist(matchProposal2);
+
+		MatchChat chat1 = MatchChat.builder()
+			.proposal(matchProposal1)
+			.user(author)
+			.target(target1)
+			.content("hi")
+			.chattedAt(now())
+			.build();
+
+		MatchChat chat2 = MatchChat.builder()
+			.proposal(matchProposal1)
+			.user(target1)
+			.target(author)
+			.content("hello")
+			.chattedAt(now())
+			.build();
+
+		MatchChat chat3 = MatchChat.builder()
+			.proposal(matchProposal1)
+			.user(target2)
+			.target(author)
+			.content("hello")
+			.chattedAt(now())
+			.build();
+
+		matchChatRepository.save(chat1);
+		matchChatRepository.save(chat2);
+		matchChatRepository.save(chat3);
+
+		List<MatchProposalResponse.SimpleProposal> proposals = List.of(
+			new MatchProposalResponse.SimpleProposal(matchProposal1.getId()),
+			new MatchProposalResponse.SimpleProposal(matchProposal2.getId()));
+		//when
+		matchChatService.deleteAllByProposals(proposals);
+
+		//then
+		assertThat(matchChatRepository.findById(chat1.getId()).isEmpty(), is(true));
+		assertThat(matchChatRepository.findById(chat2.getId()).isEmpty(), is(true));
+		assertThat(matchChatRepository.findById(chat3.getId()).isEmpty(), is(true));
 	}
 
 	@Test
@@ -324,7 +404,7 @@ class MatchChatServiceIntegrationTest {
 						.user(author)
 						.target(target)
 						.content(id == 4 ? lastChat + proposal.getId() : "칫챗")
-						.chattedAt(LocalDateTime.now())
+						.chattedAt(now())
 						.build();
 					chats.add(chat);
 					entityManager.persist(chat);

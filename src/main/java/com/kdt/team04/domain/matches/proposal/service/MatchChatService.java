@@ -17,9 +17,10 @@ import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatConverter;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatPartitionByProposalIdQueryDto;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
+import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchChatRepository;
 import com.kdt.team04.domain.user.dto.UserResponse;
@@ -30,7 +31,6 @@ public class MatchChatService {
 
 	private final MatchChatRepository matchChatRepository;
 	private final MatchProposalGiverService matchProposalGiver;
-
 	private final MatchChatConverter matchChatConverter;
 
 	public MatchChatService(
@@ -44,7 +44,7 @@ public class MatchChatService {
 
 	@Transactional
 	public void chat(Long proposalId, Long writerId, Long targetId, String content, LocalDateTime chattedAt) {
-		MatchProposalQueryDto matchProposalDto = matchProposalGiver.findSimpleProposalById(proposalId);
+		MatchProposalSimpleQueryDto matchProposalDto = matchProposalGiver.findSimpleProposalById(proposalId);
 
 		if (matchProposalDto.getStatus() != MatchProposalStatus.APPROVED) {
 			throw new BusinessException(
@@ -116,5 +116,15 @@ public class MatchChatService {
 			.toList();
 
 		return new MatchChatResponse.Chatting(match, chats);
+	}
+
+	@Transactional
+	public void deleteAllByProposals(List<MatchProposalResponse.SimpleProposal> proposalResponses) {
+		List<MatchProposal> proposals = proposalResponses.stream()
+			.map((proposal -> MatchProposal.builder()
+				.id(proposal.id())
+				.build())).toList();
+
+		matchChatRepository.deleteAllByProposalIn(proposals);
 	}
 }
