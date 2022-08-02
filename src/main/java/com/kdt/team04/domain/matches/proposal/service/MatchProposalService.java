@@ -183,7 +183,7 @@ public class MatchProposalService {
 
 	@Transactional
 	public void deleteByMatches(Long matchId) {
-		List<MatchProposal> foundProposals = proposalRepository.findByMatchId(matchId);
+		List<MatchProposal> foundProposals = proposalRepository.findAllByMatchId(matchId);
 		List<MatchProposalResponse.SimpleProposal> proposalResponses = foundProposals.stream()
 			.map(response -> new MatchProposalResponse.SimpleProposal(response.getId()))
 			.toList();

@@ -66,6 +66,8 @@ public class MatchGiverService {
 
 		return new MatchResponse.MatchAuthorResponse(
 			foundMatch.getId(),
+			foundMatch.getTitle(),
+			foundMatch.getStatus(),
 			authorResponse
 		);
 	}
