@@ -9,6 +9,7 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
@@ -28,10 +29,18 @@ public class MatchProposalGiverService {
 		this.matchProposalRepository = matchProposalRepository;
 	}
 
-	public MatchProposalQueryDto findSimpleProposalById(Long id) {
-		MatchProposalQueryDto matchProposal = matchProposalRepository.findSimpleProposalById(id)
+	public MatchProposalSimpleQueryDto findSimpleProposalById(Long id) {
+		MatchProposalSimpleQueryDto matchProposal = matchProposalRepository.findSimpleProposalById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
 				MessageFormat.format("matchProposalId = {0}", id)));
+
+		return matchProposal;
+	}
+
+	public MatchProposalQueryDto findFixedProposalByMatchId(Long matchId) {
+		MatchProposalQueryDto matchProposal = matchProposalRepository.findFixedProposalByMatchId(matchId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
+				MessageFormat.format("matchId = {0}", matchId)));
 
 		return matchProposal;
 	}

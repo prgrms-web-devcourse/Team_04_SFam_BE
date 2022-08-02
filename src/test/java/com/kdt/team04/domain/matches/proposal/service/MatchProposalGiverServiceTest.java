@@ -24,6 +24,7 @@ import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.team.SportsCategory;
@@ -39,6 +40,80 @@ class MatchProposalGiverServiceTest {
 
 	@Autowired
 	private MatchProposalGiverService matchProposalGiver;
+
+	@Test
+	@DisplayName("경기 종료된 매칭과 상대 정보를 조회한다.")
+	void test_findFixedProposalByMatchId() {
+		//given
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
+		User target = getUser("target");
+		Team targetTeam = getSoccerTeam("target", target);
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.END, author, authorTeam);
+
+		MatchProposal matchProposal = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(target)
+			.team(targetTeam)
+			.status(MatchProposalStatus.FIXED)
+			.build();
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+		entityManager.persist(target);
+		entityManager.persist(targetTeam);
+		entityManager.persist(match);
+		entityManager.persist(matchProposal);
+
+		MatchProposalQueryDto expectedQueryDto = new MatchProposalQueryDto(
+			matchProposal.getId(),
+			matchProposal.getUser().getId(),
+			matchProposal.getTeam().getId(),
+			match.getId(),
+			match.getStatus(),
+			match.getMatchType(),
+			match.getUser().getId(),
+			match.getTeam().getId()
+		);
+
+		//when
+		MatchProposalQueryDto fixedProposal = matchProposalGiver.findFixedProposalByMatchId(match.getId());
+
+		//then
+		assertThat(fixedProposal, samePropertyValuesAs(expectedQueryDto));
+	}
+
+	@Test
+	@DisplayName("경기 완료가 되었는데, Fixed 된 신청이 없으면 오류가 발생한다.")
+	void testFail_MatchEnded_ButNotExists_FixedProposal() {
+		//given
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
+		User target = getUser("target");
+		Team targetTeam = getSoccerTeam("target", target);
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.END, author, authorTeam);
+
+		MatchProposal matchProposal = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(target)
+			.team(targetTeam)
+			.status(MatchProposalStatus.APPROVED)
+			.build();
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+		entityManager.persist(target);
+		entityManager.persist(targetTeam);
+		entityManager.persist(match);
+		entityManager.persist(matchProposal);
+
+		//when, then
+		assertThrows(BusinessException.class, () -> {
+			matchProposalGiver.findFixedProposalByMatchId(match.getId());
+		});
+	}
 
 	@Test
 	@DisplayName("채팅 등록을 위해 신청 정보를 조회한다.")
@@ -60,7 +135,7 @@ class MatchProposalGiverServiceTest {
 		entityManager.persist(match);
 		entityManager.persist(proposal);
 
-		MatchProposalQueryDto expected = new MatchProposalQueryDto(
+		MatchProposalSimpleQueryDto expected = new MatchProposalSimpleQueryDto(
 			proposal.getId(),
 			proposal.getStatus(),
 			target.getId(),
@@ -69,7 +144,7 @@ class MatchProposalGiverServiceTest {
 		);
 
 		//when
-		MatchProposalQueryDto response = matchProposalGiver.findSimpleProposalById(proposal.getId());
+		MatchProposalSimpleQueryDto response = matchProposalGiver.findSimpleProposalById(proposal.getId());
 
 		//then
 		assertThat(response, samePropertyValuesAs(expected));
