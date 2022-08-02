@@ -63,7 +63,8 @@ public class UserController {
 	@Operation(summary = "회원 위치 정보 업데이트", description = "회원 위치 정보(위도, 경도)를 업데이트 한다.")
 	@PutMapping("/{id}/location")
 	public ApiResponse<UserResponse.UpdateLocationResponse> update(
-		@AuthenticationPrincipal JwtAuthentication auth, @RequestBody @Valid @NotNull UserRequest.UpdateLocationRequest request) {
+		@AuthenticationPrincipal JwtAuthentication auth,
+		@RequestBody @Valid @NotNull UserRequest.UpdateLocationRequest request) {
 		if (auth == null) {
 			throw new NotAuthenticationException("not authenticated");
 		}
@@ -71,6 +72,16 @@ public class UserController {
 		UserResponse.UpdateLocationResponse response = userService.updateLocation(auth.id(), request);
 
 		return new ApiResponse<>(response);
+	}
+
+	@GetMapping("/nickname/duplication")
+	public ApiResponse<Boolean> nicknameDuplicationCheck(@RequestParam String input) {
+		return new ApiResponse<>(userService.nicknameDuplicationCheck(input));
+	}
+
+	@GetMapping("/username/duplication")
+	public ApiResponse<Boolean> usernameDuplicationCheck(@RequestParam String input) {
+		return new ApiResponse<>(userService.usernameDuplicationCheck(input));
 	}
 
 	@Operation(summary = "회원 프로필 이미지 업데이트", description = "파일을 받아 사용자 프로필 이미지를 업데이트 한다.")

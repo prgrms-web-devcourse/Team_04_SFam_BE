@@ -6,4 +6,6 @@ public interface MatchReviewRepositoryCustom {
 	MatchReviewResponse.TotalCount getTeamTotalCount(Long teamId);
 
 	MatchReviewResponse.TotalCount getTeamTotalCountByUserId(Long userId);
+
+	boolean existsByMatchIdAndUserId(Long matchId, Long userId);
 }
