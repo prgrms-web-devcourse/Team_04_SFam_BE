@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,8 +32,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
@@ -59,6 +62,12 @@ class UserControllerIntegrationTest {
 	private EntityManager entityManager;
 
 	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+	@MockBean
+	S3Uploader s3Uploader;
+
+	@MockBean
+	AmazonS3 amazonS3;
 
 	@Test
 	@Transactional
