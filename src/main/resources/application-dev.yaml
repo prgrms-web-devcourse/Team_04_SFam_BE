@@ -20,3 +20,16 @@ jwt:
   client-secret: ENC(vaOuavM8/QZzrntUSL/CLC3Q47399EsR)
 encryptor:
   key: ${ENCRYPTOR_KEY}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ENC(hDiGnEdxfCONp6TSErL9SH4mAV/Z5sQEGS3ZBHxzv3E=)
+      secretKey: ENC(lZHMD7ilan1QRzBtLwY+AYMCB1JrcVoqNZLuSeMgbL818TQ7QbLEPvRKG/qls5WjYY+0lP0CZgQ=)
+    s3:
+      bucket: ENC(YvPOdxAd97kzKfrsHEWhMafiIQufIo7b)
+      url: ENC(Jd8ikLEflOap/jQTEMu+1XNBiVKqNzrug+Sek472b6SfG25fHEJ5nk1Q2afrDow2v7dxxhLquS/0nOsVeNWzZg==)
+    region:
+      static: ENC(WGH0CPvngxeIX0bpp8fLTnrAWMtglKek)
+    stack:
+      auto: false
