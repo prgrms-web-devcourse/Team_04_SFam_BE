@@ -159,7 +159,7 @@ public class MatchService {
 				MessageFormat.format("matchId = {0}", id)));
 
 		if (match.getStatus().isMatched()) {
-			throw new BusinessException(ErrorCode.PROPOSAL_INVALID_DELETE_REQUEST, MessageFormat.format("matchId = {0}", id));
+			throw new BusinessException(ErrorCode.MATCH_INVALID_DELETE_REQUEST, MessageFormat.format("matchId = {0}", id));
 		}
 
 		if (!Objects.equals(match.getUser().getId(), userId)) {
