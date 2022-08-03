@@ -1,8 +1,10 @@
 package com.kdt.team04.domain.matches.request.service;
 
+import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.APPROVED;
+import static java.time.LocalDateTime.now;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
@@ -12,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -32,16 +33,16 @@ import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchChatRepository;
 import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
-import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 
 @Transactional
@@ -79,7 +80,7 @@ class MatchChatServiceIntegrationTest {
 			.content("덤벼라!")
 			.user(target)
 			.team(targetTeam)
-			.status(MatchProposalStatus.APPROVED)
+			.status(APPROVED)
 			.build();
 
 		entityManager.persist(author);
@@ -90,7 +91,7 @@ class MatchChatServiceIntegrationTest {
 		entityManager.persist(matchProposal);
 
 		String content = "hi";
-		LocalDateTime chattedAt = LocalDateTime.now();
+		LocalDateTime chattedAt = now();
 
 		//when
 		matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), content, chattedAt);
@@ -120,7 +121,7 @@ class MatchChatServiceIntegrationTest {
 
 		//when, then
 		assertThrows(EntityNotFoundException.class, () -> {
-			matchChatService.chat(invalidId, author.getId(), target.getId(), "hi", LocalDateTime.now());
+			matchChatService.chat(invalidId, author.getId(), target.getId(), "hi", now());
 		});
 	}
 
@@ -151,7 +152,7 @@ class MatchChatServiceIntegrationTest {
 
 		//when, then
 		assertThrows(BusinessException.class, () -> {
-			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", LocalDateTime.now());
+			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", now());
 		});
 	}
 
@@ -170,7 +171,7 @@ class MatchChatServiceIntegrationTest {
 			.content("덤벼라!")
 			.user(target)
 			.team(targetTeam)
-			.status(MatchProposalStatus.APPROVED)
+			.status(APPROVED)
 			.build();
 
 		entityManager.persist(author);
@@ -182,7 +183,7 @@ class MatchChatServiceIntegrationTest {
 
 		//when, then
 		assertThrows(BusinessException.class, () -> {
-			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", LocalDateTime.now());
+			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", now());
 		});
 	}
 
@@ -219,8 +220,7 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), author.getId(), invalidTargetId, "hi",
-					LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), author.getId(), invalidTargetId, "hi", now());
 			});
 		}
 
@@ -253,8 +253,7 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), invalidAuthorId, target.getId(), "hi",
-					LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), invalidAuthorId, target.getId(), "hi", now());
 			});
 		}
 
@@ -288,8 +287,7 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), invalidAuthorId, invalidTargetId, "hi",
-					LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), invalidAuthorId, invalidTargetId, "hi", now());
 			});
 		}
 	}
@@ -338,7 +336,7 @@ class MatchChatServiceIntegrationTest {
 			.user(author)
 			.target(target1)
 			.content("hi")
-			.chattedAt(LocalDateTime.now())
+			.chattedAt(now())
 			.build();
 
 		MatchChat chat2 = MatchChat.builder()
@@ -346,7 +344,7 @@ class MatchChatServiceIntegrationTest {
 			.user(target1)
 			.target(author)
 			.content("hello")
-			.chattedAt(LocalDateTime.now())
+			.chattedAt(now())
 			.build();
 
 		MatchChat chat3 = MatchChat.builder()
@@ -354,7 +352,7 @@ class MatchChatServiceIntegrationTest {
 			.user(target2)
 			.target(author)
 			.content("hello")
-			.chattedAt(LocalDateTime.now())
+			.chattedAt(now())
 			.build();
 
 		matchChatRepository.save(chat1);
@@ -399,7 +397,7 @@ class MatchChatServiceIntegrationTest {
 					.content("덤벼라! 나는 " + id)
 					.user(target)
 					.team(targetTeam)
-					.status(MatchProposalStatus.APPROVED)
+					.status(APPROVED)
 					.build();
 
 				proposals.add(matchProposal);
@@ -415,7 +413,7 @@ class MatchChatServiceIntegrationTest {
 						.user(author)
 						.target(target)
 						.content(id == 4 ? lastChat + proposal.getId() : "칫챗")
-						.chattedAt(LocalDateTime.now())
+						.chattedAt(now())
 						.build();
 					chats.add(chat);
 					entityManager.persist(chat);
@@ -442,7 +440,56 @@ class MatchChatServiceIntegrationTest {
 		});
 	}
 
+	@Test
+	@DisplayName("채팅 내용을 조회한다.")
+	void test_findChatsByProposalId() {
+		//given
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
+		User target = getUser("target");
+		Team targetTeam = getSoccerTeam("target", target);
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.WAITING, author, authorTeam);
 
+		MatchProposal proposal = getProposal(match, "덤벼라!", target, targetTeam, APPROVED);
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+		entityManager.persist(target);
+		entityManager.persist(targetTeam);
+		entityManager.persist(match);
+		entityManager.persist(proposal);
+
+		List<MatchChat> chats = new ArrayList<>();
+		chats.add(getChat(proposal, author, target, "안녕"));
+		chats.add(getChat(proposal, target, author, "hi"));
+		chats.add(getChat(proposal, author, target, "겜 하실?"));
+		chats.add(getChat(proposal, target, author, "ㅇㅇ"));
+		chats.add(getChat(proposal, author, target, "7시에 ㄱㄱ"));
+		chats.forEach(chat -> {
+			entityManager.persist(chat);
+		});
+
+		List<MatchChatResponse.Chat> expected = chats.stream()
+			.map(chat -> new MatchChatResponse.Chat(
+				chat.getContent(),
+				chat.getChattedAt(),
+				new UserResponse.ChatWriterProfile(chat.getUser().getId())
+			))
+			.toList();
+
+		//when
+		MatchChatResponse.Chatting response
+			= matchChatService.findChatsByProposalId(proposal.getId(), author.getId());
+
+		//then
+		MatchProposalResponse.ChatMatch matchResponse = response.match();
+		assertThat(matchResponse.title(), is(match.getTitle()));
+		assertThat(matchResponse.status(), is(match.getStatus()));
+		assertThat(matchResponse.targetProfile().nickname(), is(target.getNickname()));
+
+		List<MatchChatResponse.Chat> chatResponse = response.chats();
+		assertThat(chatResponse, containsInAnyOrder(expected.toArray()));
+	}
 
 	private static User getUser(String name) {
 		return User.builder()
@@ -471,6 +518,26 @@ class MatchChatServiceIntegrationTest {
 			.status(status)
 			.user(user)
 			.team(team)
+			.build();
+	}
+
+	private static MatchProposal getProposal(Match match, String content, User proposer, Team proposerTeam, MatchProposalStatus status) {
+		return MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(proposer)
+			.team(proposerTeam)
+			.status(APPROVED)
+			.build();
+	}
+
+	private static MatchChat getChat(MatchProposal proposal, User user, User target, String content) {
+		return MatchChat.builder()
+			.proposal(proposal)
+			.user(user)
+			.target(target)
+			.content(content)
+			.chattedAt(LocalDateTime.now())
 			.build();
 	}
 }

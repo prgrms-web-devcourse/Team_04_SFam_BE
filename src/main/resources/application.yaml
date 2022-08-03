@@ -27,6 +27,7 @@ security:
         - /swagger-ui.html/**
         - /api/users/nickname/duplication
         - /api/users/username/duplication
+        - /health
       POST:
         - /api/users/signin
         - /api/users/signup

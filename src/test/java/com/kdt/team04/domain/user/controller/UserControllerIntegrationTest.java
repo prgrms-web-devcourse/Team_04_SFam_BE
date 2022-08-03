@@ -14,10 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.LongStream;
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.Cookie;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.file.service.S3Uploader;
+import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
@@ -45,6 +49,7 @@ import com.kdt.team04.domain.security.WithMockJwtAuthentication;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
+import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 
@@ -61,6 +66,8 @@ class UserControllerIntegrationTest {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	@Autowired
+	Jwt jwt;
 	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@MockBean
@@ -72,7 +79,6 @@ class UserControllerIntegrationTest {
 	@Test
 	@Transactional
 	@DisplayName("회원 프로필을 조회한다.")
-	@WithMockJwtAuthentication
 	void testFindProfile() throws Exception {
 		// given
 		User findUser = new User("test00", "nk-test00",
@@ -149,6 +155,7 @@ class UserControllerIntegrationTest {
 		ResultActions result = mockMvc.perform(
 			get("/api/users/" + findUser.getId())
 				.accept(MediaType.APPLICATION_JSON)
+				.cookie(getAccessTokenCookie(user))
 		);
 
 		// then
@@ -184,6 +191,7 @@ class UserControllerIntegrationTest {
 			get("/api/users")
 				.param("nickname", nickname)
 				.accept(MediaType.APPLICATION_JSON)
+				.cookie(getAccessTokenCookie(createUser(entityManager)))
 		);
 
 		// then
@@ -197,7 +205,6 @@ class UserControllerIntegrationTest {
 	@Test
 	@Transactional
 	@DisplayName("닉네임이 포함된 사용자가 없다면 비어있는 리스트를 반환한다.")
-	@WithMockJwtAuthentication
 	void testFindAllByNicknameEmpty() throws Exception {
 		// given
 		String nickname = "notfound";
@@ -216,6 +223,7 @@ class UserControllerIntegrationTest {
 			get("/api/users")
 				.param("nickname", nickname)
 				.accept(MediaType.APPLICATION_JSON)
+				.cookie(getAccessTokenCookie(createUser(entityManager)))
 		);
 
 		// then
@@ -229,7 +237,6 @@ class UserControllerIntegrationTest {
 	@Test
 	@Transactional
 	@DisplayName("닉네임이 null 혹은 빈값으로 요청된다면 예외를 반환한다.")
-	@WithMockJwtAuthentication
 	void testFindAllByNicknameException() throws Exception {
 		// given
 		LongStream.range(1, 6)
@@ -240,11 +247,32 @@ class UserControllerIntegrationTest {
 
 		// when
 		ResultActions result = mockMvc
-			.perform(get("/api/users"));
+			.perform(get("/api/users")
+				.cookie(getAccessTokenCookie(createUser(entityManager))));
 
 		// then
 		result.andDo(print())
 			.andExpect(status().isBadRequest());
 	}
 
+	User createUser(EntityManager entityManager) {
+		String encodedPassword = passwordEncoder.encode("@Test1234!");
+		User newUser = new User("dummyuser1234", "dummyNickname1",
+			encodedPassword);
+
+		entityManager.persist(newUser);
+
+		return newUser;
+	}
+
+	Cookie getAccessTokenCookie(User user) {
+		Jwt.Claims claims = Jwt.Claims.builder()
+			.userId(user.getId())
+			.roles(new String[] {String.valueOf(Role.USER)})
+			.username(user.getUsername())
+			.build();
+		String accessToken = jwt.generateAccessToken(claims);
+
+		return new Cookie(jwt.accessTokenProperties().header(), accessToken);
+	}
 }
