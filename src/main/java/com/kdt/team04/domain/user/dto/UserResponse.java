@@ -9,13 +9,13 @@ import com.kdt.team04.domain.user.entity.Location;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
+@Builder
 public record UserResponse(
 	Long id,
 	String username,
 	String password,
 	String nickname,
 	Location location
-
 ) {
 
 	@Builder
