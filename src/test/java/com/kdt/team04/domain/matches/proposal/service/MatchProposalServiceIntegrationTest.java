@@ -38,6 +38,7 @@ class MatchProposalServiceIntegrationTest {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		User proposer = new User("proposer", "proposer", "aA1234!");
+
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 
@@ -51,7 +52,9 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.content("content")
 			.build();
+
 		entityManager.persist(match);
+
 		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(null, "개인전 신청합니다.");
 
 		//when
@@ -67,6 +70,10 @@ class MatchProposalServiceIntegrationTest {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		User proposer = new User("proposer", "proposer", "aA1234!");
+
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+
 		Team authorTeam = Team.builder()
 			.name("team1")
 			.description("first team")
@@ -79,6 +86,7 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
+
 		entityManager.persist(authorTeam);
 		entityManager.persist(proposerTeam);
 		entityManager.persist(author);
@@ -112,6 +120,10 @@ class MatchProposalServiceIntegrationTest {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		User proposer = new User("proposer", "proposer", "aA1234!");
+
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+
 		Team authorTeam = Team.builder()
 			.name("team1")
 			.description("first team")
@@ -124,6 +136,7 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
+
 		entityManager.persist(authorTeam);
 		entityManager.persist(proposerTeam);
 		entityManager.persist(author);
