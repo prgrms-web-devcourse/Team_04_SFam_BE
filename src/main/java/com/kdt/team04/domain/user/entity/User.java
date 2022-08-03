@@ -10,6 +10,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.kdt.team04.domain.BaseEntity;
 
 import lombok.Builder;
@@ -77,5 +80,15 @@ public class User extends BaseEntity {
 
 	public void updateLocation(Location location) {
 		this.location = location;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+			.append("id", id)
+			.append("username", username)
+			.append("nickname", nickname)
+			.append("location", location)
+			.toString();
 	}
 }
