@@ -130,7 +130,7 @@ public class MatchProposalService {
 	public MatchProposalStatus react(Long matchId, Long id, MatchProposalStatus status) {
 		MatchResponse match = matchGiver.findById(matchId);
 		MatchProposal proposal = proposalRepository.findById(id)
-			.orElseThrow(() -> new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
+			.orElseThrow(() -> new BusinessException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("proposalId = {0}", id)));
 
 		if (match.status().isMatched() || proposal.getStatus().isApproved()) {
@@ -154,7 +154,7 @@ public class MatchProposalService {
 
 		List<MatchProposal> matchProposals = proposalRepository.findAllByMatchId(matchId);
 		if (matchProposals.isEmpty()) {
-			throw new BusinessException(ErrorCode.MATCH_PROPOSAL_NOT_FOUND,
+			throw new BusinessException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("Match proposal not found with matchId={0}, authorId={1}", matchId, authorId));
 		}
 

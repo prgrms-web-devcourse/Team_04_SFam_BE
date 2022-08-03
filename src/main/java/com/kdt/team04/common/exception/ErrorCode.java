@@ -4,11 +4,11 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
 	//COMMON
-	INTERNAL_SEVER_ERROR("C001", "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
+	INTERNAL_SEVER_ERROR("C0001", "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
 	NOT_FOUND_EXCEPTION("C0002", "Not found exception", HttpStatus.NOT_FOUND),
 	BIND_ERROR("C0003", "Binding Exception", HttpStatus.BAD_REQUEST),
-	RUNTIME_EXCEPTION("C004", "Runtime error", HttpStatus.BAD_REQUEST),
-	METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION("C005", "Method argument type mismatch exception", HttpStatus.BAD_REQUEST),
+	RUNTIME_EXCEPTION("C0004", "Runtime error", HttpStatus.BAD_REQUEST),
+	METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION("C0005", "Method argument type mismatch exception", HttpStatus.BAD_REQUEST),
 
 	//VALIDATION
 	METHOD_ARGUMENT_NOT_VALID("V0001", "Validation error", HttpStatus.BAD_REQUEST),
@@ -49,12 +49,12 @@ public enum ErrorCode {
 	MATCH_NOT_ENDED("M0010", "Match not ended", HttpStatus.BAD_REQUEST),
 
 	//MATCH_PROPOSAL
-	MATCH_PROPOSAL_NOT_FOUND("MP0001", "Not found proposal", HttpStatus.NOT_FOUND),
+	PROPOSAL_NOT_FOUND("MP0001", "Not found proposal", HttpStatus.NOT_FOUND),
 	PROPOSAL_INVALID_CREATE_REQUEST("MP0002", "Invalid proposal request", HttpStatus.BAD_REQUEST),
-	MATCH_PROPOSAL_NOT_APPROVED("MP0003", "The request is not approved.", HttpStatus.BAD_REQUEST),
-	ANOTHER_MATCH_PROPOSAL_ALREADY_FIXED("MP0004", "Fixed another proposal already exists.", HttpStatus.BAD_REQUEST),
+	PROPOSAL_NOT_APPROVED("MP0003", "The request is not approved.", HttpStatus.BAD_REQUEST),
+	ANOTHER_PROPOSAL_ALREADY_FIXED("MP0004", "Fixed another proposal already exists.", HttpStatus.BAD_REQUEST),
 	PROPOSAL_INVALID_REACT("MP0005", "Invalid react", HttpStatus.BAD_REQUEST),
-	MATCH_PROPOSAL_ACCESS_DENIED("MP0006", "Don't have permission to access match proposal", HttpStatus.FORBIDDEN),
+	PROPOSAL_ACCESS_DENIED("MP0006", "Don't have permission to access match proposal", HttpStatus.FORBIDDEN),
 
 	//MATCH_CHAT
 	MATCH_CHAT_NOT_CORRECT_CHAT_PARTNER("MC0002", "The chat partner is incorrect.", HttpStatus.BAD_REQUEST),
