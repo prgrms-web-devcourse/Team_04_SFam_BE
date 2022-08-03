@@ -45,6 +45,13 @@ public record MatchResponse(
 	String content
 ) {
 
+	public record MatchAuthorResponse(
+		Long id,
+		String title,
+		MatchStatus status,
+		UserResponse.AuthorResponse author
+	) {}
+
 	public record ListViewResponse(
 		@Schema(description = "매칭 ID")
 		Long id,

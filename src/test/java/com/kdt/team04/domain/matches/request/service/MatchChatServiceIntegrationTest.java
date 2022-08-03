@@ -1,12 +1,19 @@
 package com.kdt.team04.domain.matches.request.service;
 
+import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.APPROVED;
+import static java.time.LocalDateTime.now;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,13 +30,16 @@ import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
-import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
 import com.kdt.team04.domain.matches.proposal.repository.MatchChatRepository;
+import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 
 @Transactional
@@ -61,7 +71,7 @@ class MatchChatServiceIntegrationTest {
 			.content("덤벼라!")
 			.user(target)
 			.team(targetTeam)
-			.status(MatchProposalStatus.APPROVED)
+			.status(APPROVED)
 			.build();
 
 		entityManager.persist(author);
@@ -72,7 +82,7 @@ class MatchChatServiceIntegrationTest {
 		entityManager.persist(matchProposal);
 
 		String content = "hi";
-		LocalDateTime chattedAt = LocalDateTime.now();
+		LocalDateTime chattedAt = now();
 
 		//when
 		matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), content, chattedAt);
@@ -102,7 +112,7 @@ class MatchChatServiceIntegrationTest {
 
 		//when, then
 		assertThrows(EntityNotFoundException.class, () -> {
-			matchChatService.chat(invalidId, author.getId(), target.getId(), "hi", LocalDateTime.now());
+			matchChatService.chat(invalidId, author.getId(), target.getId(), "hi", now());
 		});
 	}
 
@@ -133,7 +143,7 @@ class MatchChatServiceIntegrationTest {
 
 		//when, then
 		assertThrows(BusinessException.class, () -> {
-			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", LocalDateTime.now());
+			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", now());
 		});
 	}
 
@@ -152,7 +162,7 @@ class MatchChatServiceIntegrationTest {
 			.content("덤벼라!")
 			.user(target)
 			.team(targetTeam)
-			.status(MatchProposalStatus.APPROVED)
+			.status(APPROVED)
 			.build();
 
 		entityManager.persist(author);
@@ -164,7 +174,7 @@ class MatchChatServiceIntegrationTest {
 
 		//when, then
 		assertThrows(BusinessException.class, () -> {
-			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", LocalDateTime.now());
+			matchChatService.chat(matchProposal.getId(), author.getId(), target.getId(), "hi", now());
 		});
 	}
 
@@ -201,7 +211,7 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), author.getId(), invalidTargetId, "hi", LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), author.getId(), invalidTargetId, "hi", now());
 			});
 		}
 
@@ -234,7 +244,7 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), invalidAuthorId, target.getId(), "hi", LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), invalidAuthorId, target.getId(), "hi", now());
 			});
 		}
 
@@ -268,9 +278,208 @@ class MatchChatServiceIntegrationTest {
 
 			//when, then
 			assertThrows(BusinessException.class, () -> {
-				matchChatService.chat(matchProposal.getId(), invalidAuthorId, invalidTargetId, "hi", LocalDateTime.now());
+				matchChatService.chat(matchProposal.getId(), invalidAuthorId, invalidTargetId, "hi", now());
 			});
 		}
+	}
+
+	@Test
+	@Transactional
+	@DisplayName("해당하는 모든 매칭 신청들의 메시지를 삭제할 수 있다.")
+	void testDeleteAllByProposals() {
+		//given
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
+		User target1 = getUser("target1");
+		User target2 = getUser("target2");
+		Team targetTeam1 = getSoccerTeam("target1", target1);
+		Team targetTeam2 = getSoccerTeam("target2", target2);
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.WAITING, author, authorTeam);
+
+		MatchProposal matchProposal1 = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(target1)
+			.team(targetTeam1)
+			.status(MatchProposalStatus.APPROVED)
+			.build();
+
+		MatchProposal matchProposal2 = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(target2)
+			.team(targetTeam2)
+			.status(MatchProposalStatus.APPROVED)
+			.build();
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+		entityManager.persist(target1);
+		entityManager.persist(targetTeam1);
+		entityManager.persist(target2);
+		entityManager.persist(targetTeam2);
+		entityManager.persist(match);
+		entityManager.persist(matchProposal1);
+		entityManager.persist(matchProposal2);
+
+		MatchChat chat1 = MatchChat.builder()
+			.proposal(matchProposal1)
+			.user(author)
+			.target(target1)
+			.content("hi")
+			.chattedAt(now())
+			.build();
+
+		MatchChat chat2 = MatchChat.builder()
+			.proposal(matchProposal1)
+			.user(target1)
+			.target(author)
+			.content("hello")
+			.chattedAt(now())
+			.build();
+
+		MatchChat chat3 = MatchChat.builder()
+			.proposal(matchProposal1)
+			.user(target2)
+			.target(author)
+			.content("hello")
+			.chattedAt(now())
+			.build();
+
+		matchChatRepository.save(chat1);
+		matchChatRepository.save(chat2);
+		matchChatRepository.save(chat3);
+
+		List<MatchProposalResponse.SimpleProposal> proposals = List.of(
+			new MatchProposalResponse.SimpleProposal(matchProposal1.getId()),
+			new MatchProposalResponse.SimpleProposal(matchProposal2.getId()));
+		//when
+		matchChatService.deleteAllByProposals(proposals);
+
+		//then
+		assertThat(matchChatRepository.findById(chat1.getId()).isEmpty(), is(true));
+		assertThat(matchChatRepository.findById(chat2.getId()).isEmpty(), is(true));
+		assertThat(matchChatRepository.findById(chat3.getId()).isEmpty(), is(true));
+	}
+
+	@Test
+	@DisplayName("여러 매칭 신청 ID로 각각 매칭의 마지막 채팅 내용을 조회한다.")
+	void test_findAllLastChats() {
+		//given
+		String lastChat = "마지막 채팅";
+
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
+		User target = getUser("target");
+		Team targetTeam = getSoccerTeam("target", target);
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.WAITING, author, authorTeam);
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+		entityManager.persist(target);
+		entityManager.persist(targetTeam);
+		entityManager.persist(match);
+
+		List<MatchProposal> proposals = new ArrayList<>();
+		IntStream.range(1, 3)
+			.forEach(id -> {
+				MatchProposal matchProposal = MatchProposal.builder()
+					.match(match)
+					.content("덤벼라! 나는 " + id)
+					.user(target)
+					.team(targetTeam)
+					.status(APPROVED)
+					.build();
+
+				proposals.add(matchProposal);
+				entityManager.persist(matchProposal);
+			});
+
+		List<MatchChat> chats = new ArrayList<>();
+		proposals.forEach(proposal -> {
+			IntStream.range(1, 5)
+				.forEach(id -> {
+					MatchChat chat = MatchChat.builder()
+						.proposal(proposal)
+						.user(author)
+						.target(target)
+						.content(id == 4 ? lastChat + proposal.getId() : "칫챗")
+						.chattedAt(now())
+						.build();
+					chats.add(chat);
+					entityManager.persist(chat);
+				});
+		});
+
+		Map<Long, MatchChatResponse.LastChat> expected = new HashMap<>();
+		proposals.forEach(proposal -> {
+			expected.put(proposal.getId(), new MatchChatResponse.LastChat(lastChat + proposal.getId()));
+		});
+
+		List<Long> matchProposalIds = proposals.stream()
+			.map(MatchProposal::getId)
+			.toList();
+
+		//when
+		Map<Long, MatchChatResponse.LastChat> foundChats = matchChatService.findAllLastChats(matchProposalIds);
+
+		//then
+		assertThat(foundChats.size(), is(2));
+		proposals.forEach(proposal -> {
+			assertThat(foundChats.containsKey(proposal.getId()), is(true));
+			assertThat(foundChats.get(proposal.getId()).content(), is(expected.get(proposal.getId()).content()));
+		});
+	}
+
+	@Test
+	@DisplayName("채팅 내용을 조회한다.")
+	void test_findChatsByProposalId() {
+		//given
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
+		User target = getUser("target");
+		Team targetTeam = getSoccerTeam("target", target);
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.WAITING, author, authorTeam);
+
+		MatchProposal proposal = getProposal(match, "덤벼라!", target, targetTeam, APPROVED);
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+		entityManager.persist(target);
+		entityManager.persist(targetTeam);
+		entityManager.persist(match);
+		entityManager.persist(proposal);
+
+		List<MatchChat> chats = new ArrayList<>();
+		chats.add(getChat(proposal, author, target, "안녕"));
+		chats.add(getChat(proposal, target, author, "hi"));
+		chats.add(getChat(proposal, author, target, "겜 하실?"));
+		chats.add(getChat(proposal, target, author, "ㅇㅇ"));
+		chats.add(getChat(proposal, author, target, "7시에 ㄱㄱ"));
+		chats.forEach(chat -> {
+			entityManager.persist(chat);
+		});
+
+		List<MatchChatResponse.Chat> expected = chats.stream()
+			.map(chat -> new MatchChatResponse.Chat(
+				chat.getContent(),
+				chat.getChattedAt(),
+				new UserResponse.ChatWriterProfile(chat.getUser().getId())
+			))
+			.toList();
+
+		//when
+		MatchChatResponse.Chatting response
+			= matchChatService.findChatsByProposalId(proposal.getId(), author.getId());
+
+		//then
+		MatchProposalResponse.ChatMatch matchResponse = response.match();
+		assertThat(matchResponse.title(), is(match.getTitle()));
+		assertThat(matchResponse.status(), is(match.getStatus()));
+		assertThat(matchResponse.targetProfile().nickname(), is(target.getNickname()));
+
+		List<MatchChatResponse.Chat> chatResponse = response.chats();
+		assertThat(chatResponse, containsInAnyOrder(expected.toArray()));
 	}
 
 	private static User getUser(String name) {
@@ -300,6 +509,26 @@ class MatchChatServiceIntegrationTest {
 			.status(status)
 			.user(user)
 			.team(team)
+			.build();
+	}
+
+	private static MatchProposal getProposal(Match match, String content, User proposer, Team proposerTeam, MatchProposalStatus status) {
+		return MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(proposer)
+			.team(proposerTeam)
+			.status(APPROVED)
+			.build();
+	}
+
+	private static MatchChat getChat(MatchProposal proposal, User user, User target, String content) {
+		return MatchChat.builder()
+			.proposal(proposal)
+			.user(user)
+			.target(target)
+			.content(content)
+			.chattedAt(LocalDateTime.now())
 			.build();
 	}
 }

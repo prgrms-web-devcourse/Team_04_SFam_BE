@@ -37,6 +37,7 @@ public class AuthService {
 		this.jwt = jwt;
 	}
 
+	@Transactional
 	public AuthResponse.SignInResponse signIn(String username, String password) {
 		UserResponse foundUser;
 		try {

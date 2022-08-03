@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +29,8 @@ import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.teammember.entity.TeamMember;
+import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 
@@ -48,22 +51,30 @@ class MatchServiceIntegrationTest {
 	@DisplayName("팀의 리더는 팀 매칭 공고를 생성할 수 있다.")
 	void testTeamCreateSuccess() {
 		//given
-		User user = new User("password", "username", "nickname");
-		entityManager.persist(user);
-		user.updateLocation(new Location(1.1, 1.2));
+		User leader = new User("leader", "leader", "password");
+		User user1 = new User("member1", "member1", "password");
+		User user2 = new User("member2", "member2", "password");
+		User user3 = new User("member3", "member3", "password");
+		entityManager.persist(leader);
+		entityManager.persist(user1);
+		entityManager.persist(user2);
+		leader.updateLocation(new Location(1.1, 1.2));
 		Team team = Team.builder()
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(user)
+			.leader(leader)
 			.build();
 		entityManager.persist(team);
+		entityManager.persist(new TeamMember(team, user1, TeamMemberRole.LEADER));
+		entityManager.persist(new TeamMember(team, user1, TeamMemberRole.MEMBER));
+		entityManager.persist(new TeamMember(team, user2, TeamMemberRole.MEMBER));
 		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.TEAM_MATCH,
 			team.getId(), 3, SportsCategory.BADMINTON, "content");
 
 		//when
-		Long createdMatch = matchService.create(user.getId(), request);
+		Long createdMatch = matchService.create(leader.getId(), request);
 
 		//then
 		assertThat(createdMatch).isNotNull();
@@ -128,6 +139,28 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("팀 매칭 공고 생성 시 request에 팀 id가 null이면 예외가 발생한다.")
 	void testTeamCreateFailByRequest() {
+		//given
+		User user = new User("username", "nickname", "password");
+		entityManager.persist(user);
+		Team team = Team.builder()
+			.name("team1")
+			.description("first team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(user)
+			.build();
+		entityManager.persist(team);
+		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
+			MatchType.TEAM_MATCH,
+			null, 3, SportsCategory.BADMINTON, "content");
+
+		//when, then
+		assertThatThrownBy(() -> matchService.create(user.getId(), request)).isInstanceOf(BusinessException.class);
+
+	}
+
+	@Test
+	@DisplayName("팀 매칭 공고 생성 시 자신이 선택한 팀의 팀원보다 매칭 참여 인원수가 많으면 예외가 발생한다.")
+	void testTeamCreateFailByTeamMemberCount() {
 		//given
 		User user = new User("username", "nickname", "password");
 		entityManager.persist(user);
@@ -531,5 +564,302 @@ class MatchServiceIntegrationTest {
 		assertThat(foundMatches.values().get(0).id()).isEqualTo(matches.get(matches.size() - 1).getId());
 		assertThat(foundMatches.values().get(4).id()).isEqualTo(matches.get(matches.size() - 5).getId());
 		assertThat(foundMatches.hasNext()).isTrue();
+	}
+
+	@Test
+	@DisplayName("매칭을 모집 완료로 상태 변경한다.")
+	void test_updateStatusExceptEnd_toInGame() {
+		//given
+		User author = new User("author", "author", "aA1234!");
+		Team authorTeam = Team.builder()
+			.name("team1")
+			.description("first team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(author)
+			.build();
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+
+		Match match = Match.builder()
+			.title("match")
+			.status(MatchStatus.WAITING)
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.TEAM_MATCH)
+			.participants(3)
+			.user(author)
+			.team(authorTeam)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build();
+		entityManager.persist(match);
+
+		//when
+		matchService.updateStatusExceptEnd(match.getId(), author.getId(), MatchStatus.IN_GAME);
+
+		//then
+		Match foundMatch = entityManager.find(Match.class, match.getId());
+		assertThat(foundMatch).isNotNull();
+		assertThat(foundMatch.getStatus()).isEqualTo(MatchStatus.IN_GAME);
+	}
+
+	@Test
+	@DisplayName("매칭을 모집 중으로 상태 변경한다.")
+	void test_updateStatusExceptEnd_toWaiting() {
+		//given
+		User author = new User("author", "author", "aA1234!");
+		Team authorTeam = Team.builder()
+			.name("team1")
+			.description("first team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(author)
+			.build();
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+
+		Match match = Match.builder()
+			.title("match")
+			.status(MatchStatus.IN_GAME)
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.TEAM_MATCH)
+			.participants(3)
+			.user(author)
+			.team(authorTeam)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build();
+		entityManager.persist(match);
+
+		//when
+		matchService.updateStatusExceptEnd(match.getId(), author.getId(), MatchStatus.WAITING);
+
+		//then
+		Match foundMatch = entityManager.find(Match.class, match.getId());
+		assertThat(foundMatch).isNotNull();
+		assertThat(foundMatch.getStatus()).isEqualTo(MatchStatus.WAITING);
+	}
+
+	@Nested
+	@DisplayName("매칭을 모집 완료 또는 모집 중으로 상태 변경 시")
+	class UpdateStatusExceptEnd {
+
+		@Test
+		@DisplayName("경기 완료 상태로 변경하는 경우 오류가 발생한다.")
+		void testFail_CanNotUpdateEnd_updateStatusExceptEnd() {
+			//given
+			User author = new User("author", "author", "aA1234!");
+			Team authorTeam = Team.builder()
+				.name("team1")
+				.description("first team")
+				.sportsCategory(SportsCategory.BADMINTON)
+				.leader(author)
+				.build();
+			entityManager.persist(author);
+			entityManager.persist(authorTeam);
+
+			Match match = Match.builder()
+				.title("match")
+				.status(MatchStatus.IN_GAME)
+				.matchDate(LocalDate.now())
+				.matchType(MatchType.TEAM_MATCH)
+				.participants(3)
+				.user(author)
+				.team(authorTeam)
+				.sportsCategory(SportsCategory.BADMINTON)
+				.content("content")
+				.build();
+			entityManager.persist(match);
+
+			//when, then
+			assertThatThrownBy(() -> {
+				matchService.updateStatusExceptEnd(match.getId(), author.getId(), MatchStatus.END);
+			}).isInstanceOf(BusinessException.class);
+		}
+
+		@Test
+		@DisplayName("매칭이 존재하지 않는 경우 오류가 발생한다.")
+		void testFail_EmptyExceptionBy_updateStatusExceptEnd() {
+			//given
+			User author = new User("author", "author", "aA1234!");
+			entityManager.persist(author);
+
+			Long invalidMatchId = 999L;
+
+			//when, then
+			assertThatThrownBy(() -> {
+				matchService.updateStatusExceptEnd(invalidMatchId, author.getId(), MatchStatus.IN_GAME);
+			}).isInstanceOf(BusinessException.class);
+		}
+
+		@Test
+		@DisplayName("매칭 작성자가 아닌 경우 오류가 발생한다.")
+		void testFail_Access_DeniedBy_updateStatusExceptEnd() {
+			//given
+			User author = new User("author", "author", "aA1234!");
+			Team authorTeam = Team.builder()
+				.name("team1")
+				.description("first team")
+				.sportsCategory(SportsCategory.BADMINTON)
+				.leader(author)
+				.build();
+			entityManager.persist(author);
+			entityManager.persist(authorTeam);
+
+			Match match = Match.builder()
+				.title("match")
+				.status(MatchStatus.WAITING)
+				.matchDate(LocalDate.now())
+				.matchType(MatchType.TEAM_MATCH)
+				.participants(3)
+				.user(author)
+				.team(authorTeam)
+				.sportsCategory(SportsCategory.BADMINTON)
+				.content("content")
+				.build();
+			entityManager.persist(match);
+
+			User invalidUser = new User("proposer", "proposer", "aA1234!");
+			entityManager.persist(invalidUser);
+
+			//when, then
+			assertThatThrownBy(() -> {
+				matchService.updateStatusExceptEnd(match.getId(), invalidUser.getId(), MatchStatus.IN_GAME);
+			}).isInstanceOf(BusinessException.class);
+		}
+
+		@Test
+		@DisplayName("이미 변경 상태인 경우 오류가 발생한다.")
+		void testFail_AlreadyChangedBy_updateStatusExceptEnd() {
+			//given
+			User author = new User("author", "author", "aA1234!");
+			Team authorTeam = Team.builder()
+				.name("team1")
+				.description("first team")
+				.sportsCategory(SportsCategory.BADMINTON)
+				.leader(author)
+				.build();
+			entityManager.persist(author);
+			entityManager.persist(authorTeam);
+
+			Match match = Match.builder()
+				.title("match")
+				.status(MatchStatus.IN_GAME)
+				.matchDate(LocalDate.now())
+				.matchType(MatchType.TEAM_MATCH)
+				.participants(3)
+				.user(author)
+				.team(authorTeam)
+				.sportsCategory(SportsCategory.BADMINTON)
+				.content("content")
+				.build();
+			entityManager.persist(match);
+
+			//when, then
+			assertThatThrownBy(() -> {
+				matchService.updateStatusExceptEnd(match.getId(), author.getId(), MatchStatus.IN_GAME);
+			}).isInstanceOf(BusinessException.class);
+		}
+
+		@Test
+		@DisplayName("경기 종료 상태인 경우 오류가 발생한다.")
+		void testFail_MatchEndedBy_updateStatusExceptEnd() {
+			//given
+			User author = new User("author", "author", "aA1234!");
+			Team authorTeam = Team.builder()
+				.name("team1")
+				.description("first team")
+				.sportsCategory(SportsCategory.BADMINTON)
+				.leader(author)
+				.build();
+			entityManager.persist(author);
+			entityManager.persist(authorTeam);
+
+			Match match = Match.builder()
+				.title("match")
+				.status(MatchStatus.END)
+				.matchDate(LocalDate.now())
+				.matchType(MatchType.TEAM_MATCH)
+				.participants(3)
+				.user(author)
+				.team(authorTeam)
+				.sportsCategory(SportsCategory.BADMINTON)
+				.content("content")
+				.build();
+			entityManager.persist(match);
+
+			//when, then
+			assertThatThrownBy(() -> {
+				matchService.updateStatusExceptEnd(match.getId(), author.getId(), MatchStatus.IN_GAME);
+			}).isInstanceOf(BusinessException.class);
+		}
+	}
+
+	@Test
+	@DisplayName("매칭 공고자는 매칭 공고를 삭제할 수 있다.")
+	void testDeleteSuccess() {
+		//given
+		User user = new User("password", "username", "nickname");
+		entityManager.persist(user);
+
+		Match savedMatch = matchRepository.save(Match.builder()
+			.title("match")
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(user)
+			.status(MatchStatus.WAITING)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build());
+
+		//when
+		matchService.delete(user.getId(), savedMatch.getId());
+
+		//then
+		assertThat(matchRepository.findById(savedMatch.getId())).isEmpty();
+
+	}
+
+	@Test
+	@DisplayName("매칭 공고자가 아니면 매칭 공고를 삭제시 예외가 발생한다.")
+	void testDeleteFail() {
+		//given
+		User user = new User("username", "nickname", "password");
+		entityManager.persist(user);
+
+		Match savedMatch = matchRepository.save(Match.builder()
+			.title("match")
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(user)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.status(MatchStatus.WAITING)
+			.content("content")
+			.build());
+
+		//when, then
+		assertThatThrownBy(() -> matchService.delete(1000L, savedMatch.getId()));
+	}
+
+	@Test
+	@DisplayName("매칭 공고의 상태가 모집 중이 아닐 경우 예외가 발생한다.")
+	void testDeleteFailByStatus() {
+		//given
+		User user = new User("username", "nickname", "password");
+		entityManager.persist(user);
+
+		Match savedMatch = matchRepository.save(Match.builder()
+			.title("match")
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(user)
+			.status(MatchStatus.IN_GAME)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build());
+
+		//when, then
+		assertThatThrownBy(() -> matchService.delete(user.getId(), savedMatch.getId()));
 	}
 }

@@ -22,6 +22,11 @@ configurations {
 	}
 }
 
+
+ext {
+	set('springCloudVersion', "2021.0.3")
+}
+
 jar {
 	enabled = false
 }
@@ -79,8 +84,20 @@ dependencies {
 	//JASYPT
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
 
+	//QLRM
+	implementation 'org.qlrm:qlrm:3.0.4'
+
 	// ANNOTATION PROCESSOR
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+	//FEIGN CLIENT
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 tasks.named('compileJava') {

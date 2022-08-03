@@ -54,4 +54,14 @@ public record UserResponse(
 		Long id,
 		@Schema(description = "회원 닉네임")
 		String nickname) {}
+
+	public record ChatTargetProfile(
+		@Schema(description = "채팅 상대 닉네임")
+		String nickname
+	) {}
+
+	public record ChatWriterProfile(
+		@Schema(description = "채팅 작성자")
+		Long id
+	) {}
 }

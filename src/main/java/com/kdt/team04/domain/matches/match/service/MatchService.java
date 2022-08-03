@@ -1,7 +1,6 @@
 package com.kdt.team04.domain.matches.match.service;
 
 import java.text.MessageFormat;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -16,13 +15,15 @@ import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
 import com.kdt.team04.domain.matches.match.dto.MatchRequest;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
+import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
-import com.kdt.team04.domain.team.SportsCategory;
+import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamGiverService;
+import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.Location;
@@ -35,17 +36,22 @@ public class MatchService {
 
 	private final MatchRepository matchRepository;
 	private final UserService userService;
+	private final MatchProposalService matchProposalService;
 	private final TeamGiverService teamGiver;
+	private final TeamMemberGiverService teamMemberGiver;
 	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
 
-	public MatchService(MatchRepository matchRepository, UserService userService, TeamGiverService teamGiver,
-		MatchConverter matchConverter, TeamConverter teamConverter,
+	public MatchService(MatchRepository matchRepository, UserService userService,
+		MatchProposalService matchProposalService, TeamGiverService teamGiver,
+		TeamMemberGiverService teamMemberGiver, MatchConverter matchConverter, TeamConverter teamConverter,
 		UserConverter userConverter) {
 		this.matchRepository = matchRepository;
 		this.userService = userService;
+		this.matchProposalService = matchProposalService;
 		this.teamGiver = teamGiver;
+		this.teamMemberGiver = teamMemberGiver;
 		this.matchConverter = matchConverter;
 		this.teamConverter = teamConverter;
 		this.userConverter = userConverter;
@@ -62,7 +68,7 @@ public class MatchService {
 
 	private Match individualMatchCreate(Long userId, MatchRequest.MatchCreateRequest request) {
 		if (request.participants() != 1) {
-			throw new BusinessException(ErrorCode.INVALID_PARTICIPANTS,
+			throw new BusinessException(ErrorCode.MATCH_INVALID_PARTICIPANTS,
 				MessageFormat.format("userId = {0}, participants = {1}", userId, request.participants()));
 		}
 
@@ -91,7 +97,8 @@ public class MatchService {
 		}
 
 		TeamResponse teamResponse = teamGiver.findById(request.teamId());
-		verifyLeader(userId, request.teamId(), teamResponse.leader().id());
+		teamGiver.verifyLeader(userId, request.teamId(), teamResponse.leader().id());
+		teamMemberGiver.hasEnoughMemberCount(request.participants(), request.teamId());
 
 		User teamLeader = userConverter.toUser(teamResponse.leader());
 		Team team = teamConverter.toTeam(teamResponse, teamLeader);
@@ -122,19 +129,8 @@ public class MatchService {
 		}
 		Location location = foundUser.location();
 
-		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchRepository.findByLocationPaging(
+		return matchRepository.findByLocationPaging(
 			location.getLatitude(), location.getLongitude(), request);
-
-		return foundMatches;
-	}
-
-	private Boolean hasNext(LocalDateTime createdAtCursor, Long idCursor, SportsCategory sportsCategory) {
-		if (createdAtCursor == null || idCursor == null) {
-			return false;
-		}
-
-		return this.matchRepository.existsByCreatedAtLessThanEqualAndIdLessThanAndSportsCategory(createdAtCursor,
-			idCursor, sportsCategory);
 	}
 
 	public MatchResponse findById(Long id) {
@@ -156,10 +152,50 @@ public class MatchService {
 		return matchConverter.toMatchResponse(foundMatch, authorResponse);
 	}
 
-	private void verifyLeader(Long userId, Long teamId, Long leaderId) {
-		if (!Objects.equals(userId, leaderId)) {
-			throw new BusinessException(ErrorCode.NOT_TEAM_LEADER,
-				MessageFormat.format("teamId = {0} , userId = {1}", teamId, userId));
+	@Transactional
+	public void delete(Long userId, Long id) {
+		Match match = matchRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
+				MessageFormat.format("matchId = {0}", id)));
+
+		if (match.getStatus().isMatched()) {
+			throw new BusinessException(ErrorCode.MATCH_INVALID_DELETE_REQUEST, MessageFormat.format("matchId = {0}", id));
 		}
+
+		if (!Objects.equals(match.getUser().getId(), userId)) {
+			throw new BusinessException(ErrorCode.AUTHOR_NOT_MATCHED,
+				MessageFormat.format("userId = {0}, matchId = {1}", userId, match.getId()));
+		}
+		matchProposalService.deleteByMatches(id);
+		matchRepository.delete(match);
+	}
+
+	@Transactional
+	public void updateStatusExceptEnd(Long id, Long userId, MatchStatus status) {
+		if (Objects.equals(status, MatchStatus.END)) {
+			throw new BusinessException(ErrorCode.MATCH_CANNOT_UPDATE_END,
+				MessageFormat.format("matchId = {0}, userId = {1}, status = {2}", id, userId, status));
+		}
+
+		Match match = matchRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
+				MessageFormat.format("matchId = {0}", id)));
+
+		if (!Objects.equals(match.getUser().getId(), userId)) {
+			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
+				MessageFormat.format("matchId = {0} , userId = {1}", id, userId));
+		}
+
+		if (Objects.equals(match.getStatus(), status)) {
+			throw new BusinessException(ErrorCode.MATCH_ALREADY_CHANGED_STATUS,
+				MessageFormat.format("matchId = {0} , status = {1}", id, status));
+		}
+
+		if (Objects.equals(match.getStatus(), MatchStatus.END)) {
+			throw new BusinessException(ErrorCode.MATCH_ENDED,
+				MessageFormat.format("matchId = {0} , status = {1}", id, status));
+		}
+
+		match.updateStatus(status);
 	}
 }

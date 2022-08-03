@@ -1,10 +1,13 @@
 package com.kdt.team04.domain.teammember.service;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.teammember.dto.TeamMemberConverter;
 import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
@@ -46,4 +49,17 @@ public class TeamMemberGiverService {
 		teamMemberRepository.save(teamMember);
 	}
 
+	public int countByTeamId(Long teamId) {
+		return teamMemberRepository.countAllByTeamId(teamId);
+	}
+
+	public void hasEnoughMemberCount(int participants, Long teamId) {
+		int teamMemberCount = teamMemberRepository.countAllByTeamId(teamId);
+
+		if (teamMemberCount < participants) {
+			throw new BusinessException(ErrorCode.MATCH_INVALID_PARTICIPANTS,
+				MessageFormat.format("TeamMemberCount = {0} participants = {1}",
+					teamMemberCount, participants));
+		}
+	}
 }

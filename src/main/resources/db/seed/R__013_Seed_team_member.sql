@@ -7,7 +7,7 @@ INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (4, 2, 1, 'LEA
 INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (5, 3, 2, 'LEADER');
 INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (6, 4, 3, 'LEADER');
 
-INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (4, 5, 4, 'LEADER');
-INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (5, 5, 9, 'MEMBER');
-INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (6, 5, 10, 'MEMBER');
-INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (7, 5, 11, 'MEMBER');
+INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (7, 5, 4, 'LEADER');
+INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (8, 5, 9, 'MEMBER');
+INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (9, 5, 10, 'MEMBER');
+INSERT IGNORE INTO team_member(id, team_id, user_id, role) VALUES (10, 5, 11, 'MEMBER');
