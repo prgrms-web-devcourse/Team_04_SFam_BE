@@ -11,5 +11,5 @@ public class ApiResponse<T> {
 		this.data = data;
 	}
 
-	public T getResponse() { return data;}
+	public T getData() { return data;}
 }
