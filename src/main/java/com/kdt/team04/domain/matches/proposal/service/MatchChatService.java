@@ -48,14 +48,14 @@ public class MatchChatService {
 
 		if (matchProposalDto.getStatus() != MatchProposalStatus.APPROVED) {
 			throw new BusinessException(
-				ErrorCode.MATCH_PROPOSAL_NOT_APPROVED,
+				ErrorCode.PROPOSAL_NOT_APPROVED,
 				MessageFormat.format("proposalId = {0}", proposalId));
 		}
 
 		if (matchProposalDto.getMatchStatus() != MatchStatus.WAITING
 			&& matchProposalDto.getStatus() != MatchProposalStatus.FIXED
 		) {
-			throw new BusinessException(ErrorCode.ANOTHER_MATCH_PROPOSAL_ALREADY_FIXED,
+			throw new BusinessException(ErrorCode.ANOTHER_PROPOSAL_ALREADY_FIXED,
 				MessageFormat.format("proposalId = {0}", proposalId));
 		}
 
