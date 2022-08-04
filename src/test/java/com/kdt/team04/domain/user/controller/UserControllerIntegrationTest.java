@@ -142,9 +142,9 @@ class UserControllerIntegrationTest {
 		MatchReviewResponse.TotalCount reviewResponse = new MatchReviewResponse.TotalCount(1, 0, 0);
 		List<TeamResponse.SimpleResponse> teamResponses = Arrays.asList(
 			new TeamResponse.SimpleResponse(findUserTeam1.getId(), findUserTeam1.getName(),
-				findUserTeam1.getSportsCategory()),
+				findUserTeam1.getSportsCategory(), findUserTeam1.getLogoImageUrl()),
 			new TeamResponse.SimpleResponse(findUserTeam2.getId(), findUserTeam2.getName(),
-				findUserTeam2.getSportsCategory())
+				findUserTeam2.getSportsCategory(), findUserTeam2.getLogoImageUrl())
 		);
 		UserResponse.FindProfile profileResponse = new UserResponse.FindProfile(findUser.getNickname(),  findUser.getProfileImageUrl(), reviewResponse,
 			teamResponses);

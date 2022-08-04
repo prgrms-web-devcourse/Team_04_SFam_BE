@@ -122,8 +122,8 @@ class UserServiceTest {
 
 		MatchReviewResponse.TotalCount review = new MatchReviewResponse.TotalCount(1, 1, 1);
 		List<TeamResponse.SimpleResponse> teams = Arrays.asList(
-			new TeamResponse.SimpleResponse(1L, "축구왕", SportsCategory.SOCCER),
-			new TeamResponse.SimpleResponse(2L, "야구왕", SportsCategory.BASEBALL)
+			new TeamResponse.SimpleResponse(1L, "축구왕", SportsCategory.SOCCER, null),
+			new TeamResponse.SimpleResponse(2L, "야구왕", SportsCategory.BASEBALL, null)
 		);
 		UserResponse.FindProfile response = new UserResponse.FindProfile(user.getUsername(), user.getProfileImageUrl(),
 			review, teams);

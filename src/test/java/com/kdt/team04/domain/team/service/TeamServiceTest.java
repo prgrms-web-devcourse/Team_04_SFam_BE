@@ -68,12 +68,12 @@ class TeamServiceTest {
 	private final TeamRequest.CreateRequest CREATE_REQUEST = new TeamRequest.CreateRequest("team1", "first team",
 		SportsCategory.BADMINTON);
 	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),
-		CREATE_REQUEST.sportsCategory(), USER);
+		CREATE_REQUEST.sportsCategory(), USER, null);
 	private final MatchRecordResponse.TotalCount RECORD = new MatchRecordResponse.TotalCount(1, 1, 1);
 	private final MatchReviewResponse.TotalCount REVIEW = new MatchReviewResponse.TotalCount(1, 1, 1);
 	private final TeamResponse RESPONSE = new TeamResponse(TEAM.getId(), TEAM.getName(), TEAM.getDescription(),
 		TEAM.getSportsCategory(),
-		Collections.emptyList(), RECORD, REVIEW, USER_RESPONSE);
+		Collections.emptyList(), RECORD, REVIEW, USER_RESPONSE, null);
 
 	@Test
 	@DisplayName("팀 생성에 성공합니다.")
