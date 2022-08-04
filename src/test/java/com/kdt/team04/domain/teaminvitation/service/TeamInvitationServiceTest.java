@@ -5,18 +5,20 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.entity.Team;
@@ -40,6 +42,12 @@ class TeamInvitationServiceTest {
 
 	@Autowired
 	TeamConverter teamConverter;
+
+	@MockBean
+	S3Uploader s3Uploader;
+
+	@MockBean
+	AmazonS3 amazonS3;
 
 	@Test
 	@DisplayName("팀 초대 성공")
@@ -230,7 +238,8 @@ class TeamInvitationServiceTest {
 		entityManager.clear();
 
 		// when
-		PageDto.TeamInvitationCursorPageRequest request = new PageDto.TeamInvitationCursorPageRequest(null, null, 10, InvitationStatus.WAITING);
+		PageDto.TeamInvitationCursorPageRequest request = new PageDto.TeamInvitationCursorPageRequest(null, null, 10,
+			InvitationStatus.WAITING);
 		PageDto.CursorResponse invites = teamInvitationService.getInvitations(userB.getId(), request);
 
 		// then
@@ -272,7 +281,8 @@ class TeamInvitationServiceTest {
 		entityManager.clear();
 
 		// when
-		PageDto.TeamInvitationCursorPageRequest request = new PageDto.TeamInvitationCursorPageRequest(null, null, 20, InvitationStatus.WAITING);
+		PageDto.TeamInvitationCursorPageRequest request = new PageDto.TeamInvitationCursorPageRequest(null, null, 20,
+			InvitationStatus.WAITING);
 		PageDto.CursorResponse invites = teamInvitationService.getInvitations(userB.getId(), request);
 
 		// then

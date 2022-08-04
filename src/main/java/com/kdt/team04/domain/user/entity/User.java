@@ -41,20 +41,28 @@ public class User extends BaseEntity {
 	@Embedded
 	private Location location;
 
+	private String profileImageUrl;
+
 	protected User() {
 	}
 
 	public User(String username, String nickname, String password) {
-		this(null, password, username, nickname, null);
+		this(null, password, username, nickname, null, null);
 	}
 
 	@Builder
-	public User(Long id, String password, String username, String nickname, Location location) {
+	public User(Long id, String password, String username, String nickname,
+		Location location, String profileImageUrl) {
 		this.id = id;
 		this.password = password;
 		this.username = username;
 		this.nickname = nickname;
 		this.location = location;
+		this.profileImageUrl = profileImageUrl;
+	}
+
+	public String getProfileImageUrl() {
+		return profileImageUrl;
 	}
 
 	public Long getId() {
@@ -80,4 +88,9 @@ public class User extends BaseEntity {
 	public void updateLocation(Location location) {
 		this.location = location;
 	}
+
+	public void updateImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
+	}
+
 }

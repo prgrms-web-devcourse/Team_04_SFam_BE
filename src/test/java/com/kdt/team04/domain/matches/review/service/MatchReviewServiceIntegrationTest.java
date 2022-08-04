@@ -16,9 +16,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
@@ -42,6 +45,12 @@ class MatchReviewServiceIntegrationTest {
 
 	@Autowired
 	private MatchReviewRepository matchReviewRepository;
+
+	@MockBean
+	S3Uploader s3Uploader;
+
+	@MockBean
+	AmazonS3 amazonS3;
 
 	@Test
 	@DisplayName("팀전 종료 후 경기 후기를 등록한다.")
