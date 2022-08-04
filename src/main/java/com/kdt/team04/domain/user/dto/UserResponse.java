@@ -15,7 +15,7 @@ public record UserResponse(
 	String username,
 	String password,
 	String nickname,
-	Location location
+	Location location,
 	String profileImageUrl
 ) {
 

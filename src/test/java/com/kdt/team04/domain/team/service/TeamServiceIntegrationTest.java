@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.exception.EntityNotFoundException;
+import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.team.dto.TeamRequest;
