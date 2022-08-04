@@ -13,6 +13,8 @@ cors:
       - http://127.0.0.1:3000
       - https://127.0.0.1:3000
       - https://localhost:3000
+      - https://dongkyurami.link
+      - https://www.dongkyurami.link
 logging:
   level:
     org.hibernate.type.descriptor.sql: INFO
