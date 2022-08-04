@@ -84,28 +84,35 @@ class MatchProposalServiceIntegrationTest {
 	void testTeamProposerCreateSuccess() {
 		//given
 		User author = new User("author", "author", "aA1234!");
+
+		entityManager.persist(author);
+
 		Team authorTeam = Team.builder()
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(author)
 			.build();
+
 		entityManager.persist(authorTeam);
-		entityManager.persist(author);
 
 		User proposer = new User("proposer", "proposer", "aA1234!");
 		User user1 = new User("member1", "member1", "password");
 		User user2 = new User("member2", "member2", "password");
+
 		entityManager.persist(proposer);
 		entityManager.persist(user1);
 		entityManager.persist(user2);
+
 		proposer.updateLocation(new Location(1.1, 1.2));
+
 		Team proposerTeam = Team.builder()
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
+
 		entityManager.persist(proposerTeam);
 		entityManager.persist(new TeamMember(proposerTeam, user1, TeamMemberRole.LEADER));
 		entityManager.persist(new TeamMember(proposerTeam, user1, TeamMemberRole.MEMBER));
@@ -122,7 +129,9 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.content("content")
 			.build();
+
 		entityManager.persist(match);
+
 		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(proposerTeam.getId(),
 			"팀전 신청합니다.");
 
@@ -138,17 +147,23 @@ class MatchProposalServiceIntegrationTest {
 	void testTeamProposerCreateFailByTeamMember() {
 		//given
 		User author = new User("author", "author", "aA1234!");
+
+		entityManager.persist(author);
+
 		Team authorTeam = Team.builder()
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(author)
 			.build();
+
 		entityManager.persist(authorTeam);
 		entityManager.persist(author);
 
 		User proposer = new User("proposer", "proposer", "aA1234!");
+
 		entityManager.persist(proposer);
+
 		proposer.updateLocation(new Location(1.1, 1.2));
 		Team proposerTeam = Team.builder()
 			.name("team1")
@@ -156,6 +171,7 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
+
 		entityManager.persist(proposerTeam);
 
 		Match match = Match.builder()
@@ -169,7 +185,9 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.content("content")
 			.build();
+
 		entityManager.persist(match);
+
 		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(proposerTeam.getId(),
 			"팀전 신청합니다.");
 
@@ -184,6 +202,10 @@ class MatchProposalServiceIntegrationTest {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		User proposer = new User("proposer", "proposer", "aA1234!");
+
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+
 		Team authorTeam = Team.builder()
 			.name("team1")
 			.description("first team")
@@ -196,10 +218,9 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
+
 		entityManager.persist(authorTeam);
 		entityManager.persist(proposerTeam);
-		entityManager.persist(author);
-		entityManager.persist(proposer);
 
 		Match match = Match.builder()
 			.title("match")
