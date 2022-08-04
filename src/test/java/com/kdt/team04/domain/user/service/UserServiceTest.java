@@ -168,7 +168,6 @@ class UserServiceTest {
 		assertThat(userResponse.id()).isEqualTo(user.getId());
 		assertThat(userResponse.username()).isEqualTo(user.getUsername());
 		assertThat(userResponse.nickname()).isEqualTo(user.getNickname());
-		assertThat(userResponse.password()).isEqualTo(user.getPassword());
 	}
 
 	@Test
