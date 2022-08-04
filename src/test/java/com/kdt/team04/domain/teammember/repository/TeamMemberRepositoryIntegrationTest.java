@@ -30,6 +30,10 @@ class TeamMemberRepositoryIntegrationTest {
 	void existsByTeamIdAndMemberId() {
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+
+		User persistedUserA = entityManager.persist(userA);
+		entityManager.persist(userB);
+
 		Team team = Team.builder()
 			.name("teamA")
 			.description("description")
@@ -38,9 +42,8 @@ class TeamMemberRepositoryIntegrationTest {
 			.build();
 		TeamMember teamMemberA = new TeamMember(team, userA, TeamMemberRole.LEADER);
 		TeamMember teamMemberB = new TeamMember(team, userB, TeamMemberRole.MEMBER);
+
 		Team persistedTeam = entityManager.persist(team);
-		User persistedUserA = entityManager.persist(userA);
-		entityManager.persist(userB);
 		entityManager.persist(teamMemberA);
 		entityManager.persist(teamMemberB);
 
@@ -53,6 +56,10 @@ class TeamMemberRepositoryIntegrationTest {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
+
+		entityManager.persist(userA);
+		entityManager.persist(userB);
+
 		Team team = Team.builder()
 			.name("teamA")
 			.description("description")
@@ -60,9 +67,9 @@ class TeamMemberRepositoryIntegrationTest {
 			.leader(userA)
 			.build();
 		TeamMember teamMemberA = new TeamMember(team, userA, TeamMemberRole.LEADER);
+
 		Team persistedTeam = entityManager.persist(team);
 		User persistedUserB = entityManager.persist(userB);
-
 		entityManager.persist(userA);
 		entityManager.persist(teamMemberA);
 

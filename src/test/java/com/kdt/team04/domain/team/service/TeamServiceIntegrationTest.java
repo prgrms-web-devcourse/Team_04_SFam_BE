@@ -3,6 +3,7 @@ package com.kdt.team04.domain.team.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -12,12 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.exception.EntityNotFoundException;
-import com.kdt.team04.common.file.service.S3Uploader;
+import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.team.SportsCategory;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.team.dto.TeamRequest;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
@@ -47,17 +50,21 @@ class TeamServiceIntegrationTest {
 	@DisplayName("해당 사용자는 팀을 생성할 수 있고, 해당 팀의 리더가 된다.")
 	void testCreateSuccess() {
 		//given
-		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
-		entityManager.persist(user);
-		TeamRequest.CreateRequest CREATE_REQUEST = new TeamRequest.CreateRequest("team1", "first team",
+		User teamCreator = getDemoUser();
+		TeamRequest.CreateRequest requestDto = new TeamRequest.CreateRequest("team1", "first team",
 			SportsCategory.BADMINTON);
 
 		//when
-		Long savedId = teamService.create(user.getId(), CREATE_REQUEST.name(), CREATE_REQUEST.sportsCategory(),
-			CREATE_REQUEST.description());
+		Long savedTeamId = teamService.create(teamCreator.getId(), requestDto);
+		Long leaderId = teamRepository.findById(savedTeamId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_NOT_FOUND,
+				MessageFormat.format("TeamId = {0}", savedTeamId)))
+			.getLeader()
+			.getId();
 
 		//then
-		assertThat(savedId).isNotNull();
+		assertThat(savedTeamId).isNotNull();
+		assertThat(teamCreator.getId()).isEqualTo(leaderId);
 	}
 
 	@Test
@@ -113,6 +120,18 @@ class TeamServiceIntegrationTest {
 		//then
 		assertThat(foundTeams).hasSize(1);
 		assertThat(foundTeams.get(0).id()).isEqualTo(savedTeam.getId());
+	}
+
+	public User getDemoUser() {
+		User demoUser = User.builder()
+			.username("test1234")
+			.nickname("nickname")
+			.password("Test1234!!")
+			.build();
+
+		entityManager.persist(demoUser);
+
+		return demoUser;
 	}
 
 }

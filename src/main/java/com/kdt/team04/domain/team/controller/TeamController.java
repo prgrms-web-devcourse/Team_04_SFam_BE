@@ -41,13 +41,12 @@ public class TeamController {
 	@Operation(summary = "팀을 생성한다.", description = "새로운 팀을 생성할 수 있습니다.")
 	@PostMapping
 	public void create(@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
-		@RequestBody @Valid TeamRequest.CreateRequest request) {
+		@RequestBody @Valid TeamRequest.CreateRequest requestDto) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
 
-		teamService.create(jwtAuthentication.id(), request.name(), request.sportsCategory(),
-			request.description());
+		teamService.create(jwtAuthentication.id(),requestDto);
 	}
 
 	@Operation(summary = "팀 프로필 조회", description = "해당 id의 팀 프로필을 조회할 수 있습니다.")

@@ -9,12 +9,21 @@ import com.kdt.team04.domain.user.entity.User;
 public class UserConverter {
 
 	public User toUser(UserResponse userResponse) {
-		return new User(userResponse.id(), userResponse.password(), userResponse.username(), userResponse.nickname(),
-			userResponse.location(), null);
+		return User.builder()
+			.id(userResponse.id())
+			.username(userResponse.username())
+			.nickname(userResponse.nickname())
+			.location(userResponse.location())
+			.build();
 	}
 
 	public UserResponse toUserResponse(User user) {
-		return new UserResponse(user.getId(), user.getUsername(), user.getPassword(), user.getNickname(),
-			user.getLocation(), user.getProfileImageUrl());
+		return UserResponse.builder()
+			.id(user.getId())
+			.username(user.getUsername())
+			.nickname(user.getNickname())
+			.location(user.getLocation())
+			.profileImageUrl(user.getProfileImageUrl())
+			.build();
 	}
 }

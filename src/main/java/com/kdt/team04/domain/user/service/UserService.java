@@ -44,14 +44,14 @@ public class UserService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("Username = {0}", username)));
 
-		return new UserResponse(
-			foundUser.getId(),
-			foundUser.getUsername(),
-			foundUser.getPassword(),
-			foundUser.getNickname(),
-			foundUser.getLocation(),
-			foundUser.getProfileImageUrl()
-		);
+		return UserResponse.builder()
+			.id(foundUser.getId())
+			.username(foundUser.getUsername())
+			.password(foundUser.getPassword())
+			.nickname(foundUser.getNickname())
+			.location(foundUser.getLocation())
+			.profileImageUrl(foundUser.getProfileImageUrl())
+			.build();
 	}
 
 	@Transactional
@@ -93,14 +93,13 @@ public class UserService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", id)));
 
-		return new UserResponse(
-			foundUser.getId(),
-			foundUser.getUsername(),
-			foundUser.getPassword(),
-			foundUser.getNickname(),
-			foundUser.getLocation(),
-			foundUser.getProfileImageUrl()
-		);
+		return UserResponse.builder()
+			.id(foundUser.getId())
+			.username(foundUser.getUsername())
+			.nickname(foundUser.getNickname())
+			.location(foundUser.getLocation())
+			.profileImageUrl(foundUser.getProfileImageUrl())
+			.build();
 	}
 
 	@Transactional
