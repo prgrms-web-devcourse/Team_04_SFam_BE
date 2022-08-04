@@ -2,6 +2,7 @@ package com.kdt.team04.domain.user.service;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,13 +134,14 @@ public class UserService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", id)));
 
-		if (foundUser.getProfileImageUrl() != null) {
-			s3Uploader.delete(foundUser.getProfileImageUrl());
-		}
-
-		String key = s3Uploader.upload(file.getResource(), ImagePath.USERS_PROFILES);
-
-		foundUser.updateImageUrl(key);
+		Optional.ofNullable(foundUser.getProfileImageUrl())
+			.ifPresentOrElse(
+				key -> s3Uploader.uploadByKey(file.getResource(), key),
+				() -> {
+					String key = s3Uploader.uploadByPath(file.getResource(), ImagePath.USERS_PROFILES.getPath());
+					foundUser.updateImageUrl(key);
+				}
+			);
 	}
 
 }
