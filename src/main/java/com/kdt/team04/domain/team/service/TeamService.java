@@ -2,6 +2,7 @@ package com.kdt.team04.domain.team.service;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,13 +101,14 @@ public class TeamService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_TEAM_LEADER,
 				MessageFormat.format("TeamId = {0}", teamId)));
 
-		if (team.getLogoImageUrl() != null) {
-			s3Uploader.delete(team.getLogoImageUrl());
-		}
-
-		String key = s3Uploader.upload(file.getResource(), ImagePath.TEAMS_LOGO);
-
-		team.updateLogoUrl(key);
+		Optional.ofNullable(team.getLogoImageUrl())
+			.ifPresentOrElse(
+				key -> s3Uploader.uploadByKey(file.getResource(), key),
+				() -> {
+					String key = s3Uploader.uploadByPath(file.getResource(), ImagePath.TEAMS_LOGO.getPath());
+					team.updateLogoUrl(key);
+				}
+			);
 	}
 
 }
