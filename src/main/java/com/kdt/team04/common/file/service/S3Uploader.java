@@ -20,7 +20,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.FileValidator;
-import com.kdt.team04.common.file.ImagePath;
 import com.kdt.team04.common.file.config.S3ConfigProperties;
 
 @Component
@@ -39,12 +38,25 @@ public class S3Uploader implements FileStorage {
 	}
 
 	@Override
-	public String upload(Resource resource, ImagePath path) {
+	public String uploadByPath(Resource resource, String path) {
 		fileValidator.validate(resource);
 
 		String extension = fileValidator.getExtension(resource.getFilename());
-		String key = path.getPath() + UUID.randomUUID() + "." + extension;
+		String key = path + UUID.randomUUID() + "." + extension;
+		write(resource, key);
 
+		return s3.url() + key;
+	}
+
+	@Override
+	public void uploadByKey(Resource resource, String key) {
+		fileValidator.validate(resource);
+
+		String originalKey = key.substring(s3.url().length());
+		write(resource, originalKey);
+	}
+
+	private void write(Resource resource, String key) {
 		try (InputStream inputStream = resource.getInputStream()) {
 			ObjectMetadata metadata = new ObjectMetadata();
 
@@ -68,8 +80,6 @@ public class S3Uploader implements FileStorage {
 			throw new BusinessException(ErrorCode.INTERNAL_SEVER_ERROR,
 				"AWS S3에 저장하는 작업에 실패했습니다.");
 		}
-
-		return s3.url() + key;
 	}
 
 	@Override
