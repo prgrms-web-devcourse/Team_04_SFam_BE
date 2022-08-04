@@ -146,7 +146,7 @@ class UserControllerIntegrationTest {
 			new TeamResponse.SimpleResponse(findUserTeam2.getId(), findUserTeam2.getName(),
 				findUserTeam2.getSportsCategory())
 		);
-		UserResponse.FindProfile profileResponse = new UserResponse.FindProfile(findUser.getNickname(), reviewResponse,
+		UserResponse.FindProfile profileResponse = new UserResponse.FindProfile(findUser.getNickname(),  findUser.getProfileImageUrl(), reviewResponse,
 			teamResponses);
 
 		String response = objectMapper.writeValueAsString(new ApiResponse<>(profileResponse));
@@ -175,13 +175,18 @@ class UserControllerIntegrationTest {
 		String nickname = "test";
 		LongStream.range(1, 6)
 			.mapToObj(id ->
-				new User("test00" + id, "test00" + id, passwordEncoder.encode("12345"))
+				User.builder()
+					.username("test00"+id)
+					.nickname("test00"+id)
+					.password(passwordEncoder.encode("12345"))
+					.profileImageUrl("test00"+id)
+					.build()
 			)
 			.forEach(user -> entityManager.persist(user));
 
 		List<UserResponse.UserFindResponse> responses = LongStream.range(1, 6)
 			.mapToObj(id ->
-				new UserResponse.UserFindResponse(id, "test00" + id, "test00" + id))
+				new UserResponse.UserFindResponse(id, "test00" + id, "test00" + id, "test00" + id))
 			.toList();
 
 		String response = objectMapper.writeValueAsString(new ApiResponse<>(responses));

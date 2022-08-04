@@ -64,7 +64,7 @@ class TeamServiceTest {
 
 	private final User USER = new User(1L, "password", "username", "nickname", null, null);
 	private final UserResponse USER_RESPONSE = new UserResponse(USER.getId(), USER.getUsername(), USER.getPassword(),
-		USER.getNickname(), null);
+		USER.getNickname(), null, null);
 	private final TeamRequest.CreateRequest CREATE_REQUEST = new TeamRequest.CreateRequest("team1", "first team",
 		SportsCategory.BADMINTON);
 	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),

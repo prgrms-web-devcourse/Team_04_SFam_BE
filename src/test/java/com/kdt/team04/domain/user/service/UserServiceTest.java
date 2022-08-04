@@ -98,7 +98,7 @@ class UserServiceTest {
 			.toList();
 		List<UserResponse.UserFindResponse> responses = LongStream.range(1, 6)
 			.mapToObj(id ->
-				new UserResponse.UserFindResponse(id, "test0" + id, "test0" + id))
+				new UserResponse.UserFindResponse(id, "test0" + id, "test0" + id, "test0" + id))
 			.toList();
 
 		given(userRepository.findByNicknameContaining(nickname)).willReturn(users);
@@ -125,7 +125,8 @@ class UserServiceTest {
 			new TeamResponse.SimpleResponse(1L, "축구왕", SportsCategory.SOCCER),
 			new TeamResponse.SimpleResponse(2L, "야구왕", SportsCategory.BASEBALL)
 		);
-		UserResponse.FindProfile response = new UserResponse.FindProfile(user.getUsername(), review, teams);
+		UserResponse.FindProfile response = new UserResponse.FindProfile(user.getUsername(), user.getProfileImageUrl(),
+			review, teams);
 
 		given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
 		given(matchReviewGiver.findTotalReviewByUserId(any(Long.class))).willReturn(review);
