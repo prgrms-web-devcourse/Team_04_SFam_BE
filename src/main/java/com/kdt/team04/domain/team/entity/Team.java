@@ -46,16 +46,24 @@ public class Team extends BaseEntity {
 	@JoinColumn(name = "leader_id", nullable = false)
 	private User leader;
 
+	private String logoImageUrl;
+
 	protected Team() {
 	}
 
 	@Builder
-	public Team(Long id, String name, String description, SportsCategory sportsCategory, User leader) {
+	public Team(Long id, String name, String description, SportsCategory sportsCategory,
+		User leader, String logoImageUrl) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.sportsCategory = sportsCategory;
 		this.leader = leader;
+		this.logoImageUrl = logoImageUrl;
+	}
+
+	public void updateLogoUrl(String logoImageUrl) {
+		this.logoImageUrl = logoImageUrl;
 	}
 
 	public Long getId() {
@@ -76,6 +84,10 @@ public class Team extends BaseEntity {
 
 	public User getLeader() {
 		return leader;
+	}
+
+	public String getLogoImageUrl() {
+		return logoImageUrl;
 	}
 
 	@Override
