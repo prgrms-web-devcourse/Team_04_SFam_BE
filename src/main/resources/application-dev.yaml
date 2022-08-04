@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    username: ENC(nSSFICyQak/cBulXEeOEmlMHgdGIUy+L)
-    password: ENC(JajXE4ahsIVgOBsyZ7BGrPQ3UZTJ0bIo)
-    url: ENC(9d/4bHB1HmtQc/9cqFnK/mWXll5mHPVs1V1JBqNjyCTNZzj2CE62LTe7mWKNhCW1FK8Zh0JPGiFj8ICXRlCl65pco0f/r7TTLqJGYKeMDln1QkZRmttdcg==)
+    username: ${MYSQL_USERNAME:ENC(nSSFICyQak/cBulXEeOEmlMHgdGIUy+L)}
+    password: ${MYSQL_PASSWORD:ENC(JajXE4ahsIVgOBsyZ7BGrPQ3UZTJ0bIo)}
+    url: ${MYSQL_URL:ENC(9d/4bHB1HmtQc/9cqFnK/mWXll5mHPVs1V1JBqNjyCTNZzj2CE62LTe7mWKNhCW1FK8Zh0JPGiFj8ICXRlCl65pco0f/r7TTLqJGYKeMDln1QkZRmttdcg==)}
   jpa:
     show-sql: false
 cors:
@@ -13,10 +13,27 @@ cors:
       - http://127.0.0.1:3000
       - https://127.0.0.1:3000
       - https://localhost:3000
+      - https://dongkyurami.link
+      - https://www.dongkyurami.link
 logging:
   level:
     org.hibernate.type.descriptor.sql: INFO
 jwt:
   client-secret: ENC(vaOuavM8/QZzrntUSL/CLC3Q47399EsR)
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ENC(hDiGnEdxfCONp6TSErL9SH4mAV/Z5sQEGS3ZBHxzv3E=)
+      secretKey: ENC(lZHMD7ilan1QRzBtLwY+AYMCB1JrcVoqNZLuSeMgbL818TQ7QbLEPvRKG/qls5WjYY+0lP0CZgQ=)
+    s3:
+      bucket: ENC(YvPOdxAd97kzKfrsHEWhMafiIQufIo7b)
+      url: ENC(SILRPhAGtOjqTbcxChUxHnee6jojiNiUJ3ExwyXfT62Wrf+XkmC5+GejfQQpwksfWd4SFNZxDwpF2dGNENiZOQ==)
+    stack:
+      auto: false
+    region: ENC(j+O+c8Y9xPJqzEO38J5lTKH9E2orZwm1)
+
 encryptor:
   key: ${ENCRYPTOR_KEY}
+
+

@@ -18,9 +18,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
@@ -49,6 +52,12 @@ class MatchProposalServiceIntegrationTest {
 
 	@Autowired
 	private MatchProposalRepository matchProposalRepository;
+
+	@MockBean
+	S3Uploader s3Uploader;
+
+	@MockBean
+	AmazonS3 amazonS3;
 
 	@Test
 	@DisplayName("개인전 매칭을 신청하고 해당 신청 생성 후 Id 값을 return 한다.")
@@ -239,6 +248,32 @@ class MatchProposalServiceIntegrationTest {
 		//when, then
 		assertThatThrownBy(() -> matchProposalService.create(proposer.getId(), match.getId(), request))
 			.isInstanceOf(BusinessException.class);
+	}
+
+	@Test
+	@DisplayName("공고 작성자와 신청자의 Id가 같으면 예외가 발생한다.")
+	void TeamProposerCreateFail() {
+		//given
+		User author = new User("author", "author", "aA1234!");
+		entityManager.persist(author);
+
+		Match match = Match.builder()
+			.title("match")
+			.status(MatchStatus.WAITING)
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(author)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build();
+		entityManager.persist(match);
+		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(null, "개인전 신청합니다.");
+
+		//when, then
+		assertThatThrownBy(() -> matchProposalService.create(author.getId(), match.getId(), request)).isInstanceOf(
+			BusinessException.class);
+
 	}
 
 	@Test

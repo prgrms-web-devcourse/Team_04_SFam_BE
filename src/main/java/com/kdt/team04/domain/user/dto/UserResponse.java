@@ -16,12 +16,16 @@ public record UserResponse(
 	String password,
 	String nickname,
 	Location location
+	String profileImageUrl
 ) {
 
 	@Builder
 	public record FindProfile(
 		@Schema(description = "회원 닉네임")
 		String nickname,
+
+		@Schema(description = "유저 프로필 url")
+		String profileImageUrl,
 
 		@Schema(description = "후기 정보")
 		MatchReviewResponse.TotalCount review,
@@ -37,7 +41,9 @@ public record UserResponse(
 		@Schema(description = "회원 id")
 		String username,
 		@Schema(description = "회원 닉네임")
-		String nickname
+		String nickname,
+		@Schema(description = "유저 프로필 url")
+		String profileImageUrl
 	) {
 	}
 
@@ -53,15 +59,18 @@ public record UserResponse(
 		@Schema(description = "회원 고유 PK")
 		Long id,
 		@Schema(description = "회원 닉네임")
-		String nickname) {}
+		String nickname) {
+	}
 
 	public record ChatTargetProfile(
 		@Schema(description = "채팅 상대 닉네임")
 		String nickname
-	) {}
+	) {
+	}
 
 	public record ChatWriterProfile(
 		@Schema(description = "채팅 작성자")
 		Long id
-	) {}
+	) {
+	}
 }

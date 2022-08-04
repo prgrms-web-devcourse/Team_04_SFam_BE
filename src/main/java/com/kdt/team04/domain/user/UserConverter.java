@@ -13,7 +13,7 @@ public class UserConverter {
 			.id(userResponse.id())
 			.username(userResponse.username())
 			.nickname(userResponse.nickname())
-			.location(userResponse.location())
+			.location(userResponse.Location())
 			.build();
 	}
 
@@ -23,6 +23,7 @@ public class UserConverter {
 			.username(user.getUsername())
 			.nickname(user.getNickname())
 			.location(user.getLocation())
+			.ProfileImageUr(user.getProfileImageUrl())
 			.build();
 	}
 }

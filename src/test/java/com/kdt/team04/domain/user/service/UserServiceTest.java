@@ -57,7 +57,7 @@ class UserServiceTest {
 	void testCreateSuccess() {
 		//given
 		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
-		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null);
+		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null, null);
 		given(userRepository.save(any(User.class))).willReturn(user);
 		//when
 		Long userId = userService.create(request);
@@ -72,7 +72,7 @@ class UserServiceTest {
 	void testFindByUsernameSuccess() {
 		//given
 		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
-		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null);
+		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null, null);
 		given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.of(user));
 
 		//when
@@ -93,12 +93,12 @@ class UserServiceTest {
 		List<User> users = LongStream.range(1, 6)
 			.mapToObj(id ->
 				new User(id, passwordEncoder.encode("12345"),
-					"test0" + id, "test0" + id, null)
+					"test0" + id, "test0" + id, null, null)
 			)
 			.toList();
 		List<UserResponse.UserFindResponse> responses = LongStream.range(1, 6)
 			.mapToObj(id ->
-				new UserResponse.UserFindResponse(id, "test0" + id, "test0" + id))
+				new UserResponse.UserFindResponse(id, "test0" + id, "test0" + id, "test0" + id))
 			.toList();
 
 		given(userRepository.findByNicknameContaining(nickname)).willReturn(users);
@@ -118,14 +118,15 @@ class UserServiceTest {
 		// given
 		Long requestId = 1L;
 
-		User user = new User(requestId, passwordEncoder.encode("1234"), "test00", "nk-test00", null);
+		User user = new User(requestId, passwordEncoder.encode("1234"), "test00", "nk-test00", null, null);
 
 		MatchReviewResponse.TotalCount review = new MatchReviewResponse.TotalCount(1, 1, 1);
 		List<TeamResponse.SimpleResponse> teams = Arrays.asList(
 			new TeamResponse.SimpleResponse(1L, "축구왕", SportsCategory.SOCCER),
 			new TeamResponse.SimpleResponse(2L, "야구왕", SportsCategory.BASEBALL)
 		);
-		UserResponse.FindProfile response = new UserResponse.FindProfile(user.getUsername(), review, teams);
+		UserResponse.FindProfile response = new UserResponse.FindProfile(user.getUsername(), user.getProfileImageUrl(),
+			review, teams);
 
 		given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
 		given(matchReviewGiver.findTotalReviewByUserId(any(Long.class))).willReturn(review);
@@ -157,7 +158,7 @@ class UserServiceTest {
 	void testFindByIdSuccess() {
 		//given
 		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
-		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null);
+		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null, null);
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
 		//when
