@@ -55,7 +55,9 @@ feign:
     config:
       default:
         loggerLevel: basic
-
+cookie:
+  secure: false
+  same-site: lax
 division:
   key: ${DIVISION_KEY:CEB52025-E065-364C-9DBA-44880E3B02B8}
   domain: ${DIVISION_DOMAIN:http://localhost:8080}

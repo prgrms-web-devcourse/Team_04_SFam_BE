@@ -21,7 +21,7 @@ import com.kdt.team04.domain.auth.service.TokenService;
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties({JwtConfig.class, SecurityConfigProperties.class})
+@EnableConfigurationProperties({JwtConfig.class, SecurityConfigProperties.class, CookieConfigProperties.class})
 public class WebSecurityConfig {
 
 	private final SecurityConfigProperties securityConfigProperties;

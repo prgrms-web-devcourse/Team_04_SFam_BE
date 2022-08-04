@@ -20,3 +20,7 @@ jwt:
   client-secret: ENC(vaOuavM8/QZzrntUSL/CLC3Q47399EsR)
 encryptor:
   key: ${ENCRYPTOR_KEY}
+
+cookie:
+  secure: true
+  same-site: NONE
