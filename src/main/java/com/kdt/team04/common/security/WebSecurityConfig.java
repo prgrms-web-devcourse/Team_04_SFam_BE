@@ -14,10 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.kdt.team04.common.redis.RedisService;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationFilter;
 import com.kdt.team04.common.security.jwt.JwtConfig;
-import com.kdt.team04.domain.auth.service.TokenService;
 
 @Configuration
 @EnableWebSecurity
@@ -40,8 +40,8 @@ public class WebSecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-	public JwtAuthenticationFilter jwtAuthenticationFilter(Jwt jwt, TokenService tokenService) {
-		return new JwtAuthenticationFilter(jwt, tokenService);
+	public JwtAuthenticationFilter jwtAuthenticationFilter(Jwt jwt, RedisService redisService) {
+		return new JwtAuthenticationFilter(jwt, redisService);
 	}
 
 	@Bean
@@ -56,7 +56,7 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http, Jwt jwt, TokenService tokenService) throws Exception {
+	public SecurityFilterChain filterChain(HttpSecurity http, Jwt jwt, RedisService redisService) throws Exception {
 		http
 			.authorizeRequests()
 			.antMatchers(HttpMethod.GET, this.securityConfigProperties.patterns().permitAll().get("GET")).permitAll()
@@ -82,7 +82,7 @@ public class WebSecurityConfig {
 			.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
-			.addFilterBefore(jwtAuthenticationFilter(jwt, tokenService), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(jwtAuthenticationFilter(jwt, redisService), UsernamePasswordAuthenticationFilter.class)
 		;
 
 		return http.build();

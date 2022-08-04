@@ -92,6 +92,9 @@ dependencies {
 
 	//FEIGN CLIENT
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	//REDIS
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 dependencyManagement {

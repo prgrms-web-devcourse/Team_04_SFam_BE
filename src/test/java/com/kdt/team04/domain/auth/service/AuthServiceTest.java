@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
+import com.kdt.team04.common.redis.RedisService;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtConfig;
 import com.kdt.team04.domain.auth.dto.AuthRequest;
@@ -44,7 +45,7 @@ class AuthServiceTest {
 	UserService userService;
 
 	@Mock
-	TokenService tokenService;
+	RedisService redisService;
 
 	@Mock
 	Jwt jwt;
@@ -85,7 +86,7 @@ class AuthServiceTest {
 		verify(jwt, times(1)).generateRefreshToken();
 		verify(jwt, times(2)).accessTokenProperties();
 		verify(jwt, times(2)).refreshTokenProperties();
-		verify(tokenService, times(1)).save("refreshToken", userResponse.id());
+		verify(redisService, times(1)).setDataWithExpiration("refreshToken", String.valueOf(userResponse.id()), 0L);
 
 		assertThat(signInResponse.id()).isEqualTo(userResponse.id());
 		assertThat(signInResponse.username()).isEqualTo(userResponse.username());

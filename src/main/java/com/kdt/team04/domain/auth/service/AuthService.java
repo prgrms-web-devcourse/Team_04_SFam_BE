@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.common.redis.RedisService;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
@@ -26,14 +27,18 @@ public class AuthService {
 
 	private final UserService userService;
 	private final PasswordEncoder passwordEncoder;
-	private final TokenService tokenService;
+	private final RedisService redisService;
 	private final Jwt jwt;
 
-	public AuthService(UserService userService, PasswordEncoder passwordEncoder, TokenService tokenService,
-		Jwt jwt) {
+	public AuthService(
+		UserService userService,
+		PasswordEncoder passwordEncoder,
+		RedisService redisService,
+		Jwt jwt
+	) {
 		this.userService = userService;
 		this.passwordEncoder = passwordEncoder;
-		this.tokenService = tokenService;
+		this.redisService = redisService;
 		this.jwt = jwt;
 	}
 
@@ -60,7 +65,7 @@ public class AuthService {
 		JwtAuthentication authentication = new JwtAuthentication(accessToken, foundUser.id(), foundUser.username());
 		JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authentication, null,
 			this.jwt.getAuthorities(this.jwt.verify(accessToken)));
-		this.tokenService.save(refreshToken, foundUser.id());
+		redisService.setDataWithExpiration(refreshToken, String.valueOf(foundUser.id()), jwt.getExpirySeconds());
 
 		return new AuthResponse.SignInResponse(
 			foundUser.id(),

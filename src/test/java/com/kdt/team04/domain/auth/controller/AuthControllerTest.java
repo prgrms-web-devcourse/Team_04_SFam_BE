@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.exception.ErrorResponse;
+import com.kdt.team04.common.redis.RedisService;
 import com.kdt.team04.common.security.WebSecurityConfig;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
@@ -35,7 +36,6 @@ import com.kdt.team04.domain.auth.dto.AuthRequest;
 import com.kdt.team04.domain.auth.dto.AuthResponse;
 import com.kdt.team04.domain.auth.dto.TokenDto;
 import com.kdt.team04.domain.auth.service.AuthService;
-import com.kdt.team04.domain.auth.service.TokenService;
 import com.kdt.team04.domain.user.entity.User;
 
 @WebMvcTest({AuthController.class, WebSecurityConfig.class})
@@ -51,7 +51,7 @@ class AuthControllerTest {
 	AuthService authService;
 
 	@MockBean
-	TokenService tokenService;
+	RedisService redisService;
 
 	@MockBean
 	Jwt jwt;

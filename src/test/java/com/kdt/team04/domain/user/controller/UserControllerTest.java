@@ -19,9 +19,9 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.common.redis.RedisService;
 import com.kdt.team04.common.security.WebSecurityConfig;
 import com.kdt.team04.common.security.jwt.Jwt;
-import com.kdt.team04.domain.auth.service.TokenService;
 import com.kdt.team04.domain.user.service.UserService;
 
 @WebMvcTest({UserController.class, WebSecurityConfig.class})
@@ -37,7 +37,7 @@ class UserControllerTest {
 	UserService userService;
 
 	@MockBean
-	TokenService tokenService;
+	RedisService redisService;
 
 	@MockBean
 	Jwt jwt;

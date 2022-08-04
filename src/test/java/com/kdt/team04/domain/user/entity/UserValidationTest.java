@@ -9,9 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.kdt.team04.common.redis.RedisService;
 import com.kdt.team04.configure.TestQueryDslConfig;
 import com.kdt.team04.configure.WebSecurityTestConfigure;
 import com.kdt.team04.domain.user.repository.UserRepository;
@@ -25,6 +27,9 @@ public class UserValidationTest {
 
 	@Autowired
 	PasswordEncoder passwordEncoder;
+
+	@MockBean
+	RedisService redisService;
 
 	@Test
 	@DisplayName("User 추가 성공 테스트")

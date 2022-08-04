@@ -12,6 +12,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseCookie;
@@ -24,20 +25,20 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
+import com.kdt.team04.common.redis.RedisService;
 import com.kdt.team04.common.security.jwt.exception.JwtAccessTokenNotFoundException;
 import com.kdt.team04.common.security.jwt.exception.JwtRefreshTokenNotFoundException;
 import com.kdt.team04.common.security.jwt.exception.JwtTokenNotFoundException;
-import com.kdt.team04.domain.auth.service.TokenService;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final Jwt jwt;
-	private final TokenService tokenService;
+	private final RedisService redisService;
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	public JwtAuthenticationFilter(Jwt jwt, TokenService tokenService) {
+	public JwtAuthenticationFilter(Jwt jwt, RedisService redisService) {
 		this.jwt = jwt;
-		this.tokenService = tokenService;
+		this.redisService = redisService;
 	}
 
 	@Override
@@ -139,10 +140,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private void verifyRefreshToken(String accessToken, String refreshToken) {
 		this.jwt.verify(refreshToken);
-		TokenResponse token = tokenService.findByToken(refreshToken);
+		long storedUserId = redisService.getData(refreshToken)
+			.map(NumberUtils::toLong)
+			.orElseThrow(() -> new JwtTokenNotFoundException("Refresh token not found."));
+
 		Long userId = this.jwt.decode(accessToken).userId;
 
-		if (!userId.equals(token.userId())) {
+		if (!userId.equals(storedUserId)) {
 			throw new JWTVerificationException("Invalid refresh token.");
 		}
 	}

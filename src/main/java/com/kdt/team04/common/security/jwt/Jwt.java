@@ -61,6 +61,10 @@ public class Jwt {
 		return builder.sign(this.algorithm);
 	}
 
+	public int getExpirySeconds() {
+		return jwtConfigure.refreshToken().expirySeconds();
+	}
+
 	public Claims decode(String token) {
 		return new Claims(JWT.decode(token));
 
