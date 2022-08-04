@@ -48,7 +48,8 @@ public class UserService {
 			foundUser.getUsername(),
 			foundUser.getPassword(),
 			foundUser.getNickname(),
-			foundUser.getLocation()
+			foundUser.getLocation(),
+			foundUser.getProfileImageUrl()
 		);
 	}
 
@@ -67,6 +68,7 @@ public class UserService {
 
 		return new UserResponse.FindProfile(
 			foundUser.getNickname(),
+			foundUser.getProfileImageUrl(),
 			review,
 			teams
 		);
@@ -78,7 +80,8 @@ public class UserService {
 				user -> new UserResponse.UserFindResponse(
 					user.getId(),
 					user.getUsername(),
-					user.getNickname()
+					user.getNickname(),
+					user.getProfileImageUrl()
 				)
 			)
 			.toList();
@@ -94,7 +97,8 @@ public class UserService {
 			foundUser.getUsername(),
 			foundUser.getPassword(),
 			foundUser.getNickname(),
-			foundUser.getLocation()
+			foundUser.getLocation(),
+			foundUser.getProfileImageUrl()
 		);
 	}
 

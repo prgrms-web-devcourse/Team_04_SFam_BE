@@ -15,6 +15,6 @@ public class UserConverter {
 
 	public UserResponse toUserResponse(User user) {
 		return new UserResponse(user.getId(), user.getUsername(), user.getPassword(), user.getNickname(),
-			user.getLocation());
+			user.getLocation(), user.getProfileImageUrl());
 	}
 }
