@@ -15,3 +15,18 @@ logging:
     org.hibernate.type.descriptor.sql: DEBUG
 jwt:
   client-secret: ${JWT_SECRET:DEFAULT_JWT_SECRET}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY:ENC(DJZaeqCiNozKW4JuuBSKP5bL5RG4N96dO0cBIutH6po=)}
+      secretKey: ${AWS_SECRET_KEY:ENC(kBszTKJdX9T5msgT1OTUiRjKcTngLRG8bYYL4FGfUK3xq7fO6WRQBMTUEXehXtZHeEFWHbvAmEw=)}
+    s3:
+      bucket: ${S3_BUCKET:ENC(IDNhmo1D2i5p8+FnBMUzU/BLYyxnfKNx)}
+      url: ${S3_URL:ENC(Ol+MZICacLWE4oltu+sYOwNARkwWjfwA50g+5i0FyYOYCcjuRe9/I9AoHHczVNB13pjcbtnaBn+12zqsDPmIKw==)}
+    stack:
+      auto: false
+    region: ${AWS_REGION:ENC(ayPRiqCMtSXBerKcGgVo29E2r606Z1Ht)}
+
+encryptor:
+  key: ${ENCRYPTOR_KEY}
