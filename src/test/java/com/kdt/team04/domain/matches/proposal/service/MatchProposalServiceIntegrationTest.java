@@ -230,6 +230,32 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
+	@DisplayName("공고 작성자와 신청자의 Id가 같으면 예외가 발생한다.")
+	void TeamProposerCreateFail() {
+		//given
+		User author = new User("author", "author", "aA1234!");
+		entityManager.persist(author);
+
+		Match match = Match.builder()
+			.title("match")
+			.status(MatchStatus.WAITING)
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(author)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build();
+		entityManager.persist(match);
+		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(null, "개인전 신청합니다.");
+
+		//when, then
+		assertThatThrownBy(() -> matchProposalService.create(author.getId(), match.getId(), request)).isInstanceOf(
+			BusinessException.class);
+
+	}
+
+	@Test
 	@DisplayName("매칭 ID로 매칭 신청 목록을 조회한다.")
 	void test_findAllLastChats() {
 		//given
