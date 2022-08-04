@@ -22,7 +22,7 @@ public class Aws {
 		this.awsConfigProperties = awsConfigProperties;
 	}
 
-	@Bean
+	@Bean(name = "amazonS3")
 	public AmazonS3 amazonS3Client() {
 		AWSCredentials credentials = new BasicAWSCredentials(
 			this.awsConfigProperties.credentials().accessKey(),

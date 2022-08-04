@@ -6,6 +6,7 @@ import java.net.URLConnection;
 import java.text.MessageFormat;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ import com.kdt.team04.common.file.config.S3ConfigProperties;
 @Profile({"dev", "real"})
 public class S3Uploader implements FileStorage {
 
+	@Qualifier(value = "amazonS3")
 	private final AmazonS3 amazonS3;
 	private final S3ConfigProperties s3;
 	private final FileValidator fileValidator;
