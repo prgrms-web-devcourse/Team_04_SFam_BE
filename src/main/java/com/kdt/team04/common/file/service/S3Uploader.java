@@ -23,7 +23,7 @@ import com.kdt.team04.common.file.FileValidator;
 import com.kdt.team04.common.file.config.S3ConfigProperties;
 
 @Component
-@Profile({"dev", "real"})
+@Profile({"local", "dev", "real"})
 public class S3Uploader implements FileStorage {
 
 	@Qualifier(value = "amazonS3")
