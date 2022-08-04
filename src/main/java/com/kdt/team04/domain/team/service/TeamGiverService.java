@@ -43,7 +43,7 @@ public class TeamGiverService {
 	public List<TeamResponse.SimpleResponse> findAllByTeamMemberUserId(Long userId) {
 		return teamRepository.findAllByTeamMemberUserId(userId).stream()
 			.map(team -> new TeamResponse.SimpleResponse(
-					team.getId(), team.getName(), team.getSportsCategory()
+					team.getId(), team.getName(), team.getSportsCategory(), team.getLogoImageUrl()
 				)
 			).toList();
 	}

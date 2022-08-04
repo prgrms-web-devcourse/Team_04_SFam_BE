@@ -48,7 +48,7 @@ public class MatchGiverService {
 		if (foundMatch.getMatchType() == MatchType.TEAM_MATCH) {
 			Team team = foundMatch.getTeam();
 			TeamResponse.SimpleResponse teamResponse = new TeamResponse.SimpleResponse(team.getId(), team.getName(),
-				team.getSportsCategory());
+				team.getSportsCategory(), team.getLogoImageUrl());
 
 			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);
 		}
@@ -96,7 +96,7 @@ public class MatchGiverService {
 		if (foundMatch.getMatchType() == MatchType.TEAM_MATCH) {
 			Team team = foundMatch.getTeam();
 			TeamResponse.SimpleResponse teamResponse = new TeamResponse.SimpleResponse(team.getId(), team.getName(),
-				team.getSportsCategory());
+				team.getSportsCategory(), team.getLogoImageUrl());
 
 			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);
 		}

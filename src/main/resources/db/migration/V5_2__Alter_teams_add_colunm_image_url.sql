@@ -1,0 +1,1 @@
+ALTER TABLE team ADD logo_image_url VARCHAR(500);
