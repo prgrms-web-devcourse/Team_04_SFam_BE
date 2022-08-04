@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -46,4 +48,13 @@ public abstract class BaseEntity {
 		return updatedBy;
 	}
 
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+			.append("createdAt", createdAt)
+			.append("updatedAt", updatedAt)
+			.append("createdBy", createdBy)
+			.append("updatedBy", updatedBy)
+			.toString();
+	}
 }

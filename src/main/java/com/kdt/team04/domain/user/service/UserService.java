@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.common.file.ImagePath;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.dto.TeamResponse;
@@ -25,12 +28,14 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final MatchReviewGiverService matchReviewGiver;
 	private final TeamGiverService teamGiver;
+	private final S3Uploader s3Uploader;
 
 	public UserService(UserRepository userRepository, MatchReviewGiverService matchReviewGiver,
-		TeamGiverService teamGiver) {
+		TeamGiverService teamGiver, S3Uploader s3Uploader) {
 		this.userRepository = userRepository;
 		this.matchReviewGiver = matchReviewGiver;
 		this.teamGiver = teamGiver;
+		this.s3Uploader = s3Uploader;
 	}
 
 	public UserResponse findByUsername(String username) {
@@ -38,13 +43,14 @@ public class UserService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("Username = {0}", username)));
 
-		return new UserResponse(
-			foundUser.getId(),
-			foundUser.getUsername(),
-			foundUser.getPassword(),
-			foundUser.getNickname(),
-			foundUser.getLocation()
-		);
+		return UserResponse.builder()
+			.id(foundUser.getId())
+			.username(foundUser.getUsername())
+			.password(foundUser.getPassword())
+			.nickname(foundUser.getNickname())
+			.location(foundUser.getLocation())
+			.profileImageUrl(foundUser.getProfileImageUrl())
+			.build();
 	}
 
 	@Transactional
@@ -62,6 +68,7 @@ public class UserService {
 
 		return new UserResponse.FindProfile(
 			foundUser.getNickname(),
+			foundUser.getProfileImageUrl(),
 			review,
 			teams
 		);
@@ -73,7 +80,8 @@ public class UserService {
 				user -> new UserResponse.UserFindResponse(
 					user.getId(),
 					user.getUsername(),
-					user.getNickname()
+					user.getNickname(),
+					user.getProfileImageUrl()
 				)
 			)
 			.toList();
@@ -84,13 +92,13 @@ public class UserService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", id)));
 
-		return new UserResponse(
-			foundUser.getId(),
-			foundUser.getUsername(),
-			foundUser.getPassword(),
-			foundUser.getNickname(),
-			foundUser.getLocation()
-		);
+		return UserResponse.builder()
+			.id(foundUser.getId())
+			.username(foundUser.getUsername())
+			.nickname(foundUser.getNickname())
+			.location(foundUser.getLocation())
+			.profileImageUrl(foundUser.getProfileImageUrl())
+			.build();
 	}
 
 	@Transactional
@@ -110,4 +118,20 @@ public class UserService {
 	public Boolean nicknameDuplicationCheck(String nickname) {
 		return userRepository.existsByNickname(nickname);
 	}
+
+	@Transactional
+	public void uploadProfile(Long id, MultipartFile file) {
+		User foundUser = this.userRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
+				MessageFormat.format("UserId = {0}", id)));
+
+		if (foundUser.getProfileImageUrl() != null) {
+			s3Uploader.delete(foundUser.getProfileImageUrl());
+		}
+
+		String key = s3Uploader.upload(file.getResource(), ImagePath.USERS_PROFILES);
+
+		foundUser.updateImageUrl(key);
+	}
+
 }

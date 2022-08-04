@@ -13,6 +13,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.kdt.team04.domain.BaseEntity;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.user.entity.User;
@@ -38,8 +41,9 @@ public class Team extends BaseEntity {
 	@Enumerated(value = EnumType.STRING)
 	private SportsCategory sportsCategory;
 
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "leader_id")
+	@JoinColumn(name = "leader_id", nullable = false)
 	private User leader;
 
 	protected Team() {
@@ -72,5 +76,17 @@ public class Team extends BaseEntity {
 
 	public User getLeader() {
 		return leader;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+			.append("id", id)
+			.append("name", name)
+			.append("description", description)
+			.append("sportsCategory", sportsCategory)
+			.append("leader", leader)
+			.append("baseEntity",super.toString())
+			.toString();
 	}
 }

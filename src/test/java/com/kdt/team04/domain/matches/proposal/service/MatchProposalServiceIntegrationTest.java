@@ -18,9 +18,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
@@ -49,6 +52,12 @@ class MatchProposalServiceIntegrationTest {
 
 	@Autowired
 	private MatchProposalRepository matchProposalRepository;
+
+	@MockBean
+	S3Uploader s3Uploader;
+
+	@MockBean
+	AmazonS3 amazonS3;
 
 	@Test
 	@DisplayName("개인전 매칭을 신청하고 해당 신청 생성 후 Id 값을 return 한다.")
@@ -84,28 +93,35 @@ class MatchProposalServiceIntegrationTest {
 	void testTeamProposerCreateSuccess() {
 		//given
 		User author = new User("author", "author", "aA1234!");
+
+		entityManager.persist(author);
+
 		Team authorTeam = Team.builder()
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(author)
 			.build();
+
 		entityManager.persist(authorTeam);
-		entityManager.persist(author);
 
 		User proposer = new User("proposer", "proposer", "aA1234!");
 		User user1 = new User("member1", "member1", "password");
 		User user2 = new User("member2", "member2", "password");
+
 		entityManager.persist(proposer);
 		entityManager.persist(user1);
 		entityManager.persist(user2);
+
 		proposer.updateLocation(new Location(1.1, 1.2));
+
 		Team proposerTeam = Team.builder()
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
+
 		entityManager.persist(proposerTeam);
 		entityManager.persist(new TeamMember(proposerTeam, user1, TeamMemberRole.LEADER));
 		entityManager.persist(new TeamMember(proposerTeam, user1, TeamMemberRole.MEMBER));
@@ -122,7 +138,9 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.content("content")
 			.build();
+
 		entityManager.persist(match);
+
 		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(proposerTeam.getId(),
 			"팀전 신청합니다.");
 
@@ -138,17 +156,23 @@ class MatchProposalServiceIntegrationTest {
 	void testTeamProposerCreateFailByTeamMember() {
 		//given
 		User author = new User("author", "author", "aA1234!");
+
+		entityManager.persist(author);
+
 		Team authorTeam = Team.builder()
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(author)
 			.build();
+
 		entityManager.persist(authorTeam);
 		entityManager.persist(author);
 
 		User proposer = new User("proposer", "proposer", "aA1234!");
+
 		entityManager.persist(proposer);
+
 		proposer.updateLocation(new Location(1.1, 1.2));
 		Team proposerTeam = Team.builder()
 			.name("team1")
@@ -156,6 +180,7 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
+
 		entityManager.persist(proposerTeam);
 
 		Match match = Match.builder()
@@ -169,7 +194,9 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.content("content")
 			.build();
+
 		entityManager.persist(match);
+
 		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(proposerTeam.getId(),
 			"팀전 신청합니다.");
 
@@ -184,6 +211,10 @@ class MatchProposalServiceIntegrationTest {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		User proposer = new User("proposer", "proposer", "aA1234!");
+
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+
 		Team authorTeam = Team.builder()
 			.name("team1")
 			.description("first team")
@@ -196,10 +227,9 @@ class MatchProposalServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
+
 		entityManager.persist(authorTeam);
 		entityManager.persist(proposerTeam);
-		entityManager.persist(author);
-		entityManager.persist(proposer);
 
 		Match match = Match.builder()
 			.title("match")
@@ -218,6 +248,32 @@ class MatchProposalServiceIntegrationTest {
 		//when, then
 		assertThatThrownBy(() -> matchProposalService.create(proposer.getId(), match.getId(), request))
 			.isInstanceOf(BusinessException.class);
+	}
+
+	@Test
+	@DisplayName("공고 작성자와 신청자의 Id가 같으면 예외가 발생한다.")
+	void TeamProposerCreateFail() {
+		//given
+		User author = new User("author", "author", "aA1234!");
+		entityManager.persist(author);
+
+		Match match = Match.builder()
+			.title("match")
+			.status(MatchStatus.WAITING)
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(author)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build();
+		entityManager.persist(match);
+		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(null, "개인전 신청합니다.");
+
+		//when, then
+		assertThatThrownBy(() -> matchProposalService.create(author.getId(), match.getId(), request)).isInstanceOf(
+			BusinessException.class);
+
 	}
 
 	@Test

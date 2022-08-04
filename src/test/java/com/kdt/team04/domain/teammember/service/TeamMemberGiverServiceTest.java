@@ -11,8 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
@@ -29,6 +31,9 @@ class TeamMemberGiverServiceTest {
 
 	@Autowired
 	TeamMemberGiverService teamMemberGiverService;
+
+	@MockBean
+	S3Uploader s3Uploader;
 
 	@Test
 	@DisplayName("팀 ID로 멤버 전체 조회")

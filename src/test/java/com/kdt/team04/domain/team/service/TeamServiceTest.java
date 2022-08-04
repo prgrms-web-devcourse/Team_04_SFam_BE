@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
@@ -62,9 +63,9 @@ class TeamServiceTest {
 	@Mock
 	private MatchReviewGiverService matchReviewGiver;
 
-	private final User USER = new User(1L, "password", "username", "nickname", null);
+	private final User USER = new User(1L, "password", "username", "nickname", null, null);
 	private final UserResponse USER_RESPONSE = new UserResponse(USER.getId(), USER.getUsername(), USER.getPassword(),
-		USER.getNickname(), null);
+		USER.getNickname(), null, null);
 	private final TeamRequest.CreateRequest CREATE_REQUEST = new TeamRequest.CreateRequest("team1", "first team",
 		SportsCategory.BADMINTON);
 	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),
@@ -77,21 +78,31 @@ class TeamServiceTest {
 
 	@Test
 	@DisplayName("팀 생성에 성공합니다.")
-	void createSuccess() {
+	void testCreateSuccess() {
 		//given
-		given(userService.findById(USER.getId())).willReturn(USER_RESPONSE);
-		given(userConverter.toUser(USER_RESPONSE)).willReturn(USER);
-		given(teamRepository.save(any(Team.class))).willReturn(TEAM);
+		User user = getDemoUser();
+		UserResponse userResponse = toUserResponse(user);
+		Team newTeam = Team.builder()
+			.id(1L)
+			.name("team1")
+			.description("first team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.build();
+		TeamRequest.CreateRequest createRequest = new TeamRequest.CreateRequest("team1", "first team",
+			SportsCategory.BADMINTON);
+
+		given(userService.findById(any(Long.class))).willReturn(userResponse);
+		given(userConverter.toUser(userResponse)).willReturn(user);
+		given(teamRepository.save(any(Team.class))).willReturn(newTeam);
+
 		//when
-		Long teamId = teamService.create(USER.getId(), CREATE_REQUEST.name(),
-			CREATE_REQUEST.sportsCategory(),
-			CREATE_REQUEST.description());
+		Long teamId = teamService.create(user.getId(), createRequest);
 
 		//then
-		verify(userService, times(1)).findById(USER.getId());
+		verify(userService, times(1)).findById(user.getId());
 		verify(teamRepository, times(1)).save(any(Team.class));
 
-		assertThat(teamId).isEqualTo(TEAM.getId());
+		assertThat(teamId).isEqualTo(newTeam.getId());
 	}
 
 	@Test
@@ -123,5 +134,26 @@ class TeamServiceTest {
 		given(teamRepository.findById(invalidId)).willReturn(Optional.empty());
 
 		assertThatThrownBy(() -> teamService.findById(invalidId)).isInstanceOf(EntityNotFoundException.class);
+	}
+
+	public User getDemoUser() {
+		User demoUser = User.builder()
+			.username("test1234")
+			.nickname("nickname")
+			.password("test")
+			.build();
+
+		ReflectionTestUtils.setField(demoUser, "id", 10L);
+
+		return demoUser;
+	}
+
+	public UserResponse toUserResponse(User user) {
+		return UserResponse.builder()
+			.id(user.getId())
+			.username(user.getUsername())
+			.nickname(user.getNickname())
+			.location(user.getLocation())
+			.build();
 	}
 }

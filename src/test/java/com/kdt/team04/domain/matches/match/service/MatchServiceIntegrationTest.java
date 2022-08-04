@@ -13,13 +13,20 @@ import javax.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.aws.autoconfigure.context.ContextStackAutoConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
 import com.kdt.team04.domain.matches.match.dto.MatchRequest;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
@@ -46,6 +53,13 @@ class MatchServiceIntegrationTest {
 
 	@Autowired
 	MatchRepository matchRepository;
+
+
+	@MockBean
+	S3Uploader s3Uploader;
+
+	@MockBean
+	AmazonS3 amazonS3;
 
 	@Test
 	@DisplayName("팀의 리더는 팀 매칭 공고를 생성할 수 있다.")

@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,8 +35,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
@@ -66,6 +69,12 @@ class UserControllerIntegrationTest {
 	@Autowired
 	Jwt jwt;
 	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+	@MockBean
+	S3Uploader s3Uploader;
+
+	@MockBean
+	AmazonS3 amazonS3;
 
 	@Test
 	@Transactional
@@ -137,7 +146,7 @@ class UserControllerIntegrationTest {
 			new TeamResponse.SimpleResponse(findUserTeam2.getId(), findUserTeam2.getName(),
 				findUserTeam2.getSportsCategory())
 		);
-		UserResponse.FindProfile profileResponse = new UserResponse.FindProfile(findUser.getNickname(), reviewResponse,
+		UserResponse.FindProfile profileResponse = new UserResponse.FindProfile(findUser.getNickname(),  findUser.getProfileImageUrl(), reviewResponse,
 			teamResponses);
 
 		String response = objectMapper.writeValueAsString(new ApiResponse<>(profileResponse));
@@ -166,13 +175,18 @@ class UserControllerIntegrationTest {
 		String nickname = "test";
 		LongStream.range(1, 6)
 			.mapToObj(id ->
-				new User("test00" + id, "test00" + id, passwordEncoder.encode("12345"))
+				User.builder()
+					.username("test00"+id)
+					.nickname("test00"+id)
+					.password(passwordEncoder.encode("12345"))
+					.profileImageUrl("test00"+id)
+					.build()
 			)
 			.forEach(user -> entityManager.persist(user));
 
 		List<UserResponse.UserFindResponse> responses = LongStream.range(1, 6)
 			.mapToObj(id ->
-				new UserResponse.UserFindResponse(id, "test00" + id, "test00" + id))
+				new UserResponse.UserFindResponse(id, "test00" + id, "test00" + id, "test00" + id))
 			.toList();
 
 		String response = objectMapper.writeValueAsString(new ApiResponse<>(responses));

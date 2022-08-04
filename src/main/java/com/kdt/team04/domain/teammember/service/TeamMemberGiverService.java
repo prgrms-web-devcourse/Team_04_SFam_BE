@@ -57,7 +57,7 @@ public class TeamMemberGiverService {
 		int teamMemberCount = teamMemberRepository.countAllByTeamId(teamId);
 
 		if (teamMemberCount < participants) {
-			throw new BusinessException(ErrorCode.INVALID_PARTICIPANTS,
+			throw new BusinessException(ErrorCode.MATCH_INVALID_PARTICIPANTS,
 				MessageFormat.format("TeamMemberCount = {0} participants = {1}",
 					teamMemberCount, participants));
 		}
