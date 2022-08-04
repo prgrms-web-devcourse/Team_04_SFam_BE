@@ -60,7 +60,14 @@ public enum ErrorCode {
 	MATCH_CHAT_NOT_CORRECT_CHAT_PARTNER("MC0002", "The chat partner is incorrect.", HttpStatus.BAD_REQUEST),
 
 	//MATCH_REVIEW
-	MATCH_REVIEW_ALREADY_EXISTS("MR0002", "Match review already exists", HttpStatus.BAD_REQUEST);
+	MATCH_REVIEW_ALREADY_EXISTS("MR0002", "Match review already exists", HttpStatus.BAD_REQUEST),
+
+	// FILE
+	FILE_NOT_FOUND("F0001", "Not found file", HttpStatus.NOT_FOUND),
+	INVALID_FILE_TYPE("F0002", "Invalid file type", HttpStatus.BAD_REQUEST),
+	INVALID_FILE_SIGNATURE("F0003", "Invalid file signature", HttpStatus.BAD_REQUEST),
+	FILE_IO("F0004", "File I/O fail", HttpStatus.BAD_REQUEST);
+
 
 	private final String code;
 	private final String message;
@@ -92,4 +99,5 @@ public enum ErrorCode {
 			", message='" + message + '\'' +
 			']';
 	}
+
 }
