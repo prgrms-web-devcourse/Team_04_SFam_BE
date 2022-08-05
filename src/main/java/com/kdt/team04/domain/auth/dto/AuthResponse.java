@@ -7,10 +7,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record AuthResponse() {
 	public record SignInResponse(
-		@Schema(description = "회원 고유 PK")
+		@Schema(description = "회원 ID(고유 PK)")
 		Long id,
 
-		@Schema(description = "회원 id")
+		@Schema(description = "회원 아이디")
 		String username,
 
 		@Schema(description = "회원 닉네임")

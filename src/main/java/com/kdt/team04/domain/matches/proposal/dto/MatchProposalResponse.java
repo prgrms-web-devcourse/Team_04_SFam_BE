@@ -15,7 +15,7 @@ public record MatchProposalResponse() {
 	) {}
 
 	public record Chat(
-		@Schema(description = "매칭 신청 아이디")
+		@Schema(description = "매칭 신청 ID(고유 PK)")
 		Long id,
 
 		@Schema(description = "매칭 신청 메시지")
@@ -29,8 +29,13 @@ public record MatchProposalResponse() {
 	) {}
 
 	public record ChatMatch(
+		@Schema(description = "매칭 공고 제목")
 		String title,
+
+		@Schema(description = "매칭 상태(값/설명) - WAITING/대기중, IN_GAME/모집완료, END/경기종료")
 		MatchStatus status,
+
+		@Schema(description = "채팅 상대 정보")
 		UserResponse.ChatTargetProfile targetProfile
 	) {}
 

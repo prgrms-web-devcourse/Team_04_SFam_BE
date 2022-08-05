@@ -29,6 +29,7 @@ import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "회원 API")
@@ -42,19 +43,21 @@ public class UserController {
 		this.userService = userService;
 	}
 
-	@Operation(summary = "회원 프로필 조회", description = "회원 프로필을 닉네임을 통해 조회할 수 있다.")
+	@Operation(summary = "회원 프로필 조회", description = "회원 프로필을 닉네임을 통해 조회한다.")
 	@GetMapping
 	public ApiResponse<List<UserResponse.UserFindResponse>> findUsers(
-		@RequestParam(required = false) @NotBlank(message = "닉네임은 필수입니다.") String nickname
+		@Parameter(description = "회원 닉네임") @RequestParam(required = false) @NotBlank(message = "닉네임은 필수입니다.") String nickname
 	) {
 		List<UserResponse.UserFindResponse> foundUsers = userService.findAllByNickname(nickname);
 
 		return new ApiResponse<>(foundUsers);
 	}
 
-	@Operation(summary = "회원 프로필 조회", description = "회원 프로필을 조회할 수 있다.")
+	@Operation(summary = "회원 프로필 조회", description = "회원 프로필을 조회한다.")
 	@GetMapping("/{id}")
-	public ApiResponse<UserResponse.FindProfile> findProfile(@PathVariable Long id) {
+	public ApiResponse<UserResponse.FindProfile> findProfile(
+		@Parameter(description = "회원 ID") @PathVariable Long id
+	) {
 		UserResponse.FindProfile user = userService.findProfileById(id);
 
 		return new ApiResponse<>(user);
@@ -64,7 +67,8 @@ public class UserController {
 	@PutMapping("/{id}/location")
 	public ApiResponse<UserResponse.UpdateLocationResponse> update(
 		@AuthenticationPrincipal JwtAuthentication auth,
-		@RequestBody @Valid @NotNull UserRequest.UpdateLocationRequest request) {
+		@RequestBody @Valid @NotNull UserRequest.UpdateLocationRequest request
+	) {
 		if (auth == null) {
 			throw new NotAuthenticationException("not authenticated");
 		}
@@ -74,13 +78,19 @@ public class UserController {
 		return new ApiResponse<>(response);
 	}
 
+	@Operation(summary = "회원 닉네임 중복 조회", description = "회원 닉네임 중복 여부를 조회한다.")
 	@GetMapping("/nickname/duplication")
-	public ApiResponse<Boolean> nicknameDuplicationCheck(@RequestParam String input) {
+	public ApiResponse<Boolean> nicknameDuplicationCheck(
+		@Parameter(description = "회원 닉네임") @RequestParam String input
+	) {
 		return new ApiResponse<>(userService.nicknameDuplicationCheck(input));
 	}
 
+	@Operation(summary = "회원 아이디 중복 조회", description = "회원 아이디 중복 여부를 조회한다.")
 	@GetMapping("/username/duplication")
-	public ApiResponse<Boolean> usernameDuplicationCheck(@RequestParam String input) {
+	public ApiResponse<Boolean> usernameDuplicationCheck(
+		@Parameter(description = "회원 아이디") @RequestParam String input
+	) {
 		return new ApiResponse<>(userService.usernameDuplicationCheck(input));
 	}
 

@@ -28,8 +28,8 @@ public class MatchRecordController {
 		this.matchRecordService = matchRecordService;
 	}
 
-	@PostMapping
 	@Operation(summary = "경기 결과 등록", description = "경기 결과를 등록한다.")
+	@PostMapping
 	public void endGame(
 		@AuthenticationPrincipal JwtAuthentication authentication,
 		@PathVariable Long id,

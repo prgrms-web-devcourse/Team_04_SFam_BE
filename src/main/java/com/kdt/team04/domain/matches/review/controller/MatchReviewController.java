@@ -15,7 +15,9 @@ import com.kdt.team04.domain.matches.review.dto.MatchReviewRequest;
 import com.kdt.team04.domain.matches.review.service.MatchReviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "경기 후기 API")
 @RestController
 @RequestMapping("/api/matches/{id}/review")
 public class MatchReviewController {
@@ -26,8 +28,8 @@ public class MatchReviewController {
 		this.matchReviewService = matchReviewService;
 	}
 
-	@PostMapping
 	@Operation(summary = "경기 후기 등록", description = "경기 종료 후 경기 후기를 등록한다.")
+	@PostMapping
 	public void review(
 		@AuthenticationPrincipal JwtAuthentication authentication,
 		@PathVariable Long id,
