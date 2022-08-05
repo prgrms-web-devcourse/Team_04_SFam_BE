@@ -15,6 +15,7 @@ import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.service.TeamGiverService;
+import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.Location;
@@ -28,13 +29,15 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final MatchReviewGiverService matchReviewGiver;
 	private final TeamGiverService teamGiver;
+	private final UserConverter userConverter;
 	private final S3Uploader s3Uploader;
 
 	public UserService(UserRepository userRepository, MatchReviewGiverService matchReviewGiver,
-		TeamGiverService teamGiver, S3Uploader s3Uploader) {
+		TeamGiverService teamGiver, S3Uploader s3Uploader, UserConverter userConverter) {
 		this.userRepository = userRepository;
 		this.matchReviewGiver = matchReviewGiver;
 		this.teamGiver = teamGiver;
+		this.userConverter = userConverter;
 		this.s3Uploader = s3Uploader;
 	}
 
@@ -43,19 +46,23 @@ public class UserService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("Username = {0}", username)));
 
-		return UserResponse.builder()
-			.id(foundUser.getId())
-			.username(foundUser.getUsername())
-			.password(foundUser.getPassword())
-			.nickname(foundUser.getNickname())
-			.location(foundUser.getLocation())
-			.profileImageUrl(foundUser.getProfileImageUrl())
-			.build();
+		return userConverter.toUserResponse(foundUser);
 	}
 
-	@Transactional
-	public Long create(UserRequest.CreateRequest request) {
-		return userRepository.save(new User(request.username(), request.nickname(), request.password())).getId();
+	public UserResponse findByEmail(String email) {
+		User foundUser = this.userRepository.findByEmail(email)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
+				MessageFormat.format("email = {0}", email)));
+
+		return userConverter.toUserResponse(foundUser);
+	}
+
+	public UserResponse findById(Long id) {
+		User foundUser = this.userRepository.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
+				MessageFormat.format("UserId = {0}", id)));
+
+		return userConverter.toUserResponse(foundUser);
 	}
 
 	public UserResponse.FindProfile findProfileById(Long id) {
@@ -74,6 +81,13 @@ public class UserService {
 		);
 	}
 
+	@Transactional
+	public Long create(UserRequest.CreateRequest request) {
+		User user = userConverter.toUser(request);
+
+		return userRepository.save(user).getId();
+	}
+
 	public List<UserResponse.UserFindResponse> findAllByNickname(String nickname) {
 		return userRepository.findByNicknameContaining(nickname).stream()
 			.map(
@@ -87,25 +101,12 @@ public class UserService {
 			.toList();
 	}
 
-	public UserResponse findById(Long id) {
-		User foundUser = this.userRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
-				MessageFormat.format("UserId = {0}", id)));
-
-		return UserResponse.builder()
-			.id(foundUser.getId())
-			.username(foundUser.getUsername())
-			.nickname(foundUser.getNickname())
-			.location(foundUser.getLocation())
-			.profileImageUrl(foundUser.getProfileImageUrl())
-			.build();
-	}
-
 	@Transactional
 	public UserResponse.UpdateLocationResponse updateLocation(Long targetId,
 		UserRequest.UpdateLocationRequest request) {
-		User foundUser = userRepository.findById(targetId)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
+		User foundUser = this.userRepository.findById(targetId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
+				MessageFormat.format("UserId = {0}", targetId)));
 		foundUser.updateLocation(new Location(request.latitude(), request.longitude()));
 
 		return new UserResponse.UpdateLocationResponse(request.latitude(), request.longitude());
@@ -117,6 +118,13 @@ public class UserService {
 
 	public Boolean nicknameDuplicationCheck(String nickname) {
 		return userRepository.existsByNickname(nickname);
+	}
+
+	public void update(Long targetId, UserRequest.Update request) {
+		User foundUser = this.userRepository.findById(targetId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
+				MessageFormat.format("UserId = {0}", targetId)));
+		foundUser.update(request.nickname(), request.email(), request.profileImageUrl());
 	}
 
 	@Transactional

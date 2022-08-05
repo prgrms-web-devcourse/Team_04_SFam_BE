@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
@@ -18,6 +19,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import lombok.Builder;
 
+@Component
 public class Jwt {
 	private final JwtConfig jwtConfigure;
 	private final Algorithm algorithm;
@@ -44,6 +46,7 @@ public class Jwt {
 		}
 		builder.withClaim("userId", claims.userId);
 		builder.withClaim("username", claims.username);
+		builder.withClaim("email", claims.email);
 		builder.withArrayClaim("roles", claims.roles);
 
 		return builder.sign(this.algorithm);
@@ -92,6 +95,7 @@ public class Jwt {
 	public static class Claims {
 		Long userId;
 		String username;
+		String email;
 		String[] roles;
 		Date iat;
 		Date exp;
@@ -108,6 +112,12 @@ public class Jwt {
 			if (!username.isNull()) {
 				this.username = username.asString();
 			}
+
+			Claim email = decodedJWT.getClaim("email");
+			if (!email.isNull()) {
+				this.email = email.asString();
+			}
+
 			Claim roles = decodedJWT.getClaim("roles");
 			if (!roles.isNull()) {
 				this.roles = roles.asArray(String.class);
@@ -117,13 +127,13 @@ public class Jwt {
 		}
 
 		@Builder
-		Claims(Long userId, String username, String[] roles, Date iat, Date exp) {
+		Claims(Long userId, String username, String email, String[] roles, Date iat, Date exp) {
 			this.userId = userId;
 			this.username = username;
+			this.email = email;
 			this.roles = roles;
 			this.iat = iat;
 			this.exp = exp;
 		}
 	}
-
 }

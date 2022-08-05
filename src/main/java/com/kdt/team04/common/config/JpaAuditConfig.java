@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 
@@ -23,9 +24,11 @@ public class JpaAuditConfig {
 
 			if (authentication == null
 				|| !authentication.isAuthenticated()
-				|| authentication instanceof AnonymousAuthenticationToken) {
+				|| authentication instanceof AnonymousAuthenticationToken
+				|| authentication instanceof OAuth2AuthenticationToken) {
 				return Optional.empty();
 			}
+
 			return Optional.of(((JwtAuthentication)authentication.getPrincipal()).id().toString());
 		};
 	}

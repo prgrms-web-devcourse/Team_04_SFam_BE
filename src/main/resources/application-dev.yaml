@@ -1,11 +1,22 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    username: ENC(nSSFICyQak/cBulXEeOEmlMHgdGIUy+L)
-    password: ENC(JajXE4ahsIVgOBsyZ7BGrPQ3UZTJ0bIo)
-    url: ENC(9d/4bHB1HmtQc/9cqFnK/mWXll5mHPVs1V1JBqNjyCTNZzj2CE62LTe7mWKNhCW1FK8Zh0JPGiFj8ICXRlCl65pco0f/r7TTLqJGYKeMDln1QkZRmttdcg==)
+    username: ${MYSQL_USERNAME:ENC(nSSFICyQak/cBulXEeOEmlMHgdGIUy+L)}
+    password: ${MYSQL_PASSWORD:ENC(JajXE4ahsIVgOBsyZ7BGrPQ3UZTJ0bIo)}
+    url: ${MYSQL_URL:ENC(9d/4bHB1HmtQc/9cqFnK/mWXll5mHPVs1V1JBqNjyCTNZzj2CE62LTe7mWKNhCW1FK8Zh0JPGiFj8ICXRlCl65pco0f/r7TTLqJGYKeMDln1QkZRmttdcg==)}
   jpa:
     show-sql: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${CLIENT_ID:ENC(rUGY2BANJhAYHvlZaSMc6RnfqP6qG+hS5pD8UhuxI3mpbaPE8C6HIZboags5eZFRrqFAjOMOWB2x8LFy/C3jCGTmWaOiulLLnePMOthCohKlYRCwmaJ4PA==)}
+            client-secret: ${CLIENT_SECRET:ENC(SxADH2A4v4TN4BAUWUQ2CmYereI2TQAtzxk2MIIqFAdan/x2DC4LGLeFWDHBGzdp)}
+            scope:
+              - profile
+              - email
+            redirect-uri: ${OAUTH_REDIRECT_URI:https://dongkyurami.link/}
 cors:
   allowed:
     origin:

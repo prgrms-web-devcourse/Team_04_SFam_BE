@@ -51,8 +51,8 @@ public class AuthController {
 
 		TokenDto accessToken = signInResponse.accessToken();
 		TokenDto refreshToken = signInResponse.refreshToken();
-		ResponseCookie accessTokenCookie = createCookie(accessToken.header(), accessToken.token(), refreshToken.expirySecond());
-		ResponseCookie refreshTokenCookie = createCookie(refreshToken.header(), refreshToken.token(), refreshToken.expirySecond());
+		ResponseCookie accessTokenCookie = createCookie(accessToken.header(), accessToken.token(), refreshToken.expirySeconds());
+		ResponseCookie refreshTokenCookie = createCookie(refreshToken.header(), refreshToken.token(), refreshToken.expirySeconds());
 		response.setHeader(SET_COOKIE, accessTokenCookie.toString());
 		response.addHeader(SET_COOKIE, refreshTokenCookie.toString());
 

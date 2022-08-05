@@ -2,8 +2,10 @@ package com.kdt.team04.domain.user.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.entity.Location;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,11 +14,15 @@ import lombok.Builder;
 @Builder
 public record UserResponse(
 	Long id,
+
+	@JsonIgnore
 	String username,
 	String password,
 	String nickname,
 	Location location,
-	String profileImageUrl
+	String email,
+	String profileImageUrl,
+	Role role
 ) {
 
 	@Builder

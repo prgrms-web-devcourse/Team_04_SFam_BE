@@ -1,5 +1,6 @@
 package com.kdt.team04.domain.auth.dto;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -34,7 +35,11 @@ public record AuthRequest() {
 		@Schema(description = "회원 nickname", required = true)
 		@NotBlank
 		@Size(min = 2, max = 16)
-		String nickname
+		String nickname,
+
+		@Schema(description = "회원 email")
+		@Email
+		String email
 	) {
 	}
 }

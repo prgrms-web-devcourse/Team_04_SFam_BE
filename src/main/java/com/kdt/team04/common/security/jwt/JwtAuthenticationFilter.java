@@ -32,7 +32,6 @@ import com.kdt.team04.domain.auth.service.TokenService;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final Jwt jwt;
 	private final TokenService tokenService;
-
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public JwtAuthenticationFilter(Jwt jwt, TokenService tokenService) {
@@ -91,7 +90,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String accessToken) {
 		List<GrantedAuthority> authorities = this.jwt.getAuthorities(claims);
 		if (claims.userId != null && !authorities.isEmpty()) {
-			JwtAuthentication authentication = new JwtAuthentication(accessToken, claims.userId, claims.username);
+			JwtAuthentication authentication = new JwtAuthentication(accessToken, claims.userId, claims.username,
+				claims.email);
 			JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authentication, null, authorities);
 			authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
