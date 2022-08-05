@@ -13,18 +13,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record MatchChatRequest(
 
+	@Schema(description = "채팅 대상", required = true)
 	@NotNull
-	@Schema(description = "채팅 대상")
 	Long targetId,
 
+	@Schema(description = "채팅 내용", required = true)
 	@NotBlank
-	@Schema(description = "채팅 내용")
 	String content,
 
+	@Schema(description = "채팅 시간(yyyy-MM-dd HH:mm:ss)", required = true)
 	@NotNull
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Schema(description = "채팅 시간")
 	LocalDateTime chattedAt
 ) {
 }

@@ -21,7 +21,10 @@ import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "매칭 신청 API")
 @RestController
 @RequestMapping("/api/matches/{matchId}/proposals")
 public class MatchProposalController {
@@ -32,9 +35,11 @@ public class MatchProposalController {
 		this.matchProposalService = matchProposalService;
 	}
 
-	@PostMapping
 	@Operation(summary = "대결 신청", description = "사용자는 대결을 신청할 수 있다.")
-	public void propose(@PathVariable Long matchId, @AuthenticationPrincipal JwtAuthentication jwtAuthentication,
+	@PostMapping
+	public void propose(
+		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
+		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
 		@RequestBody @Valid MatchProposalRequest.ProposalCreate request) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
@@ -43,18 +48,20 @@ public class MatchProposalController {
 		matchProposalService.create(jwtAuthentication.id(), matchId, request);
 	}
 
-	@PatchMapping("/{id}")
 	@Operation(summary = "신청 수락 및 거절", description = "대결 공고자는 대결 신청을 수락 또는 거절 할 수 있다.")
-	public void proposeReact(@PathVariable Long matchId, @PathVariable Long id,
+	@PatchMapping("/{id}")
+	public void proposeReact(
+		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
+		@Parameter(description = "매칭 신청 ID") @PathVariable Long id,
 		@RequestBody @Valid MatchProposalRequest.ProposalReact request) {
 		matchProposalService.react(matchId, id, request.status());
 	}
 
-	@GetMapping
 	@Operation(summary = "신청 목록 조회", description = "해당 대결의 신청 목록이 조회된다.")
+	@GetMapping
 	public ApiResponse<List<MatchProposalResponse.Chat>> findAllChats(
 		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
-		@PathVariable Long matchId
+		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId
 	) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");

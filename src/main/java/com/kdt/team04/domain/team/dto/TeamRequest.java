@@ -12,18 +12,18 @@ public record TeamRequest() {
 
 	public record CreateRequest(
 
+		@Schema(description = "팀 이름, 2자 이상 10자 이하", required = true)
 		@NotBlank
 		@Size(min = 2, max = 10)
-		@Schema(description = "팀 이름, 2자 이상 10자 이하", required = true)
 		String name,
 
+		@Schema(description = "팀 설명, 100자 이하", required = true)
 		@NotBlank
 		@Size(max = 100)
-		@Schema(description = "팀 설명, 100자 이하", required = true)
 		String description,
 
+		@Schema(description = "팀 종목(값/설명) - BADMINTON/배드민턴, SOCCER/축구, BASEBALL/야구", required = true)
 		@NotNull
-		@Schema(description = "팀 종목, NOT NULL", required = true)
 		SportsCategory sportsCategory) {
 	}
 }

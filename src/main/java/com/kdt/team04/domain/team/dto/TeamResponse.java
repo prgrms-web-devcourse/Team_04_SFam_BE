@@ -13,7 +13,7 @@ import lombok.Builder;
 
 @Builder
 public record TeamResponse(
-	@Schema(description = "팀 아이디")
+	@Schema(description = "팀 ID(고유 PK)")
 	Long id,
 
 	@Schema(description = "팀 이름")
@@ -22,7 +22,7 @@ public record TeamResponse(
 	@Schema(description = "팀 설명")
 	String description,
 
-	@Schema(description = "팀 종목")
+	@Schema(description = "팀 종목(값/설명) - BADMINTON/배드민턴, SOCCER/축구, BASEBALL/야구", required = true)
 	SportsCategory sportsCategory,
 
 	@Schema(description = "팀원 정보")
@@ -48,7 +48,7 @@ public record TeamResponse(
 		@Schema(description = "팀명")
 		String name,
 
-		@Schema(description = "스포츠 종목")
+		@Schema(description = "스포츠 종목(값/설명) - BADMINTON/배드민턴, SOCCER/축구, BASEBALL/야구")
 		SportsCategory sportsCategory,
 
 		@Schema(description = "팀 로고 이미지 url")

@@ -13,12 +13,15 @@ public record MatchProposalRequest() {
 		@Schema(description = "신청자 팀 ID")
 		Long teamId,
 
-		@Schema(description = "신청 내용, 2자 이상 30자 이하")
+		@Schema(description = "신청 내용, 2자 이상 30자 이하", required = true)
 		@NotBlank
 		@Size(min = 2, max = 30)
 		String content
 	) {
 	}
 
-	public record ProposalReact(@NotNull MatchProposalStatus status) {}
+	public record ProposalReact(
+		@Schema(description = "매칭 신청 상태(값/설명) - WAITING/대기중, APPROVED/수락, REFUSE/거절, FIXED/대상확정(경기종료)", required = true)
+		@NotNull MatchProposalStatus status
+	) {}
 }

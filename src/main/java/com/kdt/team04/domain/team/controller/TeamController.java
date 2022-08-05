@@ -25,9 +25,10 @@ import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.service.TeamService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Team API")
+@Tag(name = "팀 API")
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
@@ -38,10 +39,12 @@ public class TeamController {
 		this.teamService = teamService;
 	}
 
-	@Operation(summary = "팀을 생성한다.", description = "새로운 팀을 생성할 수 있습니다.")
+	@Operation(summary = "팀 생성", description = "새로운 팀을 생성한다.")
 	@PostMapping
-	public void create(@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
-		@RequestBody @Valid TeamRequest.CreateRequest requestDto) {
+	public void create(
+		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
+		@RequestBody @Valid TeamRequest.CreateRequest requestDto
+	) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
@@ -49,18 +52,21 @@ public class TeamController {
 		teamService.create(jwtAuthentication.id(),requestDto);
 	}
 
-	@Operation(summary = "팀 프로필 조회", description = "해당 id의 팀 프로필을 조회할 수 있습니다.")
+	@Operation(summary = "팀 프로필 조회", description = "해당 ID의 팀 프로필을 조회한다.")
 	@GetMapping("/{id}")
-	public ApiResponse<TeamResponse> getById(@PathVariable Long id) {
+	public ApiResponse<TeamResponse> getById(
+		@Parameter(description = "팀 ID") @PathVariable Long id
+	) {
 		TeamResponse team = teamService.findById(id);
 
 		return new ApiResponse<>(team);
 	}
 
-	@Operation(summary = "해당 user가 리더인 팀 조회", description = "해당 userId를 가진 user가 리더인 팀을 조회할 수 있습니다.")
+	@Operation(summary = "해당 회원이 리더인 팀 조회", description = "해당 ID의 회원이 리더인 팀을 조회한다.")
 	@GetMapping("/me/leader")
 	public ApiResponse<List<TeamResponse.SimpleResponse>> getByLeaderId(
-		@AuthenticationPrincipal JwtAuthentication jwtAuthentication) {
+		@AuthenticationPrincipal JwtAuthentication jwtAuthentication
+	) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
@@ -70,9 +76,13 @@ public class TeamController {
 		return new ApiResponse<>(teams);
 	}
 
-	@Operation(summary = "팀 로고 이미지 업데이트", description = "로고 이미지 파일을 받아 팀 로고 이미지를 업데이트 합니다.")
+	@Operation(summary = "팀 로고 이미지 업데이트", description = "로고 이미지 파일을 받아 팀 로고 이미지를 업데이트 한다.")
 	@PatchMapping("/{id}/logo")
-	public void uploadLogo(@PathVariable Long id, @AuthenticationPrincipal JwtAuthentication auth, MultipartFile file) {
+	public void uploadLogo(
+		@Parameter(description = "팀 ID") @PathVariable Long id,
+		@AuthenticationPrincipal JwtAuthentication auth,
+		MultipartFile file
+	) {
 		if (auth == null) {
 			throw new NotAuthenticationException("not authenticated");
 		}
