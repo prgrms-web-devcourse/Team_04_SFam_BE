@@ -64,7 +64,7 @@ public class UserController {
 	}
 
 	@Operation(summary = "회원 위치 정보 업데이트", description = "회원 위치 정보(위도, 경도)를 업데이트 한다.")
-	@PutMapping("/{id}/location")
+	@PutMapping("/location")
 	public ApiResponse<UserResponse.UpdateLocationResponse> update(
 		@AuthenticationPrincipal JwtAuthentication auth,
 		@RequestBody @Valid @NotNull UserRequest.UpdateLocationRequest request
