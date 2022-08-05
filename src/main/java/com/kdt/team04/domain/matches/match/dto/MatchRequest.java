@@ -2,7 +2,7 @@ package com.kdt.team04.domain.matches.match.dto;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -25,7 +25,7 @@ public record MatchRequest() {
 
 		@Schema(description = "매칭 날짜, 오늘 이후의 날짜만 가능", required = true)
 		@NotNull
-		@Future
+		@FutureOrPresent
 		LocalDate matchDate,
 
 		@Schema(description = "매칭 타입(값/설명) - TEAM_MATCH/팀전, INDIVIDUAL_MATCH/개인전", required = true)
