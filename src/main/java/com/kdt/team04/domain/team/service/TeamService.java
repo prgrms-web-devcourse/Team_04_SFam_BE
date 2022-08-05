@@ -2,12 +2,16 @@ package com.kdt.team04.domain.team.service;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.common.file.ImagePath;
+import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.review.dto.MatchRecordResponse;
 import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.matches.review.service.MatchRecordGiverService;
@@ -35,11 +39,12 @@ public class TeamService {
 	private final TeamMemberGiverService teamMemberGiver;
 	private final MatchRecordGiverService matchRecordGiver;
 	private final MatchReviewGiverService matchReviewGiver;
+	private final S3Uploader s3Uploader;
 
 	public TeamService(TeamRepository teamRepository, TeamConverter teamConverter, UserConverter userConverter,
 		UserService userService,
 		TeamMemberGiverService teamMemberGiver, MatchRecordGiverService matchRecordGiver,
-		MatchReviewGiverService matchReviewGiver) {
+		MatchReviewGiverService matchReviewGiver, S3Uploader s3Uploader) {
 		this.teamRepository = teamRepository;
 		this.teamConverter = teamConverter;
 		this.userConverter = userConverter;
@@ -47,6 +52,7 @@ public class TeamService {
 		this.teamMemberGiver = teamMemberGiver;
 		this.matchRecordGiver = matchRecordGiver;
 		this.matchReviewGiver = matchReviewGiver;
+		this.s3Uploader = s3Uploader;
 	}
 
 	@Transactional
@@ -84,7 +90,25 @@ public class TeamService {
 				new TeamResponse.SimpleResponse(
 					team.getId(),
 					team.getName(),
-					team.getSportsCategory()))
+					team.getSportsCategory(),
+					team.getLogoImageUrl()))
 			.toList();
 	}
+
+	@Transactional
+	public void uploadLogo(Long teamId, Long leaderId, MultipartFile file) {
+		Team team = teamRepository.findByIdAndLeaderId(teamId, leaderId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_TEAM_LEADER,
+				MessageFormat.format("TeamId = {0}", teamId)));
+
+		Optional.ofNullable(team.getLogoImageUrl())
+			.ifPresentOrElse(
+				key -> s3Uploader.uploadByKey(file.getResource(), key),
+				() -> {
+					String key = s3Uploader.uploadByPath(file.getResource(), ImagePath.TEAMS_LOGO.getPath());
+					team.updateLogoUrl(key);
+				}
+			);
+	}
+
 }

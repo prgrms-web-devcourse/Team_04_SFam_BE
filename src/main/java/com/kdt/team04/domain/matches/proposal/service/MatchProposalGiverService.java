@@ -87,7 +87,8 @@ public class MatchProposalGiverService {
 
 		if (matchProposal.getStatus() != MatchProposalStatus.APPROVED) {
 			throw new BusinessException(ErrorCode.PROPOSAL_NOT_APPROVED,
-				MessageFormat.format("proposerId = {0}, status = {1}", matchProposal.getId(), matchProposal.getStatus()));
+				MessageFormat.format("proposerId = {0}, status = {1}", matchProposal.getId(),
+					matchProposal.getStatus()));
 		}
 
 		matchProposal.updateStatus(MatchProposalStatus.FIXED);
@@ -97,7 +98,9 @@ public class MatchProposalGiverService {
 
 		Team team = matchProposal.getTeam();
 		TeamResponse.SimpleResponse teamResponse =
-			team == null ? null : new TeamResponse.SimpleResponse(team.getId(), team.getName(), team.getSportsCategory());
+			team == null ? null
+				: new TeamResponse.SimpleResponse(team.getId(), team.getName(),
+				team.getSportsCategory(), team.getLogoImageUrl());
 
 		return new MatchProposalResponse.FixedProposal(
 			matchProposal.getId(),

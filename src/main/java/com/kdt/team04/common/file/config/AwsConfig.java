@@ -11,14 +11,14 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
-@Profile({"dev", "real"})
+@Profile({"local", "dev", "real"})
 @Configuration
 @EnableConfigurationProperties({AwsConfigProperties.class, S3ConfigProperties.class})
-public class Aws {
+public class AwsConfig {
 
 	private final AwsConfigProperties awsConfigProperties;
 
-	public Aws(AwsConfigProperties awsConfigProperties) {
+	public AwsConfig(AwsConfigProperties awsConfigProperties) {
 		this.awsConfigProperties = awsConfigProperties;
 	}
 

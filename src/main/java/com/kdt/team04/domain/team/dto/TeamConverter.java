@@ -30,6 +30,7 @@ public class TeamConverter {
 			.sportsCategory(team.getSportsCategory())
 			.description(team.getDescription())
 			.leader(leader)
+			.logoImageUrl(team.getLogoImageUrl())
 			.build();
 	}
 
@@ -44,6 +45,7 @@ public class TeamConverter {
 			.matchRecord(recordCount)
 			.matchReview(review)
 			.leader(leader)
+			.logoImageUrl(team.getLogoImageUrl())
 			.build();
 	}
 }

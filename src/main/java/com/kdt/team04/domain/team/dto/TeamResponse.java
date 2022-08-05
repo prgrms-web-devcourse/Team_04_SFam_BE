@@ -35,7 +35,10 @@ public record TeamResponse(
 	MatchReviewResponse.TotalCount matchReview,
 
 	@Schema(description = "팀 리더 정보")
-	UserResponse leader
+	UserResponse leader,
+
+	@Schema(description = "팀 로고 이미지 url")
+	String logoImageUrl
 ) {
 
 	public record SimpleResponse(
@@ -46,6 +49,10 @@ public record TeamResponse(
 		String name,
 
 		@Schema(description = "스포츠 종목")
-		SportsCategory sportsCategory
-	) { }
+		SportsCategory sportsCategory,
+
+		@Schema(description = "팀 로고 이미지 url")
+		String logoImageUrl
+	) {
+	}
 }
