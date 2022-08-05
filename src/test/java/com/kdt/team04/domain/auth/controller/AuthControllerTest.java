@@ -36,6 +36,7 @@ import com.kdt.team04.domain.auth.dto.AuthResponse;
 import com.kdt.team04.domain.auth.dto.TokenDto;
 import com.kdt.team04.domain.auth.service.AuthService;
 import com.kdt.team04.domain.auth.service.TokenService;
+import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.entity.User;
 
 @WebMvcTest({AuthController.class, WebSecurityConfig.class})
@@ -69,7 +70,9 @@ class AuthControllerTest {
 			encodedPassword,
 			"nickName",
 			null,
-			null
+			"test1234@gmail.com",
+			null,
+			Role.USER
 		);
 
 		AuthRequest.SignInRequest signInRequest = new AuthRequest.SignInRequest(username, password);
@@ -80,9 +83,12 @@ class AuthControllerTest {
 			user.getId(),
 			username,
 			user.getNickname(),
+			null,
+			null,
+			Role.USER,
 			new TokenDto("accessToken", "accessToken", 3600),
 			new TokenDto("refreshToken", "refreshToken", 3600),
-			new JwtAuthenticationToken(new JwtAuthentication("accessToken", user.getId(), username),
+			new JwtAuthenticationToken(new JwtAuthentication("accessToken", user.getId(), username, user.getEmail()),
 				null,
 				authorities
 			));
@@ -119,9 +125,12 @@ class AuthControllerTest {
 			encodedPassword,
 			"nickName",
 			null,
-			null
+			"test1234@gmail.com",
+			null,
+			Role.USER
 		);
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, password, user.getNickname());
+		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, password, user.getNickname(),
+			user.getEmail());
 		AuthResponse.SignUpResponse signUpResponse = new AuthResponse.SignUpResponse(user.getId());
 
 		String request = objectMapper.writeValueAsString(signUpRequest);
@@ -156,9 +165,12 @@ class AuthControllerTest {
 			encodedPassword,
 			"nickName",
 			null,
-			null
+			"test1234@gmail.com",
+			null,
+			Role.USER
 		);
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(null, password, user.getNickname());
+		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(null, password, user.getNickname(),
+			user.getEmail());
 
 		String request = objectMapper.writeValueAsString(signUpRequest);
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(ErrorCode.METHOD_ARGUMENT_NOT_VALID));
@@ -182,8 +194,8 @@ class AuthControllerTest {
 		String username = "test1234";
 		String encodedPassword = "$2a$12$VBMdI3AHeZK.1iPAK97kaO1K/YPNjoTjBjEfolydYMXpFHpr1ZljS";
 		String nickname = "nickname";
-
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, null, nickname);
+		String email = "test1234@gmail.com";
+		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, null, nickname, email);
 
 		String request = objectMapper.writeValueAsString(signUpRequest);
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(ErrorCode.METHOD_ARGUMENT_NOT_VALID));
@@ -206,8 +218,8 @@ class AuthControllerTest {
 		//given
 		String username = "test1234";
 		String password = "!Password1234";
-
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, password, null);
+		String email = "test1234@gmail.com";
+		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, password, null, email);
 
 		String request = objectMapper.writeValueAsString(signUpRequest);
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(ErrorCode.METHOD_ARGUMENT_NOT_VALID));
@@ -230,8 +242,8 @@ class AuthControllerTest {
 		//given
 		String username = "test1234";
 		String password = "password";
-
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, password, null);
+		String email = "test1234@gmail.com";
+		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, password, null, email);
 
 		String request = objectMapper.writeValueAsString(signUpRequest);
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(ErrorCode.METHOD_ARGUMENT_NOT_VALID));

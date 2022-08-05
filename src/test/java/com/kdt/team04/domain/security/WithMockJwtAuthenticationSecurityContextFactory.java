@@ -15,9 +15,9 @@ public class WithMockJwtAuthenticationSecurityContextFactory implements WithSecu
 	public SecurityContext createSecurityContext(WithMockJwtAuthentication annotation) {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
 		JwtAuthenticationToken authentication = new JwtAuthenticationToken(
-			new JwtAuthentication(annotation.token(), annotation.id(), annotation.username()),
+			new JwtAuthentication(annotation.token(), annotation.id(), annotation.username(), annotation.email()),
 			null,
-			createAuthorityList(annotation.role())
+			createAuthorityList(annotation.role().getKey())
 		);
 		context.setAuthentication(authentication);
 		return context;

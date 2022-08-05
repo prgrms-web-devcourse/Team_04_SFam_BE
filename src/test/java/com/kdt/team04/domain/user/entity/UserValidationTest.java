@@ -149,7 +149,7 @@ class UserValidationTest {
 		//given
 		String encodedPassword = passwordEncoder.encode("@Password12");
 		User user = new User(
-			"toolongtoolongtoolongtoolongtoolongtoolong",
+			"toolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolong",
 			"nickname",
 			encodedPassword
 		);

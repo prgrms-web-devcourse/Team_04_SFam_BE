@@ -13,6 +13,8 @@ spring:
   flyway:
     enabled: false
     baseline-on-migrate: false
+  profiles:
+    active: test
 cors:
   allowed:
     origin: "http://localhost"
