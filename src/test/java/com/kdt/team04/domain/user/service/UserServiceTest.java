@@ -54,6 +54,7 @@ class UserServiceTest {
 	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@Test
+	@DisplayName("유저 생성 성공 테스트")
 	void testCreateSuccess() {
 		//given
 		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
@@ -69,6 +70,7 @@ class UserServiceTest {
 	}
 
 	@Test
+	@DisplayName("username으로 유저 조회 성공 테스트")
 	void testFindByUsernameSuccess() {
 		//given
 		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
@@ -155,6 +157,7 @@ class UserServiceTest {
 	}
 
 	@Test
+	@DisplayName("id로 유저 조회 성공 테스트")
 	void testFindByIdSuccess() {
 		//given
 		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
@@ -180,6 +183,7 @@ class UserServiceTest {
 	}
 
 	@Test
+	@DisplayName("존재하지 않는 Usernamedm로 조회 시 EntityNotFoundException 예외 발생")
 	void testFindByNotExistUsername() {
 		//given
 		String notExistUsername = "------";

@@ -23,7 +23,7 @@ import com.kdt.team04.domain.user.repository.UserRepository;
 
 @SpringBootTest
 @Transactional
-public class UserServiceIntegrationTest {
+class UserServiceIntegrationTest {
 
 	@Autowired
 	UserService userService;

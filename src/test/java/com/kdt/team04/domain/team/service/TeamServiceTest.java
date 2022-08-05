@@ -31,6 +31,7 @@ import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
 import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
+import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;

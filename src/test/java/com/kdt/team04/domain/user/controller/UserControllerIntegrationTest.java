@@ -58,17 +58,19 @@ import com.kdt.team04.domain.user.entity.User;
 class UserControllerIntegrationTest {
 
 	@Autowired
-	private MockMvc mockMvc;
+	MockMvc mockMvc;
 
 	@Autowired
-	private ObjectMapper objectMapper;
+	ObjectMapper objectMapper;
 
 	@PersistenceContext
-	private EntityManager entityManager;
+	EntityManager entityManager;
 
 	@Autowired
 	Jwt jwt;
-	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	@MockBean
 	S3Uploader s3Uploader;

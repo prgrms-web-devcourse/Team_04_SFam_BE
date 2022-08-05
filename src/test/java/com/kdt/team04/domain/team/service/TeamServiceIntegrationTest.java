@@ -31,13 +31,13 @@ import com.kdt.team04.domain.user.entity.User;
 class TeamServiceIntegrationTest {
 
 	@Autowired
-	private TeamService teamService;
+	TeamService teamService;
 
 	@Autowired
-	private TeamRepository teamRepository;
+	TeamRepository teamRepository;
 
 	@Autowired
-	private EntityManager entityManager;
+	EntityManager entityManager;
 
 	@MockBean
 	S3Uploader s3Uploader;

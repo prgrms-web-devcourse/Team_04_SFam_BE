@@ -36,13 +36,13 @@ import com.kdt.team04.domain.user.entity.User;
 class MatchRecordServiceIntegrationTest {
 
 	@Autowired
-	private MatchRecordService matchRecordService;
+	MatchRecordService matchRecordService;
 
 	@Autowired
-	private EntityManager entityManager;
+	EntityManager entityManager;
 
 	@Autowired
-	private MatchRecordRepository matchRecordRepository;
+	MatchRecordRepository matchRecordRepository;
 
 	@MockBean
 	S3Uploader s3Uploader;
@@ -146,8 +146,6 @@ class MatchRecordServiceIntegrationTest {
 		});
 	}
 
-
-
 	private static User getUser(String name) {
 		return User.builder()
 			.password("1234")
@@ -165,7 +163,7 @@ class MatchRecordServiceIntegrationTest {
 			.build();
 	}
 
-	private static Match  getSoccerIndividualMatch(String title, MatchStatus status, User user) {
+	private static Match getSoccerIndividualMatch(String title, MatchStatus status, User user) {
 		return Match.builder()
 			.title(title)
 			.sportsCategory(SportsCategory.SOCCER)
