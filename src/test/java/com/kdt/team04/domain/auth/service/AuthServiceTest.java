@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -53,11 +54,12 @@ class AuthServiceTest {
 	PasswordEncoder passwordEncoder;
 
 	@Test
+	@DisplayName("SignIn 성공 테스트")
 	void testSignInSuccess() {
 		//given
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null,  null);
+		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null, "test00@gmail.com", null, Role.USER);
 		List<GrantedAuthority> authorities = new ArrayList<>(
 			Collections.singleton(new SimpleGrantedAuthority("USER")));
 		Jwt.Claims claims = Jwt.Claims.builder()
@@ -93,11 +95,12 @@ class AuthServiceTest {
 	}
 
 	@Test
+	@DisplayName("비밀번호가 맞지 않으면 SignIn에 실패한다.")
 	void testSignInFail() {
 		//given
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null, null);
+		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null, "test00@gmail.com", null, Role.USER);
 		given(userService.findByUsername(userResponse.username())).willReturn(userResponse);
 		given(passwordEncoder.matches(password, encodedPassword)).willReturn(false);
 		//when, then
@@ -109,12 +112,12 @@ class AuthServiceTest {
 	}
 
 	@Test
+	@DisplayName("Username이 맞지 않으면 SignIn에 실패한다.")
 	void testSignInWithNotFoundUser() {
 		//given
 		String password = "@Test1234";
-		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
 		String notExistUsername = "noname";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null, null);
+
 		given(userService.findByUsername(notExistUsername)).willThrow(EntityNotFoundException.class);
 		//when, then
 		assertThatThrownBy(() -> authService.signIn("noname", password)).isInstanceOf(BusinessException.class)
@@ -125,14 +128,15 @@ class AuthServiceTest {
 	}
 
 	@Test
+	@DisplayName("SignUp 성공 테스트")
 	void testSignUpSuccess() {
 		//given
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
 		Long userId = 1L;
 		UserRequest.CreateRequest createRequest = new UserRequest.CreateRequest("username", encodedPassword,
-			"nickname");
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest("username", password, "nickname");
+			"nickname", "username@gmail.com", null, Role.USER);
+		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest("username", password, "nickname", createRequest.email());
 
 		given(passwordEncoder.encode(password)).willReturn(encodedPassword);
 		given(userService.create(createRequest)).willReturn(userId);

@@ -3,10 +3,13 @@ package com.kdt.team04.domain.user.entity;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -15,12 +18,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.kdt.team04.domain.BaseEntity;
+import com.kdt.team04.domain.user.Role;
 
 import lombok.Builder;
 
 @Table(name = "users")
 @Entity
-
 public class User extends BaseEntity {
 
 	@Id
@@ -33,39 +36,42 @@ public class User extends BaseEntity {
 	@NotBlank
 	@Column(unique = true)
 	@Pattern(regexp = "^[a-z0-9_]*$")
-	@Size(min = 6, max = 24)
+	@Size(min = 6, max = 64)
 	private String username;
 
 	@NotBlank
-	@Size(min = 2, max = 16)
+	@Size(min = 2, max = 54)
 	@Column(unique = true)
 	private String nickname;
 
 	@Embedded
 	private Location location;
 
+	@Email
+	private String email;
+
 	private String profileImageUrl;
+
+	@Enumerated(EnumType.STRING)
+	private Role role;
 
 	protected User() {
 	}
 
 	public User(String username, String nickname, String password) {
-		this(null, password, username, nickname, null, null);
+		this(null, password, username, nickname, null, null, null, Role.USER);
 	}
 
 	@Builder
-	public User(Long id, String password, String username, String nickname,
-		Location location, String profileImageUrl) {
+	public User(Long id, String password, String username, String nickname, Location location, String email, String profileImageUrl, Role role) {
 		this.id = id;
 		this.password = password;
 		this.username = username;
 		this.nickname = nickname;
 		this.location = location;
+		this.email = email;
 		this.profileImageUrl = profileImageUrl;
-	}
-
-	public String getProfileImageUrl() {
-		return profileImageUrl;
+		this.role = role;
 	}
 
 	public Long getId() {
@@ -88,8 +94,28 @@ public class User extends BaseEntity {
 		return location;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public String getProfileImageUrl() {
+		return profileImageUrl;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
 	public void updateLocation(Location location) {
 		this.location = location;
+	}
+
+	public User update(String nickname, String email , String profileImageUrl) {
+		this.nickname = nickname != null ? nickname : this.nickname;
+		this.email = email != null ? email : this.email;
+		this.profileImageUrl = profileImageUrl != null ? profileImageUrl : this.profileImageUrl;
+
+		return this;
 	}
 
 	public void updateImageUrl(String profileImageUrl) {

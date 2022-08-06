@@ -10,6 +10,8 @@ import com.kdt.team04.domain.user.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByUsername(String username);
 
+	Optional<User> findByEmail(String email);
+
 	List<User> findByNicknameContaining(String nickname);
 
 	Boolean existsByNickname(String nickname);

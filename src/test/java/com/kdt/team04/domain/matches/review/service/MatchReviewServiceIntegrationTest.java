@@ -28,7 +28,6 @@ import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.review.entity.MatchReview;
-import com.kdt.team04.domain.matches.review.repository.MatchReviewRepository;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
@@ -38,13 +37,10 @@ import com.kdt.team04.domain.user.entity.User;
 class MatchReviewServiceIntegrationTest {
 
 	@PersistenceContext
-	private EntityManager entityManager;
+	EntityManager entityManager;
 
 	@Autowired
-	private MatchReviewService matchReviewService;
-
-	@Autowired
-	private MatchReviewRepository matchReviewRepository;
+	MatchReviewService matchReviewService;
 
 	@MockBean
 	S3Uploader s3Uploader;

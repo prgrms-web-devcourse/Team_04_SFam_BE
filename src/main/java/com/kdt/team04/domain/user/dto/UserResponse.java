@@ -2,8 +2,10 @@ package com.kdt.team04.domain.user.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
 import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.entity.Location;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,6 +19,7 @@ public record UserResponse(
 	@Schema(description = "회원 아이디")
 	String username,
 
+	@JsonIgnore
 	@Schema(description = "회원 비밀번호")
 	String password,
 
@@ -26,8 +29,14 @@ public record UserResponse(
 	@Schema(description = "회원 위치 정보")
 	Location location,
 
+	@Schema(description = "회원 이메일")
+	String email,
+
 	@Schema(description = "회원 프로필 url")
-	String profileImageUrl
+	String profileImageUrl,
+
+	@Schema(description = "회원 권한")
+	Role role
 ) {
 
 	@Builder

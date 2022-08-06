@@ -42,10 +42,10 @@ import com.kdt.team04.domain.user.entity.User;
 class MatchProposalGiverServiceTest {
 
 	@PersistenceContext
-	private EntityManager entityManager;
+	EntityManager entityManager;
 
 	@Autowired
-	private MatchProposalGiverService matchProposalGiver;
+	MatchProposalGiverService matchProposalGiver;
 
 	@MockBean
 	S3Uploader s3Uploader;

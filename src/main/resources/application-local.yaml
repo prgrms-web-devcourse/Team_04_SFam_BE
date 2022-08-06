@@ -9,6 +9,17 @@ spring:
     properties:
       hibernate:
         format_sql: ${SHOW_SQL:true}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${OAUTH_CLIENT_ID:ENC(3L5+cJ3QhPyprBUX8YOsqTuZnMOJyVBwi2gjlc2KVQzWz8J77heh1SvQyxcSGfrXAVQQbLpw2lcM1vBgkZEx4fFujLvL2dEvYnQf4dcq3I//yfArD8acow==)}
+            client-secret: ${OAUTH_CLIENT_SECRET:ENC(VlfYz991G5XtohGbAWU/vsHZkW3/y7ILKIfyqy5Vy0d2HcbEDDgMySkfKDsgX8uw)}
+            scope:
+              - profile
+              - email
+            redirect-uri: ${OAUTH_REDIRECT_URI:https://dongkyurami.link/}
 logging:
   level:
     com.kdt: DEBUG

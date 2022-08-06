@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.common.security.CookieConfigProperties;
 import com.kdt.team04.domain.auth.dto.AuthRequest;
 import com.kdt.team04.domain.auth.dto.AuthResponse;
 import com.kdt.team04.domain.auth.dto.TokenDto;
@@ -29,9 +30,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class AuthController {
 
 	private final AuthService authService;
+	private final CookieConfigProperties cookieConfigProperties;
 
-	public AuthController(AuthService authService) {
+	public AuthController(AuthService authService, CookieConfigProperties cookieConfigProperties) {
 		this.authService = authService;
+		this.cookieConfigProperties = cookieConfigProperties;
 	}
 
 	@Operation(summary = "로그인", description = "로그인을 통해 토큰을 획득합니다.")
@@ -48,21 +51,21 @@ public class AuthController {
 
 		TokenDto accessToken = signInResponse.accessToken();
 		TokenDto refreshToken = signInResponse.refreshToken();
-		ResponseCookie accessTokenCookie = createSecureCookie(accessToken.header(), accessToken.token(), refreshToken.expirySecond());
-		ResponseCookie refreshTokenCookie = createSecureCookie(refreshToken.header(), refreshToken.token(), refreshToken.expirySecond());
+		ResponseCookie accessTokenCookie = createCookie(accessToken.header(), accessToken.token(), refreshToken.expirySeconds());
+		ResponseCookie refreshTokenCookie = createCookie(refreshToken.header(), refreshToken.token(), refreshToken.expirySeconds());
 		response.setHeader(SET_COOKIE, accessTokenCookie.toString());
 		response.addHeader(SET_COOKIE, refreshTokenCookie.toString());
 
 		return new ApiResponse<>(signInResponse);
 	}
 
-	private ResponseCookie createSecureCookie(String header, String token, int expirySecond) {
+	private ResponseCookie createCookie(String header, String token, int expirySecond) {
 		return ResponseCookie.from(header, token)
 			.path("/")
 			.httpOnly(true)
-			.secure(true)
+			.secure(cookieConfigProperties.secure())
 			.maxAge(expirySecond)
-			.sameSite("none")
+			.sameSite(cookieConfigProperties.sameSite().attributeValue())
 			.build();
 	}
 

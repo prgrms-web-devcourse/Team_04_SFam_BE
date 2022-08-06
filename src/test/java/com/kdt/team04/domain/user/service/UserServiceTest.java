@@ -30,6 +30,8 @@ import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.service.TeamGiverService;
+import com.kdt.team04.domain.user.Role;
+import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -51,38 +53,83 @@ class UserServiceTest {
 	@Mock
 	TeamGiverService teamGiver;
 
+	@Mock
+	UserConverter userConverter;
+
 	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@Test
+	@DisplayName("유저 생성 성공 테스트")
 	void testCreateSuccess() {
 		//given
-		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
-		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null, null);
+		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname",
+			"test00@gmail.com", null, Role.USER);
+		User user = User.builder()
+			.id(1L)
+			.username(request.username())
+			.nickname(request.nickname())
+			.password(passwordEncoder.encode(request.password()))
+			.email(request.email())
+			.profileImageUrl(null)
+			.role(request.role())
+			.build();
+
+		given(userConverter.toUser(request)).willReturn(user);
 		given(userRepository.save(any(User.class))).willReturn(user);
+
 		//when
 		Long userId = userService.create(request);
 
 		//then
+		verify(userConverter, times(1)).toUser(request);
 		verify(userRepository, times(1)).save(any(User.class));
 
 		assertThat(userId).isNotNull();
 	}
 
 	@Test
+	@DisplayName("username으로 유저 조회 성공 테스트")
 	void testFindByUsernameSuccess() {
 		//given
-		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
-		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null, null);
+		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname",
+			"test00@gmail.com", null, Role.USER);
+		User user = User.builder()
+			.id(1L)
+			.username(request.username())
+			.nickname(request.nickname())
+			.password(passwordEncoder.encode(request.password()))
+			.email(request.email())
+			.profileImageUrl(null)
+			.role(request.role())
+			.build();
+
+		UserResponse response = UserResponse.builder()
+			.id(user.getId())
+			.username(user.getUsername())
+			.nickname(request.nickname())
+			.password(user.getPassword())
+			.email(user.getEmail())
+			.profileImageUrl(user.getProfileImageUrl())
+			.role(user.getRole())
+			.build();
+
 		given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.of(user));
+		given(userConverter.toUserResponse(user)).willReturn(response);
 
 		//when
 		UserResponse userResponse = userService.findByUsername(user.getUsername());
 
 		//then
+		verify(userConverter, times(1)).toUserResponse(user);
+		verify(userRepository, times(1)).findByUsername(user.getUsername());
+
 		assertThat(userResponse.id()).isEqualTo(user.getId());
 		assertThat(userResponse.username()).isEqualTo(user.getUsername());
 		assertThat(userResponse.nickname()).isEqualTo(user.getNickname());
 		assertThat(userResponse.password()).isEqualTo(user.getPassword());
+		assertThat(userResponse.email()).isEqualTo(user.getEmail());
+		assertThat(userResponse.profileImageUrl()).isEqualTo(user.getProfileImageUrl());
+		assertThat(userResponse.role()).isEqualTo(user.getRole());
 	}
 
 	@Test
@@ -93,7 +140,7 @@ class UserServiceTest {
 		List<User> users = LongStream.range(1, 6)
 			.mapToObj(id ->
 				new User(id, passwordEncoder.encode("12345"),
-					"test0" + id, "test0" + id, null, null)
+					"test0" + id, "test0" + id, null, "test0" + id + "@gmail.com", null, Role.USER)
 			)
 			.toList();
 		List<UserResponse.UserFindResponse> responses = LongStream.range(1, 6)
@@ -118,7 +165,8 @@ class UserServiceTest {
 		// given
 		Long requestId = 1L;
 
-		User user = new User(requestId, passwordEncoder.encode("1234"), "test00", "nk-test00", null, null);
+		User user = new User(requestId, passwordEncoder.encode("1234"), "test00", "nk-test00", null, "test00@gmail.com",
+			null, Role.USER);
 
 		MatchReviewResponse.TotalCount review = new MatchReviewResponse.TotalCount(1, 1, 1);
 		List<TeamResponse.SimpleResponse> teams = Arrays.asList(
@@ -155,19 +203,48 @@ class UserServiceTest {
 	}
 
 	@Test
+	@DisplayName("id로 유저 조회 성공 테스트")
 	void testFindByIdSuccess() {
 		//given
-		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname");
-		User user = new User(1L, "test00", "nickname", passwordEncoder.encode(request.password()), null, null);
+		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname",
+			"test00@gmail.com", null, Role.USER);
+		User user = User.builder()
+			.id(1L)
+			.username(request.username())
+			.nickname(request.nickname())
+			.password(passwordEncoder.encode(request.password()))
+			.email(request.email())
+			.profileImageUrl(null)
+			.role(request.role())
+			.build();
+
+		UserResponse response = UserResponse.builder()
+			.id(user.getId())
+			.username(user.getUsername())
+			.nickname(request.nickname())
+			.password(user.getPassword())
+			.email(user.getEmail())
+			.profileImageUrl(user.getProfileImageUrl())
+			.role(user.getRole())
+			.build();
+
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+		given(userConverter.toUserResponse(user)).willReturn(response);
 
 		//when
 		UserResponse userResponse = userService.findById(user.getId());
 
 		//then
+		verify(userConverter, times(1)).toUserResponse(user);
+		verify(userRepository, times(1)).findById(user.getId());
+
 		assertThat(userResponse.id()).isEqualTo(user.getId());
 		assertThat(userResponse.username()).isEqualTo(user.getUsername());
 		assertThat(userResponse.nickname()).isEqualTo(user.getNickname());
+		assertThat(userResponse.password()).isEqualTo(user.getPassword());
+		assertThat(userResponse.email()).isEqualTo(user.getEmail());
+		assertThat(userResponse.profileImageUrl()).isEqualTo(user.getProfileImageUrl());
+		assertThat(userResponse.role()).isEqualTo(user.getRole());
 	}
 
 	@Test
@@ -180,6 +257,7 @@ class UserServiceTest {
 	}
 
 	@Test
+	@DisplayName("존재하지 않는 Usernamedm로 조회 시 EntityNotFoundException 예외 발생")
 	void testFindByNotExistUsername() {
 		//given
 		String notExistUsername = "------";

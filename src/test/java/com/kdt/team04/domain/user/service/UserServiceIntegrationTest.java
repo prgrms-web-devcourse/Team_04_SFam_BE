@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdt.team04.domain.user.Role;
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.user.dto.UserRequest;
@@ -23,7 +24,7 @@ import com.kdt.team04.domain.user.repository.UserRepository;
 
 @SpringBootTest
 @Transactional
-public class UserServiceIntegrationTest {
+class UserServiceIntegrationTest {
 
 	@Autowired
 	UserService userService;
@@ -47,7 +48,8 @@ public class UserServiceIntegrationTest {
 	@DisplayName("새로운 유저는 위치정보가 처음엔 null이다.")
 	void newbieLocationIsNull() {
 		//given
-		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test1234", "@Test1234", "nickname");
+		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test1234", "@Test1234", "nickname",
+			"test1234@gmail.com", null, Role.USER);
 
 		//when
 		Long newUserId = userService.create(request);
