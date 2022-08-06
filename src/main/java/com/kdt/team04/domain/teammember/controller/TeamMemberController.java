@@ -26,7 +26,7 @@ public class TeamMemberController {
 	}
 
 	@PostMapping
-	@Operation(summary = "팀원 등록", description = "팀 아이디와 등록 대상 유저 ID를 받아 팀원에 등록합니다.")
+	@Operation(summary = "팀원 등록", description = "팀에 해당 회원을 팀원으로 등록한다.")
 	public void registerMember(@PathVariable Long teamId, @RequestBody @Valid TeamMemberRequest.RegisterRequest registerRequest) {
 		teamMemberService.registerTeamMember(teamId, registerRequest);
 	}

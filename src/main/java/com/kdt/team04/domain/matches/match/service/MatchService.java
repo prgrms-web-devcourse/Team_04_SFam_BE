@@ -88,6 +88,7 @@ public class MatchService {
 			.user(user)
 			.sportsCategory(request.sportsCategory())
 			.content(request.content())
+			.location(user.getLocation())
 			.build();
 	}
 
@@ -117,6 +118,7 @@ public class MatchService {
 			.team(team)
 			.sportsCategory(request.sportsCategory())
 			.content(request.content())
+			.location(teamLeader.getLocation())
 			.build();
 	}
 

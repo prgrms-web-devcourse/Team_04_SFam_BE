@@ -13,15 +13,29 @@ import lombok.Builder;
 
 @Builder
 public record UserResponse(
+	@Schema(description = "회원 ID(고유 PK)")
 	Long id,
 
-	@JsonIgnore
+	@Schema(description = "회원 아이디")
 	String username,
+
+	@JsonIgnore
+	@Schema(description = "회원 비밀번호")
 	String password,
+
+	@Schema(description = "회원 닉네임")
 	String nickname,
+
+	@Schema(description = "회원 위치 정보")
 	Location location,
+
+	@Schema(description = "회원 이메일")
 	String email,
+
+	@Schema(description = "회원 프로필 url")
 	String profileImageUrl,
+
+	@Schema(description = "회원 권한")
 	Role role
 ) {
 
@@ -30,7 +44,7 @@ public record UserResponse(
 		@Schema(description = "회원 닉네임")
 		String nickname,
 
-		@Schema(description = "유저 프로필 url")
+		@Schema(description = "회원 프로필 url")
 		String profileImageUrl,
 
 		@Schema(description = "후기 정보")
@@ -42,13 +56,13 @@ public record UserResponse(
 	}
 
 	public record UserFindResponse(
-		@Schema(description = "회원 고유 PK")
+		@Schema(description = "회원 ID(고유 PK)")
 		Long id,
-		@Schema(description = "회원 id")
+		@Schema(description = "회원 아이디")
 		String username,
 		@Schema(description = "회원 닉네임")
 		String nickname,
-		@Schema(description = "유저 프로필 url")
+		@Schema(description = "회원 프로필 url")
 		String profileImageUrl
 	) {
 	}
@@ -62,7 +76,7 @@ public record UserResponse(
 	}
 
 	public record AuthorResponse(
-		@Schema(description = "회원 고유 PK")
+		@Schema(description = "회원 ID(고유 PK)")
 		Long id,
 		@Schema(description = "회원 닉네임")
 		String nickname) {
@@ -75,7 +89,7 @@ public record UserResponse(
 	}
 
 	public record ChatWriterProfile(
-		@Schema(description = "채팅 작성자")
+		@Schema(description = "채팅 작성자 ID(고유 PK)")
 		Long id
 	) {
 	}

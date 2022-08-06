@@ -91,7 +91,7 @@ public class PageDto {
 		private Long id;
 
 		@NotNull
-		@Parameter(description = "페이징 사이즈")
+		@Parameter(description = "페이징 사이즈", required = true)
 		private Integer size;
 
 		@Parameter(description = "매칭 종목")
@@ -102,7 +102,7 @@ public class PageDto {
 
 		@Min(1)
 		@Max(30)
-		@Parameter(description = "검색 거리")
+		@Parameter(description = "검색 거리, 1 ~ 30까지 가능")
 		private Double distance;
 
 		@AssertFalse

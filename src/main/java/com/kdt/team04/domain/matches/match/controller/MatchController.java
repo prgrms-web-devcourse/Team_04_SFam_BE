@@ -22,7 +22,10 @@ import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.service.MatchService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "매칭 공고 API")
 @RestController
 @RequestMapping("/api/matches")
 public class MatchController {
@@ -44,8 +47,8 @@ public class MatchController {
 		matchService.create(jwtAuthentication.id(), request);
 	}
 
-	@GetMapping
 	@Operation(summary = "매치 공고 리스트 조회", description = "매칭 상태별, 종목별 공고 리스트를 최신글 순으로 커서방식 페이징한다.")
+	@GetMapping
 	public ApiResponse<PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor>> getWithCursorPaging(
 		@AuthenticationPrincipal JwtAuthentication auth, @Valid PageDto.MatchCursorPageRequest pageRequest) {
 		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> matches = matchService.findMatches(
@@ -56,13 +59,18 @@ public class MatchController {
 
 	@Operation(summary = "매치 공고 상세 조회", description = "매칭 공고의 세부 정보를 조회할 수 있다.")
 	@GetMapping("/{id}")
-	public ApiResponse<MatchResponse> getById(@PathVariable Long id) {
+	public ApiResponse<MatchResponse> getById(
+		@Parameter(description = "매칭 공고 ID") @PathVariable Long id
+	) {
 		return new ApiResponse<>(matchService.findById(id));
 	}
 
 	@Operation(summary = "매칭 공고 삭제", description = "매칭 공고를 삭제할 수 있다.")
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable Long id, @AuthenticationPrincipal JwtAuthentication auth) {
+	public void delete(
+		@Parameter(description = "매칭 공고 ID") @PathVariable Long id,
+		@AuthenticationPrincipal JwtAuthentication auth
+	) {
 		if (auth == null) {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
@@ -74,7 +82,7 @@ public class MatchController {
 	@PatchMapping("/{id}")
 	public void updateStatus(
 		@AuthenticationPrincipal JwtAuthentication authentication,
-		@PathVariable Long id,
+		@Parameter(description = "매칭 공고 ID") @PathVariable Long id,
 		@Valid @RequestBody MatchRequest.MatchStatusUpdateRequest request
 	) {
 		if (authentication == null) {
