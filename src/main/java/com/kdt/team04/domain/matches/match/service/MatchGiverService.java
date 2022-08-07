@@ -13,7 +13,6 @@ import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.team.dto.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
@@ -45,12 +44,8 @@ public class MatchGiverService {
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
 		UserResponse.AuthorResponse authorResponse = new UserResponse.AuthorResponse(author.id(), author.nickname());
 
-		if (foundMatch.getMatchType() == MatchType.TEAM_MATCH) {
-			Team team = foundMatch.getTeam();
-			TeamResponse.SimpleResponse teamResponse = new TeamResponse.SimpleResponse(team.getId(), team.getName(),
-				team.getSportsCategory(), team.getLogoImageUrl());
-
-			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);
+		if (foundMatch.getMatchType().isTeam()) {
+			return toTeamMatch(foundMatch, authorResponse);
 		}
 
 		return matchConverter.toMatchResponse(foundMatch, authorResponse);
@@ -83,24 +78,30 @@ public class MatchGiverService {
 				MessageFormat.format("matchId = {0} , userId = {1}", id, userId));
 		}
 
-		if (!Objects.equals(foundMatch.getUser().getId(), userId)) {
-			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
-				MessageFormat.format("matchId = {0} , userId = {1}", id, userId));
-		}
+		verifyAuthor(foundMatch, userId);
 
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
 		UserResponse.AuthorResponse authorResponse = new UserResponse.AuthorResponse(author.id(), author.nickname());
 
 		foundMatch.updateStatus(MatchStatus.END);
+		MatchResponse matchResponse = foundMatch.getMatchType().isTeam() ? toTeamMatch(foundMatch, authorResponse) :
+			matchConverter.toMatchResponse(foundMatch, authorResponse);
 
-		if (foundMatch.getMatchType() == MatchType.TEAM_MATCH) {
-			Team team = foundMatch.getTeam();
-			TeamResponse.SimpleResponse teamResponse = new TeamResponse.SimpleResponse(team.getId(), team.getName(),
-				team.getSportsCategory(), team.getLogoImageUrl());
+		return matchResponse;
+	}
 
-			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);
+	private void verifyAuthor(Match match, Long userId) {
+		if (!Objects.equals(match.getUser().getId(), userId)) {
+			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
+				MessageFormat.format("userId = {0}, matchId = {1}", userId, match.getId()));
 		}
+	}
 
-		return matchConverter.toMatchResponse(foundMatch, authorResponse);
+	private MatchResponse toTeamMatch(Match match, UserResponse.AuthorResponse author) {
+		Team team = match.getTeam();
+		TeamResponse.SimpleResponse teamResponse = new TeamResponse.SimpleResponse(team.getId(), team.getName(),
+			team.getSportsCategory(), team.getLogoImageUrl());
+
+		return matchConverter.toMatchResponse(match, author, teamResponse);
 	}
 }

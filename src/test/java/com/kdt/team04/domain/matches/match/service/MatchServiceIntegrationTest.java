@@ -13,13 +13,9 @@ import javax.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.aws.autoconfigure.context.ContextStackAutoConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -54,7 +50,6 @@ class MatchServiceIntegrationTest {
 	@Autowired
 	MatchRepository matchRepository;
 
-
 	@MockBean
 	S3Uploader s3Uploader;
 
@@ -68,7 +63,6 @@ class MatchServiceIntegrationTest {
 		User leader = new User("leader", "leader", "password");
 		User user1 = new User("member1", "member1", "password");
 		User user2 = new User("member2", "member2", "password");
-		User user3 = new User("member3", "member3", "password");
 		entityManager.persist(leader);
 		entityManager.persist(user1);
 		entityManager.persist(user2);
@@ -80,7 +74,7 @@ class MatchServiceIntegrationTest {
 			.leader(leader)
 			.build();
 		entityManager.persist(team);
-		entityManager.persist(new TeamMember(team, user1, TeamMemberRole.LEADER));
+		entityManager.persist(new TeamMember(team, leader, TeamMemberRole.LEADER));
 		entityManager.persist(new TeamMember(team, user1, TeamMemberRole.MEMBER));
 		entityManager.persist(new TeamMember(team, user2, TeamMemberRole.MEMBER));
 		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
@@ -286,7 +280,7 @@ class MatchServiceIntegrationTest {
 		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
-		assertThat(foundMatches.values().size()).isEqualTo(0);
+		assertThat(foundMatches.values().size()).isZero();
 		assertThat(foundMatches.hasNext()).isFalse();
 	}
 
@@ -349,7 +343,7 @@ class MatchServiceIntegrationTest {
 		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
-		assertThat(foundMatches.values().size()).isEqualTo(request.getSize());
+		assertThat(foundMatches.values()).hasSize(request.getSize());
 		assertThat(foundMatches.hasNext()).isTrue();
 		assertThat(foundMatches.values().get(0).id()).isEqualTo(matches.get(matches.size() - 1).getId());
 		assertThat(foundMatches.values().get(4).id()).isEqualTo(matches.get(matches.size() - 5).getId());
@@ -431,7 +425,7 @@ class MatchServiceIntegrationTest {
 		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
-		assertThat(foundMatches.values().size()).isEqualTo(2);
+		assertThat(foundMatches.values()).hasSize(2);
 		assertThat(foundMatches.hasNext()).isFalse();
 		assertThat(foundMatches.values().get(0).id()).isEqualTo(
 			badmintonMatches.get(badmintonMatches.size() - 1).getId());
@@ -510,7 +504,7 @@ class MatchServiceIntegrationTest {
 		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> secondFoundMatches = matchService.findMatches(
 			member.getId(), secondRequest);
 
-		assertThat(secondFoundMatches.values().size()).isEqualTo(request.getSize());
+		assertThat(secondFoundMatches.values()).hasSize(request.getSize());
 		assertThat(secondFoundMatches.hasNext()).isFalse();
 		assertThat(secondFoundMatches.values().get(0).id()).isEqualTo(matches.get(matches.size() - 6).getId());
 		assertThat(secondFoundMatches.values().get(4).id()).isEqualTo(matches.get(matches.size() - 10).getId());
@@ -574,7 +568,7 @@ class MatchServiceIntegrationTest {
 		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
-		assertThat(foundMatches.values().size()).isEqualTo(request.getSize());
+		assertThat(foundMatches.values()).hasSize(request.getSize());
 		assertThat(foundMatches.values().get(0).id()).isEqualTo(matches.get(matches.size() - 1).getId());
 		assertThat(foundMatches.values().get(4).id()).isEqualTo(matches.get(matches.size() - 5).getId());
 		assertThat(foundMatches.hasNext()).isTrue();
