@@ -31,9 +31,11 @@ import com.kdt.team04.common.security.WebSecurityConfig;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
-import com.kdt.team04.domain.auth.dto.AuthRequest;
-import com.kdt.team04.domain.auth.dto.AuthResponse;
 import com.kdt.team04.domain.auth.dto.TokenDto;
+import com.kdt.team04.domain.auth.dto.request.SignInRequest;
+import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
+import com.kdt.team04.domain.auth.dto.response.SignInResponse;
+import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
 import com.kdt.team04.domain.auth.service.AuthService;
 import com.kdt.team04.domain.auth.service.TokenService;
 import com.kdt.team04.domain.user.Role;
@@ -75,11 +77,11 @@ class AuthControllerTest {
 			Role.USER
 		);
 
-		AuthRequest.SignInRequest signInRequest = new AuthRequest.SignInRequest(username, password);
+		SignInRequest signInRequest = new SignInRequest(username, password);
 		List<GrantedAuthority> authorities = new ArrayList<>();
 		SimpleGrantedAuthority role_anonymous = new SimpleGrantedAuthority("ROLE_MEMBER");
 		authorities.add(role_anonymous);
-		AuthResponse.SignInResponse signInResponse = new AuthResponse.SignInResponse(
+		SignInResponse signInResponse = new SignInResponse(
 			user.getId(),
 			username,
 			user.getNickname(),
@@ -129,9 +131,9 @@ class AuthControllerTest {
 			null,
 			Role.USER
 		);
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, password, user.getNickname(),
+		SignUpRequest signUpRequest = new SignUpRequest(username, password, user.getNickname(),
 			user.getEmail());
-		AuthResponse.SignUpResponse signUpResponse = new AuthResponse.SignUpResponse(user.getId());
+		SignUpResponse signUpResponse = new SignUpResponse(user.getId());
 
 		String request = objectMapper.writeValueAsString(signUpRequest);
 		String response = objectMapper.writeValueAsString(new ApiResponse<>(signUpResponse));
@@ -145,7 +147,7 @@ class AuthControllerTest {
 		).andDo(print());
 
 		//then
-		verify(authService, times(1)).signUp(any(AuthRequest.SignUpRequest.class));
+		verify(authService, times(1)).signUp(any(SignUpRequest.class));
 
 		perform
 			.andExpect(status().isOk())
@@ -169,7 +171,7 @@ class AuthControllerTest {
 			null,
 			Role.USER
 		);
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(null, password, user.getNickname(),
+		SignUpRequest signUpRequest = new SignUpRequest(null, password, user.getNickname(),
 			user.getEmail());
 
 		String request = objectMapper.writeValueAsString(signUpRequest);
@@ -195,7 +197,7 @@ class AuthControllerTest {
 		String encodedPassword = "$2a$12$VBMdI3AHeZK.1iPAK97kaO1K/YPNjoTjBjEfolydYMXpFHpr1ZljS";
 		String nickname = "nickname";
 		String email = "test1234@gmail.com";
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, null, nickname, email);
+		SignUpRequest signUpRequest = new SignUpRequest(username, null, nickname, email);
 
 		String request = objectMapper.writeValueAsString(signUpRequest);
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(ErrorCode.METHOD_ARGUMENT_NOT_VALID));
@@ -219,7 +221,7 @@ class AuthControllerTest {
 		String username = "test1234";
 		String password = "!Password1234";
 		String email = "test1234@gmail.com";
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, password, null, email);
+		SignUpRequest signUpRequest = new SignUpRequest(username, password, null, email);
 
 		String request = objectMapper.writeValueAsString(signUpRequest);
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(ErrorCode.METHOD_ARGUMENT_NOT_VALID));
@@ -243,7 +245,7 @@ class AuthControllerTest {
 		String username = "test1234";
 		String password = "password";
 		String email = "test1234@gmail.com";
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest(username, password, null, email);
+		SignUpRequest signUpRequest = new SignUpRequest(username, password, null, email);
 
 		String request = objectMapper.writeValueAsString(signUpRequest);
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(ErrorCode.METHOD_ARGUMENT_NOT_VALID));
@@ -265,7 +267,7 @@ class AuthControllerTest {
 	void testSignInWithNullUsername() throws Exception {
 		//given
 		String password = "!Password1234";
-		AuthRequest.SignInRequest signInRequest = new AuthRequest.SignInRequest(null, password);
+		SignInRequest signInRequest = new SignInRequest(null, password);
 
 		String request = objectMapper.writeValueAsString(signInRequest);
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(ErrorCode.METHOD_ARGUMENT_NOT_VALID));
@@ -286,7 +288,7 @@ class AuthControllerTest {
 	@DisplayName("로그인 Null Password 전달 시 실패")
 	void testSignInWithNullPassword() throws Exception {
 		//given
-		AuthRequest.SignInRequest signInRequest = new AuthRequest.SignInRequest("test1234", null);
+		SignInRequest signInRequest = new SignInRequest("test1234", null);
 
 		String request = objectMapper.writeValueAsString(signInRequest);
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(ErrorCode.METHOD_ARGUMENT_NOT_VALID));

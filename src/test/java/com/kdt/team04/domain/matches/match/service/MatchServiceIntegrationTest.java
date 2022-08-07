@@ -24,8 +24,9 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
-import com.kdt.team04.domain.matches.match.dto.MatchRequest;
-import com.kdt.team04.domain.matches.match.dto.MatchResponse;
+import com.kdt.team04.domain.matches.match.dto.request.MatchCreateRequest;
+import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
+import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
@@ -77,7 +78,7 @@ class MatchServiceIntegrationTest {
 		entityManager.persist(new TeamMember(team, leader, TeamMemberRole.LEADER));
 		entityManager.persist(new TeamMember(team, user1, TeamMemberRole.MEMBER));
 		entityManager.persist(new TeamMember(team, user2, TeamMemberRole.MEMBER));
-		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
+		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.TEAM_MATCH,
 			team.getId(), 3, SportsCategory.BADMINTON, "content");
 
@@ -95,7 +96,7 @@ class MatchServiceIntegrationTest {
 		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(user);
 		user.updateLocation(new Location(1.1, 1.2));
-		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
+		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.INDIVIDUAL_MATCH,
 			null, 1, SportsCategory.BADMINTON, "content");
 
@@ -113,7 +114,7 @@ class MatchServiceIntegrationTest {
 		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 
 		entityManager.persist(user);
-		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
+		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.INDIVIDUAL_MATCH,
 			null, 2, SportsCategory.BADMINTON, "content");
 
@@ -136,7 +137,7 @@ class MatchServiceIntegrationTest {
 			.leader(leader)
 			.build();
 		entityManager.persist(team);
-		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
+		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.TEAM_MATCH,
 			team.getId(), 1, SportsCategory.BADMINTON, "content");
 
@@ -157,7 +158,7 @@ class MatchServiceIntegrationTest {
 			.leader(user)
 			.build();
 		entityManager.persist(team);
-		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
+		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.TEAM_MATCH,
 			null, 3, SportsCategory.BADMINTON, "content");
 
@@ -179,7 +180,7 @@ class MatchServiceIntegrationTest {
 			.leader(user)
 			.build();
 		entityManager.persist(team);
-		MatchRequest.MatchCreateRequest request = new MatchRequest.MatchCreateRequest("match1", LocalDate.now(),
+		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.TEAM_MATCH,
 			null, 3, SportsCategory.BADMINTON, "content");
 
@@ -277,7 +278,7 @@ class MatchServiceIntegrationTest {
 			.category(SportsCategory.BADMINTON)
 			.distance(1.5)
 			.build();
-		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
+		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
 		assertThat(foundMatches.values().size()).isZero();
@@ -340,7 +341,7 @@ class MatchServiceIntegrationTest {
 			.category(SportsCategory.BADMINTON)
 			.distance(1.51)
 			.build();
-		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
+		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
 		assertThat(foundMatches.values()).hasSize(request.getSize());
@@ -422,7 +423,7 @@ class MatchServiceIntegrationTest {
 			.category(SportsCategory.BADMINTON)
 			.distance(1.51)
 			.build();
-		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
+		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
 		assertThat(foundMatches.values()).hasSize(2);
@@ -487,7 +488,7 @@ class MatchServiceIntegrationTest {
 			.category(SportsCategory.BADMINTON)
 			.distance(1.51)
 			.build();
-		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
+		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
 		LocalDateTime lastCreatedAt = foundMatches.cursor().getCreatedAt();
@@ -501,7 +502,7 @@ class MatchServiceIntegrationTest {
 			.distance(1.51)
 			.build();
 
-		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> secondFoundMatches = matchService.findMatches(
+		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> secondFoundMatches = matchService.findMatches(
 			member.getId(), secondRequest);
 
 		assertThat(secondFoundMatches.values()).hasSize(request.getSize());
@@ -565,7 +566,7 @@ class MatchServiceIntegrationTest {
 			.distance(1.51)
 			.build();
 
-		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
+		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
 		assertThat(foundMatches.values()).hasSize(request.getSize());
@@ -648,7 +649,7 @@ class MatchServiceIntegrationTest {
 
 	@Nested
 	@DisplayName("매칭을 모집 완료 또는 모집 중으로 상태 변경 시")
-	class UpdateStatusExceptEnd {
+	class UserUpdateRequestStatusExceptEnd {
 
 		@Test
 		@DisplayName("경기 완료 상태로 변경하는 경우 오류가 발생한다.")

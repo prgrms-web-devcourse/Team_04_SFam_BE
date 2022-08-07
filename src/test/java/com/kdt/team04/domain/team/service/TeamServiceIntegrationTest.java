@@ -13,16 +13,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.common.file.service.S3Uploader;
-import com.kdt.team04.domain.team.dto.TeamRequest;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.SportsCategory;
+import com.kdt.team04.domain.team.dto.request.TeamCreateRequest;
+import com.kdt.team04.domain.team.dto.response.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
 import com.kdt.team04.domain.user.entity.User;
@@ -51,7 +51,7 @@ class TeamServiceIntegrationTest {
 	void testCreateSuccess() {
 		//given
 		User teamCreator = getDemoUser();
-		TeamRequest.CreateRequest requestDto = new TeamRequest.CreateRequest("team1", "first team",
+		TeamCreateRequest requestDto = new TeamCreateRequest("team1", "first team",
 			SportsCategory.BADMINTON);
 
 		//when
@@ -115,7 +115,7 @@ class TeamServiceIntegrationTest {
 		Team savedTeam = teamRepository.save(team);
 
 		//when
-		List<TeamResponse.SimpleResponse> foundTeams = teamService.findByLeaderId(user.getId());
+		List<TeamSimpleResponse> foundTeams = teamService.findByLeaderId(user.getId());
 
 		//then
 		assertThat(foundTeams).hasSize(1);

@@ -25,15 +25,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
-import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.SportsCategory;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.UserRequest;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
+import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
+import com.kdt.team04.domain.user.dto.response.UserFindResponse;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.repository.UserRepository;
 
@@ -62,7 +64,7 @@ class UserServiceTest {
 	@DisplayName("유저 생성 성공 테스트")
 	void testCreateSuccess() {
 		//given
-		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname",
+		UserCreateRequest request = new UserCreateRequest("test00", "@Test1234", "nickname",
 			"test00@gmail.com", null, Role.USER);
 		User user = User.builder()
 			.id(1L)
@@ -91,7 +93,7 @@ class UserServiceTest {
 	@DisplayName("username으로 유저 조회 성공 테스트")
 	void testFindByUsernameSuccess() {
 		//given
-		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname",
+		UserCreateRequest request = new UserCreateRequest("test00", "@Test1234", "nickname",
 			"test00@gmail.com", null, Role.USER);
 		User user = User.builder()
 			.id(1L)
@@ -143,15 +145,15 @@ class UserServiceTest {
 					"test0" + id, "test0" + id, null, "test0" + id + "@gmail.com", null, Role.USER)
 			)
 			.toList();
-		List<UserResponse.UserFindResponse> responses = LongStream.range(1, 6)
+		List<UserFindResponse> responses = LongStream.range(1, 6)
 			.mapToObj(id ->
-				new UserResponse.UserFindResponse(id, "test0" + id, "test0" + id, "test0" + id))
+				new UserFindResponse(id, "test0" + id, "test0" + id, "test0" + id))
 			.toList();
 
 		given(userRepository.findByNicknameContaining(nickname)).willReturn(users);
 
 		// when
-		List<UserResponse.UserFindResponse> findResponses = userService.findAllByNickname(nickname);
+		List<UserFindResponse> findResponses = userService.findAllByNickname(nickname);
 
 		// then
 		verify(userRepository, times(1)).findByNicknameContaining(nickname);
@@ -168,12 +170,12 @@ class UserServiceTest {
 		User user = new User(requestId, passwordEncoder.encode("1234"), "test00", "nk-test00", null, "test00@gmail.com",
 			null, Role.USER);
 
-		MatchReviewResponse.TotalCount review = new MatchReviewResponse.TotalCount(1, 1, 1);
-		List<TeamResponse.SimpleResponse> teams = Arrays.asList(
-			new TeamResponse.SimpleResponse(1L, "축구왕", SportsCategory.SOCCER, null),
-			new TeamResponse.SimpleResponse(2L, "야구왕", SportsCategory.BASEBALL, null)
+		MatchReviewTotalResponse review = new MatchReviewTotalResponse(1, 1, 1);
+		List<TeamSimpleResponse> teams = Arrays.asList(
+			new TeamSimpleResponse(1L, "축구왕", SportsCategory.SOCCER, null),
+			new TeamSimpleResponse(2L, "야구왕", SportsCategory.BASEBALL, null)
 		);
-		UserResponse.FindProfile response = new UserResponse.FindProfile(user.getUsername(), user.getProfileImageUrl(),
+		FindProfileResponse response = new FindProfileResponse(user.getUsername(), user.getProfileImageUrl(),
 			review, teams);
 
 		given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
@@ -181,7 +183,7 @@ class UserServiceTest {
 		given(teamGiver.findAllByTeamMemberUserId(any(Long.class))).willReturn(teams);
 
 		// when
-		UserResponse.FindProfile userResponse = userService.findProfileById(requestId);
+		FindProfileResponse userResponse = userService.findProfileById(requestId);
 
 		// then
 		verify(userRepository, times(1)).findById(requestId);
@@ -206,7 +208,7 @@ class UserServiceTest {
 	@DisplayName("id로 유저 조회 성공 테스트")
 	void testFindByIdSuccess() {
 		//given
-		UserRequest.CreateRequest request = new UserRequest.CreateRequest("test00", "@Test1234", "nickname",
+		UserCreateRequest request = new UserCreateRequest("test00", "@Test1234", "nickname",
 			"test00@gmail.com", null, Role.USER);
 		User user = User.builder()
 			.id(1L)

@@ -20,20 +20,20 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.EntityNotFoundException;
-import com.kdt.team04.domain.matches.review.dto.MatchRecordResponse;
-import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchRecordTotalResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.service.MatchRecordGiverService;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.TeamRequest;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.request.TeamCreateRequest;
+import com.kdt.team04.domain.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
 import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -64,15 +64,16 @@ class TeamServiceTest {
 	@Mock
 	private MatchReviewGiverService matchReviewGiver;
 
-	private final User USER = new User(1L, "password", "username", "nickname", null, "username@gmail.com", null, Role.USER);
+	private final User USER = new User(1L, "password", "username", "nickname", null, "username@gmail.com", null,
+		Role.USER);
 	private final UserResponse USER_RESPONSE = new UserResponse(USER.getId(), USER.getUsername(), USER.getPassword(),
 		USER.getNickname(), null, USER.getEmail(), USER.getProfileImageUrl(), USER.getRole());
-	private final TeamRequest.CreateRequest CREATE_REQUEST = new TeamRequest.CreateRequest("team1", "first team",
+	private final TeamCreateRequest CREATE_REQUEST = new TeamCreateRequest("team1", "first team",
 		SportsCategory.BADMINTON);
 	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),
 		CREATE_REQUEST.sportsCategory(), USER, null);
-	private final MatchRecordResponse.TotalCount RECORD = new MatchRecordResponse.TotalCount(1, 1, 1);
-	private final MatchReviewResponse.TotalCount REVIEW = new MatchReviewResponse.TotalCount(1, 1, 1);
+	private final MatchRecordTotalResponse RECORD = new MatchRecordTotalResponse(1, 1, 1);
+	private final MatchReviewTotalResponse REVIEW = new MatchReviewTotalResponse(1, 1, 1);
 	private final TeamResponse RESPONSE = new TeamResponse(TEAM.getId(), TEAM.getName(), TEAM.getDescription(),
 		TEAM.getSportsCategory(),
 		Collections.emptyList(), RECORD, REVIEW, USER_RESPONSE, null);
@@ -89,7 +90,7 @@ class TeamServiceTest {
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.build();
-		TeamRequest.CreateRequest createRequest = new TeamRequest.CreateRequest("team1", "first team",
+		TeamCreateRequest teamCreateRequest = new TeamCreateRequest("team1", "first team",
 			SportsCategory.BADMINTON);
 
 		given(userService.findById(any(Long.class))).willReturn(userResponse);
@@ -97,7 +98,7 @@ class TeamServiceTest {
 		given(teamRepository.save(any(Team.class))).willReturn(newTeam);
 
 		//when
-		Long teamId = teamService.create(user.getId(), createRequest);
+		Long teamId = teamService.create(user.getId(), teamCreateRequest);
 
 		//then
 		verify(userService, times(1)).findById(user.getId());
