@@ -29,8 +29,8 @@ import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatMatchResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.team.SportsCategory;
@@ -212,7 +212,7 @@ class MatchProposalGiverServiceTest {
 
 	@Nested
 	@DisplayName("신청 정보를 Fixed 변경 시")
-	class UpdateToFixed {
+	class UserUpdateRequestToFixed {
 		@Test
 		@DisplayName("신청 정보가 존재하지 않는 경우 오류가 발생한다.")
 		void testFail_NotFoundBy_updateToFixed() {
@@ -276,7 +276,7 @@ class MatchProposalGiverServiceTest {
 		entityManager.persist(proposal);
 
 		//when
-		MatchProposalResponse.ChatMatch chatMatch
+		ProposalChatMatchResponse chatMatch
 			= matchProposalGiver.findChatMatchByProposalId(proposal.getId(), author.getId());
 
 		//then
@@ -288,7 +288,7 @@ class MatchProposalGiverServiceTest {
 
 	@Nested
 	@DisplayName("채팅 기록 조회를 위한 해당 매칭 정보 조회 시")
-	class FindChatMatchInfo {
+	class FindChatMatchInfoResponse {
 		@Test
 		@DisplayName("매칭 신청 정보가 없는 경우 오류가 발생한다.")
 		void testFail_NotFoundProposalBy__findChatMatch() {
@@ -376,7 +376,8 @@ class MatchProposalGiverServiceTest {
 			.build();
 	}
 
-	private static MatchProposal getProposal(Match match, String content, User proposer, Team proposerTeam, MatchProposalStatus status) {
+	private static MatchProposal getProposal(Match match, String content, User proposer, Team proposerTeam,
+		MatchProposalStatus status) {
 		return MatchProposal.builder()
 			.match(match)
 			.content(content)

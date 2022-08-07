@@ -12,19 +12,20 @@ import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.ImagePath;
 import com.kdt.team04.common.file.service.S3Uploader;
-import com.kdt.team04.domain.matches.review.dto.MatchRecordResponse;
-import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchRecordTotalResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.service.MatchRecordGiverService;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.TeamRequest;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.request.TeamCreateRequest;
+import com.kdt.team04.domain.team.dto.response.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
-import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
+import com.kdt.team04.domain.teammember.dto.response.TeamMemberResponse;
 import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -56,7 +57,7 @@ public class TeamService {
 	}
 
 	@Transactional
-	public Long create(Long userId, TeamRequest.CreateRequest requestDto) {
+	public Long create(Long userId, TeamCreateRequest requestDto) {
 		User user = userConverter.toUser(userService.findById(userId));
 		Team savedTeam = teamRepository.save(
 			Team.builder()
@@ -77,17 +78,17 @@ public class TeamService {
 				MessageFormat.format("TeamId = {0}", id)));
 
 		List<TeamMemberResponse> teamMemberResponses = teamMemberGiver.findAllByTeamId(id);
-		MatchRecordResponse.TotalCount totalRecord = matchRecordGiver.findByTeamTotalRecord(id);
-		MatchReviewResponse.TotalCount totalReview = matchReviewGiver.findByTeamTotalReview(id);
+		MatchRecordTotalResponse totalRecord = matchRecordGiver.findByTeamTotalRecord(id);
+		MatchReviewTotalResponse totalReview = matchReviewGiver.findByTeamTotalReview(id);
 		UserResponse leader = userConverter.toUserResponse(team.getLeader());
 
 		return teamConverter.toTeamResponse(team, leader, teamMemberResponses, totalRecord, totalReview);
 	}
 
-	public List<TeamResponse.SimpleResponse> findByLeaderId(Long userId) {
+	public List<TeamSimpleResponse> findByLeaderId(Long userId) {
 		return teamRepository.findAllByLeaderId(userId).stream()
 			.map(team ->
-				new TeamResponse.SimpleResponse(
+				new TeamSimpleResponse(
 					team.getId(),
 					team.getName(),
 					team.getSportsCategory(),

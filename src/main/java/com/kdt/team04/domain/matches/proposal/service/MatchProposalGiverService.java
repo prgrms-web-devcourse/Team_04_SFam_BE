@@ -9,17 +9,19 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.domain.matches.match.dto.MatchResponse;
+import com.kdt.team04.domain.matches.match.dto.response.MatchAuthorResponse;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatMatchResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalFixedResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.AuthorResponse;
+import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import com.kdt.team04.domain.user.entity.User;
 
 @Service
@@ -42,12 +44,12 @@ public class MatchProposalGiverService {
 		return matchProposal;
 	}
 
-	public MatchProposalResponse.ChatMatch findChatMatchByProposalId(Long id, Long userId) {
+	public ProposalChatMatchResponse findChatMatchByProposalId(Long id, Long userId) {
 		MatchProposal matchProposal = matchProposalRepository.findProposalWithUserById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("matchProposalId = {0}", id)));
 
-		MatchResponse.MatchAuthorResponse match
+		MatchAuthorResponse match
 			= matchGiver.findMatchAuthorById(matchProposal.getMatch().getId());
 
 		if (isAuthorOrProposer(match, matchProposal, userId)) {
@@ -59,14 +61,14 @@ public class MatchProposalGiverService {
 			matchProposal.getUser().getNickname() :
 			match.author().nickname();
 
-		return new MatchProposalResponse.ChatMatch(
+		return new ProposalChatMatchResponse(
 			match.title(),
 			match.status(),
-			new UserResponse.ChatTargetProfile(targetNickname)
+			new ChatTargetProfileResponse(targetNickname)
 		);
 	}
 
-	private boolean isAuthorOrProposer(MatchResponse.MatchAuthorResponse match, MatchProposal proposal, Long userId) {
+	private boolean isAuthorOrProposer(MatchAuthorResponse match, MatchProposal proposal, Long userId) {
 		return !Objects.equals(proposal.getUser().getId(), userId)
 			&& !Objects.equals(match.author().id(), userId);
 	}
@@ -80,7 +82,7 @@ public class MatchProposalGiverService {
 	}
 
 	@Transactional
-	public MatchProposalResponse.FixedProposal updateToFixed(Long id) {
+	public ProposalFixedResponse updateToFixed(Long id) {
 		MatchProposal matchProposal = matchProposalRepository.findProposalById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("matchProposalId = {0}", id)));
@@ -94,15 +96,15 @@ public class MatchProposalGiverService {
 		matchProposal.updateStatus(MatchProposalStatus.FIXED);
 
 		User user = matchProposal.getUser();
-		UserResponse.AuthorResponse userResponse = new UserResponse.AuthorResponse(user.getId(), user.getNickname());
+		AuthorResponse userResponse = new AuthorResponse(user.getId(), user.getNickname());
 
 		Team team = matchProposal.getTeam();
-		TeamResponse.SimpleResponse teamResponse =
+		TeamSimpleResponse teamResponse =
 			team == null ? null
-				: new TeamResponse.SimpleResponse(team.getId(), team.getName(),
+				: new TeamSimpleResponse(team.getId(), team.getName(),
 				team.getSportsCategory(), team.getLogoImageUrl());
 
-		return new MatchProposalResponse.FixedProposal(
+		return new ProposalFixedResponse(
 			matchProposal.getId(),
 			userResponse,
 			teamResponse

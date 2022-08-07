@@ -4,7 +4,7 @@ import static com.kdt.team04.domain.matches.review.entity.QMatchReview.matchRevi
 
 import org.springframework.stereotype.Repository;
 
-import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.entity.MatchReviewValue;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,9 +19,9 @@ public class MatchReviewRepositoryCustomImpl implements MatchReviewRepositoryCus
 	}
 
 	@Override
-	public MatchReviewResponse.TotalCount getTeamTotalCount(Long teamId) {
+	public MatchReviewTotalResponse getTeamTotalCount(Long teamId) {
 		return jpaQueryFactory
-			.select(Projections.constructor(MatchReviewResponse.TotalCount.class,
+			.select(Projections.constructor(MatchReviewTotalResponse.class,
 				matchReview.review.when(MatchReviewValue.BEST).then(1).otherwise(0).sum(),
 				matchReview.review.when(MatchReviewValue.LIKE).then(1).otherwise(0).sum(),
 				matchReview.review.when(MatchReviewValue.DISLIKE).then(1).otherwise(0).sum()
@@ -32,9 +32,9 @@ public class MatchReviewRepositoryCustomImpl implements MatchReviewRepositoryCus
 	}
 
 	@Override
-	public MatchReviewResponse.TotalCount getTeamTotalCountByUserId(Long userId) {
+	public MatchReviewTotalResponse getTeamTotalCountByUserId(Long userId) {
 		return jpaQueryFactory
-			.select(Projections.constructor(MatchReviewResponse.TotalCount.class,
+			.select(Projections.constructor(MatchReviewTotalResponse.class,
 				matchReview.review.when(MatchReviewValue.BEST).then(1).otherwise(0).sum(),
 				matchReview.review.when(MatchReviewValue.LIKE).then(1).otherwise(0).sum(),
 				matchReview.review.when(MatchReviewValue.DISLIKE).then(1).otherwise(0).sum()

@@ -5,17 +5,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 import com.kdt.team04.domain.teaminvitation.service.TeamInvitationGiverService;
 import com.kdt.team04.domain.teammember.dto.TeamMemberConverter;
-import com.kdt.team04.domain.teammember.dto.TeamMemberRequest;
+import com.kdt.team04.domain.teammember.dto.request.TeamMemberRegisterRequest;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.teammember.repository.TeamMemberRepository;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -47,18 +47,18 @@ public class TeamMemberService {
 	}
 
 	@Transactional
-	public void registerTeamMember(Long teamId, TeamMemberRequest.RegisterRequest registerRequest) {
-		if (existsTeamMember(teamId, registerRequest.userId())) {
+	public void registerTeamMember(Long teamId, TeamMemberRegisterRequest teamMemberRegisterRequest) {
+		if (existsTeamMember(teamId, teamMemberRegisterRequest.userId())) {
 			throw new BusinessException(ErrorCode.ALREADY_TEAM_MEMBER);
 		}
 
 		if (!teamInvitationGiverService.existsTeamInvitation(
-			teamId, registerRequest.userId(), InvitationStatus.WAITING)
+			teamId, teamMemberRegisterRequest.userId(), InvitationStatus.WAITING)
 		) {
 			throw new BusinessException(ErrorCode.INVALID_TEAM_INVITATION);
 		}
 
-		UserResponse userResponse = userService.findById(registerRequest.userId());
+		UserResponse userResponse = userService.findById(teamMemberRegisterRequest.userId());
 		TeamResponse teamResponse = teamGiverService.findById(teamId);
 		User user = converter.toUser(userResponse.id());
 		Team team = converter.toTeam(teamResponse.id());
@@ -66,7 +66,7 @@ public class TeamMemberService {
 		TeamMember teamMember = new TeamMember(team, user, TeamMemberRole.MEMBER);
 		teamMemberRepository.save(teamMember);
 
-		teamInvitationGiverService.accept(teamId, registerRequest.userId());
+		teamInvitationGiverService.accept(teamId, teamMemberRegisterRequest.userId());
 	}
 
 }

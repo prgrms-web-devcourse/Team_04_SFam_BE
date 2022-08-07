@@ -16,14 +16,17 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatConverter;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatPartitionByProposalIdQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChattingResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatMatchResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchChatRepository;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.ChatWriterProfileResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -59,16 +62,18 @@ public class MatchChatService {
 				MessageFormat.format("proposalId = {0}", proposalId));
 		}
 
-		checkCorrectChatPartner(matchProposalDto.getMatchProposerId(), matchProposalDto.getMatchAuthorId(), writerId, targetId);
+		checkCorrectChatPartner(matchProposalDto.getMatchProposerId(), matchProposalDto.getMatchAuthorId(), writerId,
+			targetId);
 
-		MatchChat matchChat = matchChatConverter.toMatchChat(matchProposalDto.getId(), writerId, targetId, content, chattedAt);
+		MatchChat matchChat = matchChatConverter.toMatchChat(matchProposalDto.getId(), writerId, targetId, content,
+			chattedAt);
 		matchChatRepository.save(matchChat);
 	}
 
 	private void checkCorrectChatPartner(Long proposerId, Long matchAuthorId, Long writerId, Long targetId) {
 		if (
 			(Objects.equals(proposerId, writerId) && Objects.equals(matchAuthorId, targetId))
-			|| (Objects.equals(matchAuthorId, writerId) && Objects.equals(proposerId, targetId))
+				|| (Objects.equals(matchAuthorId, writerId) && Objects.equals(proposerId, targetId))
 		) {
 			return;
 		}
@@ -84,30 +89,30 @@ public class MatchChatService {
 		);
 	}
 
-	public Map<Long, MatchChatResponse.LastChat> findAllLastChats(List<Long> matchProposalIds) {
+	public Map<Long, ChatLastResponse> findAllLastChats(List<Long> matchProposalIds) {
 		List<MatchChatPartitionByProposalIdQueryDto> chatQueryDtos
 			= matchChatRepository.findAllPartitionByProposalIdOrderByChattedAtDesc(matchProposalIds);
 
-		Map<Long, MatchChatResponse.LastChat> lastChats = chatQueryDtos.stream()
+		Map<Long, ChatLastResponse> lastChats = chatQueryDtos.stream()
 			.filter(chat -> chat.getRowNumber() == 1L)
 			.collect(toMap(
 				MatchChatPartitionByProposalIdQueryDto::getMatchProposalId,
-				chat -> new MatchChatResponse.LastChat(chat.getLastChat())
+				chat -> new ChatLastResponse(chat.getLastChat())
 			));
 
 		return lastChats;
 	}
 
-	public MatchChatResponse.Chatting findChatsByProposalId(Long proposalId, Long userId) {
-		MatchProposalResponse.ChatMatch match
+	public ChattingResponse findChatsByProposalId(Long proposalId, Long userId) {
+		ProposalChatMatchResponse match
 			= matchProposalGiver.findChatMatchByProposalId(proposalId, userId);
 
 		List<MatchChat> matchChats = matchChatRepository.findAllByProposalId(proposalId);
-		List<MatchChatResponse.Chat> chats = matchChats.stream()
+		List<ChatResponse> chats = matchChats.stream()
 			.map(chat -> {
-				UserResponse.ChatWriterProfile writer = new UserResponse.ChatWriterProfile(chat.getUser().getId());
+				ChatWriterProfileResponse writer = new ChatWriterProfileResponse(chat.getUser().getId());
 
-				return new MatchChatResponse.Chat(
+				return new ChatResponse(
 					chat.getContent(),
 					chat.getChattedAt(),
 					writer
@@ -115,11 +120,11 @@ public class MatchChatService {
 			})
 			.toList();
 
-		return new MatchChatResponse.Chatting(match, chats);
+		return new ChattingResponse(match, chats);
 	}
 
 	@Transactional
-	public void deleteAllByProposals(List<MatchProposalResponse.SimpleProposal> proposalResponses) {
+	public void deleteAllByProposals(List<ProposalSimpleResponse> proposalResponses) {
 		List<MatchProposal> proposals = proposalResponses.stream()
 			.map((proposal -> MatchProposal.builder()
 				.id(proposal.id())

@@ -16,13 +16,15 @@ import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
 import com.kdt.team04.common.security.jwt.JwtConfig;
-import com.kdt.team04.domain.auth.dto.AuthRequest;
-import com.kdt.team04.domain.auth.dto.AuthResponse;
 import com.kdt.team04.domain.auth.dto.JwtClaimsAttributes;
 import com.kdt.team04.domain.auth.dto.TokenDto;
+import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
+import com.kdt.team04.domain.auth.dto.response.SignInResponse;
+import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
 import com.kdt.team04.domain.user.Role;
-import com.kdt.team04.domain.user.dto.UserRequest;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
+import com.kdt.team04.domain.user.dto.request.UserUpdateRequest;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
 @Service
@@ -42,7 +44,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public AuthResponse.SignInResponse signIn(String username, String password) {
+	public SignInResponse signIn(String username, String password) {
 		UserResponse foundUser;
 		try {
 			foundUser = userService.findByUsername(username);
@@ -68,7 +70,7 @@ public class AuthService {
 			jwt.getAuthorities(jwt.verify(accessToken)));
 		tokenService.save(refreshToken, foundUser.id());
 
-		return new AuthResponse.SignInResponse(
+		return new SignInResponse(
 			foundUser.id(),
 			username,
 			foundUser.nickname(),
@@ -84,10 +86,10 @@ public class AuthService {
 	}
 
 	@Transactional
-	public AuthResponse.SignUpResponse signUp(AuthRequest.SignUpRequest request) {
+	public SignUpResponse signUp(SignUpRequest request) {
 		String encodedPassword = passwordEncoder.encode(request.password());
 		Long userId = userService.create(
-			new UserRequest.CreateRequest(
+			new UserCreateRequest(
 				request.username(),
 				encodedPassword,
 				request.nickname(),
@@ -95,7 +97,7 @@ public class AuthService {
 				null,
 				Role.USER));
 
-		return new AuthResponse.SignUpResponse(userId);
+		return new SignUpResponse(userId);
 	}
 
 	public TokenDto generateAccessToken(JwtClaimsAttributes jwtClaimsAttributes) {
@@ -130,7 +132,8 @@ public class AuthService {
 		JwtClaimsAttributes jwtClaimsAttributes;
 		try {
 			UserResponse foundUserResponse = userService.findByEmail((String)attributes.get("email"));
-			UserRequest.Update updateRequest = new UserRequest.Update(null, null, (String)attributes.get("email"));
+			UserUpdateRequest updateRequest = new UserUpdateRequest(null, null,
+				(String)attributes.get("email"));
 			userService.update(foundUserResponse.id(), updateRequest);
 			jwtClaimsAttributes = new JwtClaimsAttributes(
 				foundUserResponse.id(),
@@ -141,21 +144,21 @@ public class AuthService {
 
 			return jwtClaimsAttributes;
 		} catch (EntityNotFoundException e) {
-			UserRequest.CreateRequest createRequest = attributeToCreateUserRequest(attributes);
-			Long userId = userService.create(createRequest);
+			UserCreateRequest userCreateRequest = attributeToCreateUserRequest(attributes);
+			Long userId = userService.create(userCreateRequest);
 
 			jwtClaimsAttributes = new JwtClaimsAttributes(
 				userId,
-				createRequest.username(),
-				createRequest.email(),
-				createRequest.role()
+				userCreateRequest.username(),
+				userCreateRequest.email(),
+				userCreateRequest.role()
 			);
 
 			return jwtClaimsAttributes;
 		}
 	}
 
-	private UserRequest.CreateRequest attributeToCreateUserRequest(Map<String, Object> attributes) {
+	private UserCreateRequest attributeToCreateUserRequest(Map<String, Object> attributes) {
 		String email = (String)attributes.get("email");
 		String username = email.split("@")[0];
 		String nickname = generateRandomNickname(username);
@@ -164,7 +167,8 @@ public class AuthService {
 		String encodedRandomPassword = UUID.randomUUID().toString();
 		nickname = generateRandomNicknameRecursive(nickname);
 
-		return new UserRequest.CreateRequest(usernameWithUUID, encodedRandomPassword, nickname, email, profileImageUrl,
+		return new UserCreateRequest(usernameWithUUID, encodedRandomPassword, nickname, email,
+			profileImageUrl,
 			Role.USER);
 	}
 

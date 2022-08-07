@@ -4,7 +4,7 @@ import static com.kdt.team04.domain.matches.review.entity.QMatchRecord.matchReco
 
 import org.springframework.stereotype.Repository;
 
-import com.kdt.team04.domain.matches.review.dto.MatchRecordResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchRecordTotalResponse;
 import com.kdt.team04.domain.matches.review.entity.MatchRecordValue;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,9 +19,9 @@ public class MatchRecordRepositoryCustomImpl implements MatchRecordRepositoryCus
 	}
 
 	@Override
-	public MatchRecordResponse.TotalCount getTeamTotalCount(Long teamId) {
+	public MatchRecordTotalResponse getTeamTotalCount(Long teamId) {
 		return queryFactory
-			.select(Projections.constructor(MatchRecordResponse.TotalCount.class,
+			.select(Projections.constructor(MatchRecordTotalResponse.class,
 				matchRecord.result.when(MatchRecordValue.WIN).then(1).otherwise(0).sum(),
 				matchRecord.result.when(MatchRecordValue.DRAW).then(1).otherwise(0).sum(),
 				matchRecord.result.when(MatchRecordValue.LOSE).then(1).otherwise(0).sum()

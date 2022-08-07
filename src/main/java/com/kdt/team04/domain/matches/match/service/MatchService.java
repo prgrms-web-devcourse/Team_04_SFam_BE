@@ -12,19 +12,22 @@ import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
-import com.kdt.team04.domain.matches.match.dto.MatchRequest;
-import com.kdt.team04.domain.matches.match.dto.MatchResponse;
+import com.kdt.team04.domain.matches.match.dto.request.MatchCreateRequest;
+import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
+import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.AuthorResponse;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
@@ -57,7 +60,7 @@ public class MatchService {
 	}
 
 	@Transactional
-	public Long create(Long userId, MatchRequest.MatchCreateRequest request) {
+	public Long create(Long userId, MatchCreateRequest request) {
 		Match match = request.matchType().isTeam() ?
 			teamMatchCreate(userId, request) : individualMatchCreate(userId, request);
 		Match savedMatch = matchRepository.save(match);
@@ -65,7 +68,7 @@ public class MatchService {
 		return savedMatch.getId();
 	}
 
-	private Match individualMatchCreate(Long userId, MatchRequest.MatchCreateRequest request) {
+	private Match individualMatchCreate(Long userId, MatchCreateRequest request) {
 		if (request.participants() != 1) {
 			throw new BusinessException(ErrorCode.MATCH_INVALID_PARTICIPANTS,
 				MessageFormat.format("userId = {0}, participants = {1}", userId, request.participants()));
@@ -88,7 +91,7 @@ public class MatchService {
 			.build();
 	}
 
-	private Match teamMatchCreate(Long userId, MatchRequest.MatchCreateRequest request) {
+	private Match teamMatchCreate(Long userId, MatchCreateRequest request) {
 		if (request.teamId() == null) {
 			throw new BusinessException(ErrorCode.METHOD_ARGUMENT_NOT_VALID, "teamId is null");
 		}
@@ -115,7 +118,7 @@ public class MatchService {
 			.build();
 	}
 
-	public PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> findMatches(Long myId,
+	public PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> findMatches(Long myId,
 		PageDto.MatchCursorPageRequest request) {
 		UserResponse foundUser = userService.findById(myId);
 
@@ -133,11 +136,11 @@ public class MatchService {
 				MessageFormat.format("matchId = {0}", id)));
 
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
-		UserResponse.AuthorResponse authorResponse = new UserResponse.AuthorResponse(author.id(), author.nickname());
+		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname());
 
 		if (foundMatch.getMatchType().isTeam()) {
 			Team team = foundMatch.getTeam();
-			TeamResponse.SimpleResponse teamResponse = new TeamResponse.SimpleResponse(team.getId(), team.getName(),
+			TeamSimpleResponse teamResponse = new TeamSimpleResponse(team.getId(), team.getName(),
 				team.getSportsCategory(), team.getLogoImageUrl());
 
 			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);

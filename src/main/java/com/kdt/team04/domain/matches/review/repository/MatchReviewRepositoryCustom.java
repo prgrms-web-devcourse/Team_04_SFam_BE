@@ -1,11 +1,11 @@
 package com.kdt.team04.domain.matches.review.repository;
 
-import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 
 public interface MatchReviewRepositoryCustom {
-	MatchReviewResponse.TotalCount getTeamTotalCount(Long teamId);
+	MatchReviewTotalResponse getTeamTotalCount(Long teamId);
 
-	MatchReviewResponse.TotalCount getTeamTotalCountByUserId(Long userId);
+	MatchReviewTotalResponse getTeamTotalCountByUserId(Long userId);
 
 	boolean existsByMatchIdAndUserId(Long matchId, Long userId);
 }

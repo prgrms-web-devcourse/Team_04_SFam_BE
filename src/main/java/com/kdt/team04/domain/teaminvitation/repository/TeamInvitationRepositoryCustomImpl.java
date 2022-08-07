@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.kdt.team04.common.PageDto;
 import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationCursor;
-import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationResponse;
+import com.kdt.team04.domain.teaminvitation.dto.response.TeamInvitesResponse;
 import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
@@ -25,7 +25,8 @@ public class TeamInvitationRepositoryCustomImpl implements TeamInvitationReposit
 	}
 
 	@Override
-	public PageDto.CursorResponse<TeamInvitationResponse.InvitesResponse, TeamInvitationCursor> getInvitations(Long targetId, PageDto.TeamInvitationCursorPageRequest request) {
+	public PageDto.CursorResponse<TeamInvitesResponse, TeamInvitationCursor> getInvitations(Long targetId,
+		PageDto.TeamInvitationCursorPageRequest request) {
 		Long lastId = request.getId();
 		LocalDateTime createdAt = request.getCreatedAt();
 
@@ -36,15 +37,15 @@ public class TeamInvitationRepositoryCustomImpl implements TeamInvitationReposit
 
 		BooleanExpression cursorCondition = (createdAt == null || lastId == null) ? null
 			: teamInvitation
-				.createdAt.lt(asDateTime(createdAt))
-				.or(
-					asDateTime(createdAt).eq(teamInvitation.createdAt)
-						.and(asNumber(teamInvitation.id).lt(lastId))
-				);
+			.createdAt.lt(asDateTime(createdAt))
+			.or(
+				asDateTime(createdAt).eq(teamInvitation.createdAt)
+					.and(asNumber(teamInvitation.id).lt(lastId))
+			);
 
-		List<TeamInvitationResponse.InvitesResponse> responses = jpaQueryFactory
+		List<TeamInvitesResponse> responses = jpaQueryFactory
 			.select(
-				Projections.constructor(TeamInvitationResponse.InvitesResponse.class,
+				Projections.constructor(TeamInvitesResponse.class,
 					teamInvitation.id,
 					teamInvitation.team.id,
 					teamInvitation.team.name,
