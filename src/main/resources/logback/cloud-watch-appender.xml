@@ -1,0 +1,16 @@
+<included>
+        <appender name="AWS_CLOUD_WATCH" class="ca.pjer.logback.AwsLogsAppender">
+
+            <layout>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </layout>
+
+            <logGroupName>S-Fam</logGroupName>
+            <logStreamName>[s-fam] </logStreamName>
+            <logRegion>ap-northeast-2</logRegion>
+            <maxBatchLogEvents>50</maxBatchLogEvents>
+            <maxFlushTimeMillis>30000</maxFlushTimeMillis>
+            <maxBlockTimeMillis>5000</maxBlockTimeMillis>
+            <retentionTimeDays>0</retentionTimeDays>
+        </appender>
+</included>
