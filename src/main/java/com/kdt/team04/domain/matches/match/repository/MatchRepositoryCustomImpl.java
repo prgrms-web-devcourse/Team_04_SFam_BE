@@ -23,11 +23,11 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-public class CustomizedMatchRepositoryImpl implements CustomizedMatchRepository {
+public class MatchRepositoryCustomImpl implements CustomizedMatchRepository {
 
 	private final JPAQueryFactory jpaQueryFactory;
 
-	public CustomizedMatchRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
+	public MatchRepositoryCustomImpl(JPAQueryFactory jpaQueryFactory) {
 		this.jpaQueryFactory = jpaQueryFactory;
 	}
 

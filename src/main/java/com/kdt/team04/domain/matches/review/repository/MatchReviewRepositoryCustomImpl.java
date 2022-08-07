@@ -10,11 +10,11 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Repository
-public class MatchReviewRepositoryImpl implements MatchReviewRepositoryCustom {
+public class MatchReviewRepositoryCustomImpl implements MatchReviewRepositoryCustom {
 
 	private final JPAQueryFactory jpaQueryFactory;
 
-	public MatchReviewRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
+	public MatchReviewRepositoryCustomImpl(JPAQueryFactory jpaQueryFactory) {
 		this.jpaQueryFactory = jpaQueryFactory;
 	}
 
