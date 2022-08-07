@@ -3,7 +3,7 @@ name: team-cicd-real
 on:
   push:
     branches:
-      - DK-221
+      - main
 
   workflow_dispatch:
 
