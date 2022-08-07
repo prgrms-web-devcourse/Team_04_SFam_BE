@@ -11,11 +11,12 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,9 +41,9 @@ public class TeamGiverService {
 		return teamConverter.toTeamResponse(team, leader);
 	}
 
-	public List<TeamResponse.SimpleResponse> findAllByTeamMemberUserId(Long userId) {
+	public List<TeamSimpleResponse> findAllByTeamMemberUserId(Long userId) {
 		return teamRepository.findAllByTeamMemberUserId(userId).stream()
-			.map(team -> new TeamResponse.SimpleResponse(
+			.map(team -> new TeamSimpleResponse(
 					team.getId(), team.getName(), team.getSportsCategory(), team.getLogoImageUrl()
 				)
 			).toList();

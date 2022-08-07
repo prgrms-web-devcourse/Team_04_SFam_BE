@@ -1,7 +1,6 @@
 package com.kdt.team04.domain.teammember.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
@@ -17,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
-import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
+import com.kdt.team04.domain.teammember.dto.response.TeamMemberResponse;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.user.entity.User;

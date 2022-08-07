@@ -12,7 +12,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.kdt.team04.common.security.CookieConfigProperties;
-import com.kdt.team04.domain.auth.dto.AuthResponse;
 import com.kdt.team04.domain.auth.dto.JwtClaimsAttributes;
 import com.kdt.team04.domain.auth.dto.TokenDto;
 import com.kdt.team04.domain.auth.service.AuthService;

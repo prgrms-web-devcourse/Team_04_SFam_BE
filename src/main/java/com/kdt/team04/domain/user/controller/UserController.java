@@ -24,8 +24,10 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.user.dto.UserRequest;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.request.UserUpdateLocationRequest;
+import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
+import com.kdt.team04.domain.user.dto.response.UpdateLocationResponse;
+import com.kdt.team04.domain.user.dto.response.UserFindResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,35 +47,35 @@ public class UserController {
 
 	@Operation(summary = "회원 프로필 조회", description = "회원 프로필을 닉네임을 통해 조회한다.")
 	@GetMapping
-	public ApiResponse<List<UserResponse.UserFindResponse>> findUsers(
+	public ApiResponse<List<UserFindResponse>> findUsers(
 		@Parameter(description = "회원 닉네임") @RequestParam(required = false) @NotBlank(message = "닉네임은 필수입니다.") String nickname
 	) {
-		List<UserResponse.UserFindResponse> foundUsers = userService.findAllByNickname(nickname);
+		List<UserFindResponse> foundUsers = userService.findAllByNickname(nickname);
 
 		return new ApiResponse<>(foundUsers);
 	}
 
 	@Operation(summary = "회원 프로필 조회", description = "회원 프로필을 조회한다.")
 	@GetMapping("/{id}")
-	public ApiResponse<UserResponse.FindProfile> findProfile(
+	public ApiResponse<FindProfileResponse> findProfile(
 		@Parameter(description = "회원 ID") @PathVariable Long id
 	) {
-		UserResponse.FindProfile user = userService.findProfileById(id);
+		FindProfileResponse user = userService.findProfileById(id);
 
 		return new ApiResponse<>(user);
 	}
 
 	@Operation(summary = "회원 위치 정보 업데이트", description = "회원 위치 정보(위도, 경도)를 업데이트 한다.")
 	@PutMapping("/location")
-	public ApiResponse<UserResponse.UpdateLocationResponse> update(
+	public ApiResponse<UpdateLocationResponse> update(
 		@AuthenticationPrincipal JwtAuthentication auth,
-		@RequestBody @Valid @NotNull UserRequest.UpdateLocationRequest request
+		@RequestBody @Valid @NotNull UserUpdateLocationRequest request
 	) {
 		if (auth == null) {
 			throw new NotAuthenticationException("not authenticated");
 		}
 
-		UserResponse.UpdateLocationResponse response = userService.updateLocation(auth.id(), request);
+		UpdateLocationResponse response = userService.updateLocation(auth.id(), request);
 
 		return new ApiResponse<>(response);
 	}

@@ -33,8 +33,11 @@ import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
-import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChattingResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatMatchResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
@@ -42,7 +45,7 @@ import com.kdt.team04.domain.matches.proposal.repository.MatchChatRepository;
 import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.ChatWriterProfileResponse;
 import com.kdt.team04.domain.user.entity.User;
 
 @Transactional
@@ -359,9 +362,9 @@ class MatchChatServiceIntegrationTest {
 		matchChatRepository.save(chat2);
 		matchChatRepository.save(chat3);
 
-		List<MatchProposalResponse.SimpleProposal> proposals = List.of(
-			new MatchProposalResponse.SimpleProposal(matchProposal1.getId()),
-			new MatchProposalResponse.SimpleProposal(matchProposal2.getId()));
+		List<ProposalSimpleResponse> proposals = List.of(
+			new ProposalSimpleResponse(matchProposal1.getId()),
+			new ProposalSimpleResponse(matchProposal2.getId()));
 		//when
 		matchChatService.deleteAllByProposals(proposals);
 
@@ -420,9 +423,9 @@ class MatchChatServiceIntegrationTest {
 				});
 		});
 
-		Map<Long, MatchChatResponse.LastChat> expected = new HashMap<>();
+		Map<Long, ChatLastResponse> expected = new HashMap<>();
 		proposals.forEach(proposal -> {
-			expected.put(proposal.getId(), new MatchChatResponse.LastChat(lastChat + proposal.getId()));
+			expected.put(proposal.getId(), new ChatLastResponse(lastChat + proposal.getId()));
 		});
 
 		List<Long> matchProposalIds = proposals.stream()
@@ -430,7 +433,7 @@ class MatchChatServiceIntegrationTest {
 			.toList();
 
 		//when
-		Map<Long, MatchChatResponse.LastChat> foundChats = matchChatService.findAllLastChats(matchProposalIds);
+		Map<Long, ChatLastResponse> foundChats = matchChatService.findAllLastChats(matchProposalIds);
 
 		//then
 		assertThat(foundChats.size(), is(2));
@@ -469,25 +472,25 @@ class MatchChatServiceIntegrationTest {
 			entityManager.persist(chat);
 		});
 
-		List<MatchChatResponse.Chat> expected = chats.stream()
-			.map(chat -> new MatchChatResponse.Chat(
+		List<ChatResponse> expected = chats.stream()
+			.map(chat -> new ChatResponse(
 				chat.getContent(),
 				chat.getChattedAt(),
-				new UserResponse.ChatWriterProfile(chat.getUser().getId())
+				new ChatWriterProfileResponse(chat.getUser().getId())
 			))
 			.toList();
 
 		//when
-		MatchChatResponse.Chatting response
+		ChattingResponse response
 			= matchChatService.findChatsByProposalId(proposal.getId(), author.getId());
 
 		//then
-		MatchProposalResponse.ChatMatch matchResponse = response.match();
+		ProposalChatMatchResponse matchResponse = response.match();
 		assertThat(matchResponse.title(), is(match.getTitle()));
 		assertThat(matchResponse.status(), is(match.getStatus()));
 		assertThat(matchResponse.targetProfile().nickname(), is(target.getNickname()));
 
-		List<MatchChatResponse.Chat> chatResponse = response.chats();
+		List<ChatResponse> chatResponse = response.chats();
 		assertThat(chatResponse, containsInAnyOrder(expected.toArray()));
 	}
 
@@ -521,7 +524,8 @@ class MatchChatServiceIntegrationTest {
 			.build();
 	}
 
-	private static MatchProposal getProposal(Match match, String content, User proposer, Team proposerTeam, MatchProposalStatus status) {
+	private static MatchProposal getProposal(Match match, String content, User proposer, Team proposerTeam,
+		MatchProposalStatus status) {
 		return MatchProposal.builder()
 			.match(match)
 			.content("덤벼라!")

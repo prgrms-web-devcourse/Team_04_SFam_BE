@@ -11,16 +11,18 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamService;
-import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationResponse;
+import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationCursor;
+import com.kdt.team04.domain.teaminvitation.dto.response.TeamInviteResponse;
+import com.kdt.team04.domain.teaminvitation.dto.response.TeamInvitesResponse;
 import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 import com.kdt.team04.domain.teaminvitation.entity.TeamInvitation;
 import com.kdt.team04.domain.teaminvitation.repository.TeamInvitationRepository;
 import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -46,12 +48,13 @@ public class TeamInvitationService {
 		this.teamService = teamService;
 	}
 
-	public PageDto.CursorResponse getInvitations(Long targetId, PageDto.TeamInvitationCursorPageRequest request) {
+	public PageDto.CursorResponse<TeamInvitesResponse, TeamInvitationCursor> getInvitations(Long targetId,
+		PageDto.TeamInvitationCursorPageRequest request) {
 		return teamInvitationRepository.getInvitations(targetId, request);
 	}
 
 	@Transactional
-	public TeamInvitationResponse.InviteResponse invite(Long myId, Long teamId, Long targetUserId) {
+	public TeamInviteResponse invite(Long myId, Long teamId, Long targetUserId) {
 		if (teamMemberGiverService.existsTeamMember(teamId, targetUserId)) {
 			throw new BusinessException(ErrorCode.ALREADY_TEAM_MEMBER,
 				MessageFormat.format("teamId = {0}, userId = {1}", teamId, targetUserId));
@@ -70,7 +73,7 @@ public class TeamInvitationService {
 		TeamInvitation invitation = new TeamInvitation(team, target, InvitationStatus.WAITING);
 		Long savedInvitationId = teamInvitationRepository.save(invitation).getId();
 
-		return new TeamInvitationResponse.InviteResponse(savedInvitationId);
+		return new TeamInviteResponse(savedInvitationId);
 	}
 
 	@Transactional

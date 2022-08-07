@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.kdt.team04.domain.matches.match.entity.Match;
 
-public interface MatchRepository extends JpaRepository<Match, Long>, CustomizedMatchRepository {
+public interface MatchRepository extends JpaRepository<Match, Long>, MatchRepositoryCustom {
 }

@@ -22,8 +22,8 @@ import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.entity.Team;
-import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationRequest;
-import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationResponse;
+import com.kdt.team04.domain.teaminvitation.dto.request.TeamInvitationRequest;
+import com.kdt.team04.domain.teaminvitation.dto.response.TeamInviteResponse;
 import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 import com.kdt.team04.domain.teaminvitation.entity.TeamInvitation;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
@@ -72,7 +72,7 @@ class TeamInvitationServiceTest {
 		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
 
 		//when
-		TeamInvitationResponse.InviteResponse response = teamInvitationService.invite(userA.getId(), team.getId(),
+		TeamInviteResponse response = teamInvitationService.invite(userA.getId(), team.getId(),
 			teamInvitationRequest.targetUserId());
 
 		//then

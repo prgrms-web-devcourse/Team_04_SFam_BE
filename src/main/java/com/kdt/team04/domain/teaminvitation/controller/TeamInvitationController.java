@@ -15,8 +15,8 @@ import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationRequest;
-import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationResponse;
+import com.kdt.team04.domain.teaminvitation.dto.request.TeamInvitationRequest;
+import com.kdt.team04.domain.teaminvitation.dto.response.TeamInviteResponse;
 import com.kdt.team04.domain.teaminvitation.service.TeamInvitationService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,7 +50,7 @@ public class TeamInvitationController {
 
 	@PostMapping("/{teamId}/invitations")
 	@Operation(summary = "팀원 초대", description = "팀 ID와 초대 대상 회원 ID를 받아 팀으로 초대한다.")
-	public ApiResponse<TeamInvitationResponse.InviteResponse> invite(
+	public ApiResponse<TeamInviteResponse> invite(
 		@AuthenticationPrincipal JwtAuthentication auth,
 		@Parameter(description = "팀 ID", required = true) @PathVariable Long teamId,
 		@RequestBody @Valid TeamInvitationRequest request

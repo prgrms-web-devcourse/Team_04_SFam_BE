@@ -2,15 +2,16 @@ package com.kdt.team04.domain.matches.match.dto;
 
 import org.springframework.stereotype.Component;
 
+import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.AuthorResponse;
 import com.kdt.team04.domain.user.entity.User;
 
 @Component
 public class MatchConverter {
-	public MatchResponse toMatchResponse(Match match, UserResponse.AuthorResponse user) {
+	public MatchResponse toMatchResponse(Match match, AuthorResponse user) {
 		return MatchResponse.builder()
 			.id(match.getId())
 			.title(match.getTitle())
@@ -24,8 +25,8 @@ public class MatchConverter {
 			.build();
 	}
 
-	public MatchResponse toMatchResponse(Match match, UserResponse.AuthorResponse user,
-		TeamResponse.SimpleResponse team) {
+	public MatchResponse toMatchResponse(Match match, AuthorResponse user,
+		TeamSimpleResponse team) {
 		return MatchResponse.builder()
 			.id(match.getId())
 			.title(match.getTitle())
