@@ -19,7 +19,7 @@ spring:
             scope:
               - profile
               - email
-            redirect-uri: ${OAUTH_REDIRECT_URI:https://dongkyurami.link/}
+            redirect-uri: ${OAUTH_REDIRECT_URI:http://localhost:8080/login/oauth2/code/google}
 logging:
   level:
     com.kdt: DEBUG

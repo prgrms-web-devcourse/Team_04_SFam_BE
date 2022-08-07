@@ -77,18 +77,12 @@ public class WebSecurityConfig {
 			.anyRequest()
 			.authenticated()
 			.and()
-			.formLogin()
-			.disable()
-			.csrf()
-			.disable()
-			.headers()
-			.disable()
-			.httpBasic()
-			.disable()
-			.rememberMe()
-			.disable()
-			.logout()
-			.disable()
+			.formLogin().disable()
+			.csrf().disable()
+			.headers().disable()
+			.httpBasic().disable()
+			.rememberMe().disable()
+			.logout().disable()
 			.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
@@ -103,5 +97,4 @@ public class WebSecurityConfig {
 		}
 		return http.build();
 	}
-
 }
