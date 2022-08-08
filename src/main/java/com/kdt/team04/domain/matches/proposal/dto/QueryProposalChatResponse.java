@@ -8,10 +8,19 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class QueryProposalChatResponse {
+	@Schema(description = "매칭 신청 ID(고유 PK)")
 	private final Long id;
+
+	@Schema(description = "매칭 신청 메시지")
 	private final String content;
+
+	@Schema(description = "채팅 대상")
 	private final ChatTargetProfileResponse target;
+
+	@Schema(description = "마지막 채팅 정보")
 	private final ChatLastResponse lastChat;
 
 	public QueryProposalChatResponse(
