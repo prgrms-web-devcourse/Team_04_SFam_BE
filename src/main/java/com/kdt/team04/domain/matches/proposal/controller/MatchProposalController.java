@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
-import com.kdt.team04.common.exception.NotAuthenticationException;
+import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.request.ReactProposalRequest;
@@ -39,14 +38,10 @@ public class MatchProposalController {
 	@Operation(summary = "대결 신청", description = "사용자는 대결을 신청할 수 있다.")
 	@PostMapping
 	public void propose(
-		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
+		@AuthUser JwtAuthentication auth,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
 		@RequestBody @Valid CreateProposalRequest request) {
-		if (jwtAuthentication == null) {
-			throw new NotAuthenticationException("Not Authenticated");
-		}
-
-		matchProposalService.create(jwtAuthentication.id(), matchId, request);
+		matchProposalService.create(auth.id(), matchId, request);
 	}
 
 	@Operation(summary = "신청 수락 및 거절", description = "대결 공고자는 대결 신청을 수락 또는 거절 할 수 있다.")
@@ -61,16 +56,12 @@ public class MatchProposalController {
 	@Operation(summary = "신청 목록 조회", description = "해당 대결의 신청 목록이 조회된다.")
 	@GetMapping
 	public ApiResponse<List<ChatRoomResponse>> findAllChats(
-		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
+		@AuthUser JwtAuthentication auth,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId
 	) {
-		if (jwtAuthentication == null) {
-			throw new NotAuthenticationException("Not Authenticated");
-		}
-
 		List<ChatRoomResponse> proposals = matchProposalService.findAllProposalChats(
 			matchId,
-			jwtAuthentication.id()
+			auth.id()
 		);
 
 		return new ApiResponse<>(proposals);

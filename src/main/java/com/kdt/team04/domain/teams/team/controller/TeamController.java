@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,9 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.net.MediaType;
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.teams.team.dto.request.CreateTeamRequest;
 import com.kdt.team04.domain.teams.team.dto.response.TeamResponse;
@@ -43,14 +42,10 @@ public class TeamController {
 	@Operation(summary = "팀 생성", description = "새로운 팀을 생성한다.")
 	@PostMapping
 	public void create(
-		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
+		@AuthUser JwtAuthentication auth,
 		@RequestBody @Valid CreateTeamRequest requestDto
 	) {
-		if (jwtAuthentication == null) {
-			throw new NotAuthenticationException("Not Authenticated");
-		}
-
-		teamService.create(jwtAuthentication.id(), requestDto);
+		teamService.create(auth.id(), requestDto);
 	}
 
 	@Operation(summary = "팀 프로필 조회", description = "해당 ID의 팀 프로필을 조회한다.")
@@ -66,13 +61,9 @@ public class TeamController {
 	@Operation(summary = "해당 회원이 리더인 팀 조회", description = "해당 ID의 회원이 리더인 팀을 조회한다.")
 	@GetMapping("/me/leader")
 	public ApiResponse<List<TeamSimpleResponse>> getByLeaderId(
-		@AuthenticationPrincipal JwtAuthentication jwtAuthentication
+		@AuthUser JwtAuthentication auth
 	) {
-		if (jwtAuthentication == null) {
-			throw new NotAuthenticationException("Not Authenticated");
-		}
-
-		List<TeamSimpleResponse> teams = teamService.findByLeaderId(jwtAuthentication.id());
+		List<TeamSimpleResponse> teams = teamService.findByLeaderId(auth.id());
 
 		return new ApiResponse<>(teams);
 	}
@@ -81,12 +72,9 @@ public class TeamController {
 	@PatchMapping("/{id}/logo")
 	public void uploadLogo(
 		@Parameter(description = "팀 ID") @PathVariable Long id,
-		@AuthenticationPrincipal JwtAuthentication auth,
+		@AuthUser JwtAuthentication auth,
 		MultipartFile file
 	) {
-		if (auth == null) {
-			throw new NotAuthenticationException("not authenticated");
-		}
 		if (file.isEmpty() || !file.getContentType().startsWith(MediaType.ANY_IMAGE_TYPE.type())) {
 			throw new BusinessException(ErrorCode.INVALID_FILE_TYPE,
 				"파일이 첨부되지 않았거나 지원하지 않는 타입입니다.");
