@@ -156,7 +156,6 @@ class TeamServiceTest {
 			.id(user.getId())
 			.username(user.getUsername())
 			.nickname(user.getNickname())
-			.location(user.getLocation())
 			.build();
 	}
 }

@@ -7,5 +7,9 @@ public record UpdateLocationResponse(
 	double latitude,
 
 	@Schema(description = "사용자 위치 - 경도")
-	double longitude) {
+	double longitude,
+
+	@Schema(description = "회원 조회 거리 설정값")
+	Integer searchDistance
+	) {
 }

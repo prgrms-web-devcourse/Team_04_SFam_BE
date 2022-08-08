@@ -19,6 +19,7 @@ import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
 import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
+import com.kdt.team04.domain.user.entity.UserSettings;
 import com.kdt.team04.domain.user.service.UserService;
 
 @Service
@@ -64,6 +65,8 @@ public class AuthService {
 			jwt.getAuthorities(jwt.verify(accessToken)));
 		tokenService.save(refreshToken, foundUser.id());
 
+		UserSettings foundUserSettings = foundUser.userSettings();
+
 		return new SignInResponse(
 			foundUser.id(),
 			username,
@@ -71,6 +74,9 @@ public class AuthService {
 			foundUser.email(),
 			foundUser.profileImageUrl(),
 			foundUser.role(),
+			foundUserSettings.getLocation().getLatitude(),
+			foundUserSettings.getLocation().getLongitude(),
+			foundUserSettings.getSearchDistance(),
 			new JwtToken(jwt.accessTokenProperties().header(), accessToken,
 				jwt.accessTokenProperties().expirySeconds()),
 			new JwtToken(jwt.refreshTokenProperties().header(), refreshToken,

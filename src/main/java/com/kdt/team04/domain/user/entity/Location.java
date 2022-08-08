@@ -11,19 +11,19 @@ public class Location {
 	private Double latitude;
 	private Double longitude;
 
-	protected Location() {
-	}
+	protected Location() {}
 
-	public Location(double latitude, double longitude) {
+	public Location(Double latitude, Double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
 
 	public Double getLatitude() {
-		return latitude;
+		return this.latitude;
 	}
 
 	public Double getLongitude() {
-		return longitude;
+		return this.longitude;
 	}
+
 }

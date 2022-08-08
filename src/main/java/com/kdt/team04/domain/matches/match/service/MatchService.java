@@ -89,7 +89,7 @@ public class MatchService {
 			.user(user)
 			.sportsCategory(request.sportsCategory())
 			.content(request.content())
-			.location(user.getLocation())
+			.location(user.getUserSettings().getLocation())
 			.build();
 	}
 
@@ -116,7 +116,7 @@ public class MatchService {
 			.team(team)
 			.sportsCategory(request.sportsCategory())
 			.content(request.content())
-			.location(teamLeader.getLocation())
+			.location(teamLeader.getUserSettings().getLocation())
 			.build();
 	}
 
@@ -126,7 +126,7 @@ public class MatchService {
 
 		verifyUserLocation(userConverter.toUser(foundUser));
 
-		Location location = foundUser.location();
+		Location location = foundUser.userSettings().getLocation();
 
 		return matchRepository.findByLocationPaging(
 			location.getLatitude(), location.getLongitude(), request);
@@ -197,7 +197,7 @@ public class MatchService {
 	}
 
 	private void verifyUserLocation(User user) {
-		if (user.getLocation() == null) {
+		if (user.getUserSettings().getLocation() == null) {
 			throw new BusinessException(ErrorCode.LOCATION_NOT_FOUND,
 				MessageFormat.format("User id = {0} location is null", user.getId()));
 		}

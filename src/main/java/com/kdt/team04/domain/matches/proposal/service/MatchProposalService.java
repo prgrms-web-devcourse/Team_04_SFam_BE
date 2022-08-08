@@ -14,12 +14,13 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.response.MatchAuthorResponse;
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
-import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.model.MatchType;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
+import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
-import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
@@ -191,6 +192,10 @@ public class MatchProposalService {
 			.toList();
 
 		return proposalChats;
+	}
+
+	public List<QueryProposalChatResponse> findAllProposals(Long userId) {
+		return proposalRepository.findAllProposalByUserId(userId);
 	}
 
 	@Transactional

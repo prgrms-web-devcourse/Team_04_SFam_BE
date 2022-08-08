@@ -39,6 +39,7 @@ import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
 import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
+import com.kdt.team04.domain.user.entity.UserSettings;
 
 @Transactional
 @SpringBootTest
@@ -113,7 +114,7 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.persist(user1);
 		entityManager.persist(user2);
 
-		proposer.updateLocation(new Location(1.1, 1.2));
+		proposer.updateSettings(new UserSettings(1.1, 1.2, 10));
 
 		Team proposerTeam = Team.builder()
 			.name("team1")
@@ -173,7 +174,7 @@ class MatchProposalServiceIntegrationTest {
 
 		entityManager.persist(proposer);
 
-		proposer.updateLocation(new Location(1.1, 1.2));
+		proposer.updateSettings(new UserSettings(1.1, 1.2, 10));
 		Team proposerTeam = Team.builder()
 			.name("team1")
 			.description("first team")

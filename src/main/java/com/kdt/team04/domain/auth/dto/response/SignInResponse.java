@@ -26,6 +26,15 @@ public record SignInResponse(
 	@Schema(description = "회원 권한")
 	Role role,
 
+	@Schema(description = "회원 위치 - 위도")
+	Double latitude,
+
+	@Schema(description = "회원 위치 - 경도")
+	Double longitude,
+
+	@Schema(description = "회원 거리 설정값")
+	Integer searchDistance,
+
 	@JsonIgnore
 	JwtToken accessToken,
 

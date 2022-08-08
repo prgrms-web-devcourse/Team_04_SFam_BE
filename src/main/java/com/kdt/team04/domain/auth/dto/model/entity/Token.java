@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.auth.entity;
+package com.kdt.team04.domain.auth.dto.model.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kdt.team04.domain.auth.entity.TagSequence;
+import com.kdt.team04.domain.auth.dto.model.entity.TagSequence;
 
 @Service
 public class TagSequenceService {

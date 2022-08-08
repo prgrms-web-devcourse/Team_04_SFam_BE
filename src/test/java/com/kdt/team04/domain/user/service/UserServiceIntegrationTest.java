@@ -57,7 +57,7 @@ class UserServiceIntegrationTest {
 		User foundUser = entityManager.find(User.class, newUserId);
 
 		//then
-		Assertions.assertThat(foundUser.getLocation()).isNull();
+		Assertions.assertThat(foundUser.getUserSettings()).isNull();
 	}
 
 	@Test
@@ -67,15 +67,17 @@ class UserServiceIntegrationTest {
 		User user = new User("test1234", "nickname", "$2a$12$VBMdI3AHeZK.1iPAK97kaO1K/YPNjoTjBjEfolydYMXpFHpr1ZljS");
 		entityManager.persist(user);
 		Location location = new Location(1.2, 2.2);
-		UpdateUserLocationRequest request = new UpdateUserLocationRequest(1.2, 2.2);
+		Integer searchDistance = 10;
+		UpdateUserLocationRequest request = new UpdateUserLocationRequest(1.2, 2.2, 10);
 		//when
 		UpdateLocationResponse response = userService.updateLocation(user.getId(), request);
 		User foundUser = entityManager.find(User.class, user.getId());
 
 		//then
-		Assertions.assertThat(foundUser.getLocation()).isNotNull();
-		Assertions.assertThat(foundUser.getLocation().getLongitude()).isEqualTo(location.getLongitude());
-		Assertions.assertThat(foundUser.getLocation().getLatitude()).isEqualTo(location.getLatitude());
+		Assertions.assertThat(foundUser.getUserSettings()).isNotNull();
+		Assertions.assertThat(foundUser.getUserSettings().getLocation().getLongitude()).isEqualTo(location.getLongitude());
+		Assertions.assertThat(foundUser.getUserSettings().getLocation().getLatitude()).isEqualTo(location.getLatitude());
+		Assertions.assertThat(foundUser.getUserSettings().getSearchDistance()).isEqualTo(searchDistance);
 		Assertions.assertThat(response.latitude()).isEqualTo(location.getLatitude());
 		Assertions.assertThat(response.longitude()).isEqualTo(location.getLongitude());
 	}

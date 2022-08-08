@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.security.jwt.TokenResponse;
-import com.kdt.team04.domain.auth.entity.Token;
+import com.kdt.team04.domain.auth.dto.model.entity.Token;
 import com.kdt.team04.domain.auth.repository.TokenRepository;
 
 @Service

@@ -24,8 +24,8 @@ import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UpdateLocationResponse;
 import com.kdt.team04.domain.user.dto.response.UserFindResponse;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
-import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
+import com.kdt.team04.domain.user.entity.UserSettings;
 import com.kdt.team04.domain.user.repository.UserRepository;
 
 @Service
@@ -113,9 +113,9 @@ public class UserService {
 		User foundUser = this.userRepository.findById(targetId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", targetId)));
-		foundUser.updateLocation(new Location(request.latitude(), request.longitude()));
+		foundUser.updateSettings(new UserSettings(request.latitude(), request.longitude(), request.searchDistance()));
 
-		return new UpdateLocationResponse(request.latitude(), request.longitude());
+		return new UpdateLocationResponse(request.latitude(), request.longitude(), request.searchDistance());
 	}
 
 	public Boolean usernameDuplicationCheck(String username) {
