@@ -19,6 +19,7 @@ public class TagSequenceService {
 	@Transactional
 	public Long nextSequenceByKey(String key) {
 		Optional<TagSequence> foundSequence = tagSequenceRepository.findById(key);
+
 		if (foundSequence.isPresent()) {
 			return foundSequence.get().nextSequence();
 		} else {

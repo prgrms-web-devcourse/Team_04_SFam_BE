@@ -21,9 +21,6 @@ import com.kdt.team04.domain.user.dto.UserRequest;
 import com.kdt.team04.domain.user.dto.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 

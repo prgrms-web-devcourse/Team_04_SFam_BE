@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -15,15 +14,15 @@ import com.kdt.team04.common.security.CookieConfigProperties;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.domain.user.Role;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@RequiredArgsConstructor
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 	private final Jwt jwt;
 	private final CookieConfigProperties cookieConfigProperties;
+
+	public OAuth2SuccessHandler(Jwt jwt, CookieConfigProperties cookieConfigProperties) {
+		this.jwt = jwt;
+		this.cookieConfigProperties = cookieConfigProperties;
+	}
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -46,7 +45,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
 		response.setHeader(SET_COOKIE, accessTokenCookie.toString());
 		response.addHeader(SET_COOKIE, refreshTokenCookie.toString());
-		//SecurityContextHolder.clearContext();
 	}
 
 	private ResponseCookie createCookie(String header, String token, int expirySeconds) {
