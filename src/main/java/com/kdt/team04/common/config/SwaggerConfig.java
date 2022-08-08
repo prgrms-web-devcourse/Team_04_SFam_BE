@@ -2,10 +2,13 @@ package com.kdt.team04.common.config;
 
 import java.util.Arrays;
 
+import org.springdoc.core.SpringDocUtils;
 import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+
+import com.kdt.team04.common.config.resolver.AuthUser;
 
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -16,6 +19,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 public class SwaggerConfig {
 	@Bean
 	public OpenApiCustomiser customOpenApi() {
+		SpringDocUtils.getConfig().addAnnotationsToIgnore(AuthUser.class);
 		return openApi -> {
 			String bearer = "bearer";
 			openApi
