@@ -11,20 +11,15 @@ spring:
       client:
         registration:
           google:
-            client-id: ${CLIENT_ID:ENC(rUGY2BANJhAYHvlZaSMc6RnfqP6qG+hS5pD8UhuxI3mpbaPE8C6HIZboags5eZFRrqFAjOMOWB2x8LFy/C3jCGTmWaOiulLLnePMOthCohKlYRCwmaJ4PA==)}
-            client-secret: ${CLIENT_SECRET:ENC(SxADH2A4v4TN4BAUWUQ2CmYereI2TQAtzxk2MIIqFAdan/x2DC4LGLeFWDHBGzdp)}
+            client-id: ${OAUTH_CLIENT_ID:ENC(rUGY2BANJhAYHvlZaSMc6RnfqP6qG+hS5pD8UhuxI3mpbaPE8C6HIZboags5eZFRrqFAjOMOWB2x8LFy/C3jCGTmWaOiulLLnePMOthCohKlYRCwmaJ4PA==)}
+            client-secret: ${OAUTH_CLIENT_SECRET:ENC(SxADH2A4v4TN4BAUWUQ2CmYereI2TQAtzxk2MIIqFAdan/x2DC4LGLeFWDHBGzdp)}
             scope:
               - profile
               - email
-            redirect-uri: ${OAUTH_REDIRECT_URI:https://dongkyurami.link/}
+            redirect-uri: ${OAUTH_REDIRECT_URI:https://api.dongkyurami.link/login/oauth2/code/google}
 cors:
   allowed:
     origin:
-      - http://localhost:3000
-      - http://127.0.0.1:3000
-      - https://127.0.0.1:3000
-      - https://localhost:3000
-      - https://dongkyurami.link
       - https://www.dongkyurami.link
 logging:
   level:

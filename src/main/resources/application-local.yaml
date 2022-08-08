@@ -24,6 +24,15 @@ logging:
   level:
     com.kdt: DEBUG
     org.hibernate.type.descriptor.sql: DEBUG
+
+cors:
+  allowed:
+    origin:
+      - http://localhost:3000
+      - http://127.0.0.1:3000
+      - https://127.0.0.1:3000
+      - https://localhost:3000
+
 jwt:
   client-secret: ${JWT_SECRET:DEFAULT_JWT_SECRET}
 
