@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
+import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.request.ProposalCreateRequest;
 import com.kdt.team04.domain.matches.proposal.dto.request.ProposalReactRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
@@ -76,5 +77,19 @@ public class MatchProposalController {
 		return new ApiResponse<>(proposals);
 	}
 
+	@Operation(summary = "사용자 전체 신청 목록 조회", description = "로그인된 사용자의 전체 신청 목록이 조회된다.")
+	@GetMapping("/proposals")
+	public ApiResponse<List<QueryProposalChatResponse>> findAllChats(
+		@AuthenticationPrincipal JwtAuthentication jwtAuthentication
+	) {
+		if (jwtAuthentication == null) {
+			throw new NotAuthenticationException("Not Authenticated");
+		}
 
+		List<QueryProposalChatResponse> proposals = matchProposalService.findAllProposals(
+			jwtAuthentication.id()
+		);
+
+		return new ApiResponse<>(proposals);
+	}
 }

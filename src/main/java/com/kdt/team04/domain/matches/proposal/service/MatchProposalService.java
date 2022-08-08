@@ -17,6 +17,7 @@ import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
+import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.request.ProposalCreateRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
@@ -191,6 +192,10 @@ public class MatchProposalService {
 			.toList();
 
 		return proposals;
+	}
+
+	public List<QueryProposalChatResponse> findAllProposals(Long userId) {
+		return proposalRepository.findAllProposalByUserId(userId);
 	}
 
 	@Transactional
