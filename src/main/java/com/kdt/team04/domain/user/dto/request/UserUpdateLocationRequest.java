@@ -11,5 +11,9 @@ public record UserUpdateLocationRequest(
 
 	@Schema(description = "사용자 위치 - 경도, -180 ~ 180")
 	@Range(min = -180, max = 180)
-	double longitude) {
+	double longitude,
+
+	@Schema(description = "조회 거리설정 - 5km ~ 40km")
+	@Range(min = 5, max = 40)
+	Integer searchDistance) {
 }

@@ -2,7 +2,7 @@ package com.kdt.team04.domain.user.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kdt.team04.domain.user.Role;
-import com.kdt.team04.domain.user.entity.Location;
+import com.kdt.team04.domain.user.entity.UserSettings;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -22,8 +22,8 @@ public record UserResponse(
 	@Schema(description = "회원 닉네임")
 	String nickname,
 
-	@Schema(description = "회원 위치 정보")
-	Location location,
+	@Schema(description = "회원 설정 정보")
+	UserSettings userSettings,
 
 	@Schema(description = "회원 이메일")
 	String email,

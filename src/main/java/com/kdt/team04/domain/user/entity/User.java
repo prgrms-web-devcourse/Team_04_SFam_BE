@@ -45,7 +45,7 @@ public class User extends BaseEntity {
 	private String nickname;
 
 	@Embedded
-	private Location location;
+	private UserSettings userSettings;
 
 	@Email
 	private String email;
@@ -63,12 +63,12 @@ public class User extends BaseEntity {
 	}
 
 	@Builder
-	public User(Long id, String password, String username, String nickname, Location location, String email, String profileImageUrl, Role role) {
+	public User(Long id, String password, String username, String nickname, UserSettings userSettings, String email, String profileImageUrl, Role role) {
 		this.id = id;
 		this.password = password;
 		this.username = username;
 		this.nickname = nickname;
-		this.location = location;
+		this.userSettings = userSettings;
 		this.email = email;
 		this.profileImageUrl = profileImageUrl;
 		this.role = role;
@@ -90,10 +90,6 @@ public class User extends BaseEntity {
 		return nickname;
 	}
 
-	public Location getLocation() {
-		return location;
-	}
-
 	public String getEmail() {
 		return email;
 	}
@@ -106,8 +102,12 @@ public class User extends BaseEntity {
 		return role;
 	}
 
-	public void updateLocation(Location location) {
-		this.location = location;
+	public UserSettings getUserSettings() {
+		return userSettings;
+	}
+
+	public void updateSettings(UserSettings userSettings) {
+		this.userSettings = userSettings;
 	}
 
 	public User update(String nickname, String email , String profileImageUrl) {
@@ -128,7 +128,7 @@ public class User extends BaseEntity {
 			.append("id", id)
 			.append("username", username)
 			.append("nickname", nickname)
-			.append("location", location)
+			.append("userSettings", userSettings)
 			.toString();
 	}
 }
