@@ -98,7 +98,7 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.persist(author);
 
 		Team authorTeam = Team.builder()
-			.name("team1")
+			.name("author")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(author)
@@ -117,8 +117,8 @@ class MatchProposalServiceIntegrationTest {
 		proposer.updateSettings(new UserSettings(1.1, 1.2, 10));
 
 		Team proposerTeam = Team.builder()
-			.name("team1")
-			.description("first team")
+			.name("proposer")
+			.description("proposer team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
@@ -161,7 +161,7 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.persist(author);
 
 		Team authorTeam = Team.builder()
-			.name("team1")
+			.name("author")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(author)
@@ -176,7 +176,7 @@ class MatchProposalServiceIntegrationTest {
 
 		proposer.updateSettings(new UserSettings(1.1, 1.2, 10));
 		Team proposerTeam = Team.builder()
-			.name("team1")
+			.name("proposer")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
@@ -217,13 +217,13 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.persist(proposer);
 
 		Team authorTeam = Team.builder()
-			.name("team1")
+			.name("author")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
 			.build();
 		Team proposerTeam = Team.builder()
-			.name("team1")
+			.name("proposer")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(proposer)
