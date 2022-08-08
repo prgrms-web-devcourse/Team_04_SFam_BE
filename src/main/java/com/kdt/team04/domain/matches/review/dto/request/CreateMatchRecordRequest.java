@@ -2,7 +2,7 @@ package com.kdt.team04.domain.matches.review.dto.request;
 
 import javax.validation.constraints.NotNull;
 
-import com.kdt.team04.domain.matches.review.entity.MatchRecordValue;
+import com.kdt.team04.domain.matches.review.model.MatchRecordValue;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

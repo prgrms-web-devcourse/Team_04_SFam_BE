@@ -2,7 +2,7 @@ package com.kdt.team04.domain.matches.match.dto.request;
 
 import javax.validation.constraints.NotNull;
 
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.MatchStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

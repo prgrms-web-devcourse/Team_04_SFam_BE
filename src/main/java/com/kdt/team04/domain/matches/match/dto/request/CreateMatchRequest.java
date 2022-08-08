@@ -9,8 +9,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.kdt.team04.domain.matches.match.entity.MatchType;
-import com.kdt.team04.domain.team.SportsCategory;
+import com.kdt.team04.domain.matches.match.model.MatchType;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

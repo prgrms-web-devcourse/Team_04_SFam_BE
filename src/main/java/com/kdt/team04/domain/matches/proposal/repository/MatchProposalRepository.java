@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 
-public interface MatchProposalRepository extends JpaRepository<MatchProposal, Long>, MatchProposalRepositoryCustom {
+public interface MatchProposalRepository extends JpaRepository<MatchProposal, Long>, CustomMatchProposalRepository {
 
 	void deleteAllByMatchId(Long id);
 

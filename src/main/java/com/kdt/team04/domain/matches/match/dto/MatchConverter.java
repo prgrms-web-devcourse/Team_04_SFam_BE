@@ -5,10 +5,10 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
-import com.kdt.team04.domain.matches.match.entity.Match;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
-import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
-import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.user.dto.response.AuthorResponse;
 import com.kdt.team04.domain.user.entity.User;
 

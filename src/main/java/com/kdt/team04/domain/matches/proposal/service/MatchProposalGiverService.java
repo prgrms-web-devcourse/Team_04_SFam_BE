@@ -18,8 +18,8 @@ import com.kdt.team04.domain.matches.proposal.dto.response.FixedProposalResponse
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
-import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
-import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.user.dto.response.AuthorResponse;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import com.kdt.team04.domain.user.entity.User;

@@ -7,7 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.aws.autoconfigure.context.ContextRegionProviderAutoConfiguration;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.kdt.team04.common.file.service.S3Uploader;
+import com.kdt.team04.common.aws.s3.S3Uploader;
 
 @SpringBootTest
 @EnableAutoConfiguration(exclude = ContextRegionProviderAutoConfiguration.class)

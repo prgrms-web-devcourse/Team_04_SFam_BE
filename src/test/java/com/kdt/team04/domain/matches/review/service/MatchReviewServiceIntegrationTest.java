@@ -1,6 +1,6 @@
 package com.kdt.team04.domain.matches.review.service;
 
-import static com.kdt.team04.domain.matches.review.entity.MatchReviewValue.BEST;
+import static com.kdt.team04.domain.matches.review.model.MatchReviewValue.BEST;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -21,15 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.exception.BusinessException;
-import com.kdt.team04.common.file.service.S3Uploader;
-import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.common.aws.s3.S3Uploader;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
+import com.kdt.team04.domain.matches.match.model.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
-import com.kdt.team04.domain.matches.review.entity.MatchReview;
-import com.kdt.team04.domain.team.SportsCategory;
-import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.matches.review.model.entity.MatchReview;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
 @Transactional

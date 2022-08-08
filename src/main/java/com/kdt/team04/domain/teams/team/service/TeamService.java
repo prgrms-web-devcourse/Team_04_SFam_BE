@@ -1,4 +1,4 @@
-package com.kdt.team04.domain.team.service;
+package com.kdt.team04.domain.teams.team.service;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -16,14 +16,14 @@ import com.kdt.team04.domain.matches.review.dto.response.MatchRecordTotalRespons
 import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.service.MatchRecordGiverService;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
-import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.request.CreateTeamRequest;
-import com.kdt.team04.domain.team.dto.response.TeamResponse;
-import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
-import com.kdt.team04.domain.team.entity.Team;
-import com.kdt.team04.domain.team.repository.TeamRepository;
-import com.kdt.team04.domain.teammember.dto.response.TeamMemberResponse;
-import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
+import com.kdt.team04.domain.teams.team.dto.TeamConverter;
+import com.kdt.team04.domain.teams.team.dto.request.CreateTeamRequest;
+import com.kdt.team04.domain.teams.team.dto.response.TeamResponse;
+import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
+import com.kdt.team04.domain.teams.team.repository.TeamRepository;
+import com.kdt.team04.domain.teams.teammember.dto.response.TeamMemberResponse;
+import com.kdt.team04.domain.teams.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.MatchStatus;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatConverter;
 import com.kdt.team04.domain.matches.proposal.dto.QueryMatchChatPartitionByProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalSimpleResponse;

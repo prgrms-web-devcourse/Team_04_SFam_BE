@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.kdt.team04.common.file.service.S3Uploader;
+import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
 import com.kdt.team04.domain.user.dto.request.UpdateUserLocationRequest;

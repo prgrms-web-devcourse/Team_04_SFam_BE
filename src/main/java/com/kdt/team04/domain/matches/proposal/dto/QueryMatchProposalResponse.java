@@ -3,8 +3,8 @@ package com.kdt.team04.domain.matches.proposal.dto;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.match.model.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.querydsl.core.annotations.QueryProjection;
 
 public class QueryMatchProposalResponse {

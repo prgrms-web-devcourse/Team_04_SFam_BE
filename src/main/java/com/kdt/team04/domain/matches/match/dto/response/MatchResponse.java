@@ -3,11 +3,11 @@ package com.kdt.team04.domain.matches.match.dto.response;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.match.model.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
-import com.kdt.team04.domain.team.SportsCategory;
-import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
+import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.user.dto.response.AuthorResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -1,6 +1,6 @@
 package com.kdt.team04.domain.matches.review.service;
 
-import static com.kdt.team04.domain.matches.match.entity.MatchType.INDIVIDUAL_MATCH;
+import static com.kdt.team04.domain.matches.match.model.MatchType.INDIVIDUAL_MATCH;
 
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -13,8 +13,8 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalGiverService;
 import com.kdt.team04.domain.matches.review.dto.MatchReviewConverter;
-import com.kdt.team04.domain.matches.review.entity.MatchReview;
-import com.kdt.team04.domain.matches.review.entity.MatchReviewValue;
+import com.kdt.team04.domain.matches.review.model.entity.MatchReview;
+import com.kdt.team04.domain.matches.review.model.MatchReviewValue;
 import com.kdt.team04.domain.matches.review.repository.MatchReviewRepository;
 
 @Service

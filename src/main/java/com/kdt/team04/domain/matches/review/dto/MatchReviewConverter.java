@@ -2,10 +2,10 @@ package com.kdt.team04.domain.matches.review.dto;
 
 import org.springframework.stereotype.Component;
 
-import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.matches.review.entity.MatchReview;
-import com.kdt.team04.domain.matches.review.entity.MatchReviewValue;
-import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
+import com.kdt.team04.domain.matches.review.model.entity.MatchReview;
+import com.kdt.team04.domain.matches.review.model.MatchReviewValue;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
 @Component
