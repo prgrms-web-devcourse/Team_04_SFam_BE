@@ -12,12 +12,13 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
-import com.kdt.team04.domain.auth.dto.AuthRequest;
-import com.kdt.team04.domain.auth.dto.AuthResponse;
 import com.kdt.team04.domain.auth.dto.TokenDto;
+import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
+import com.kdt.team04.domain.auth.dto.response.SignInResponse;
+import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
 import com.kdt.team04.domain.user.Role;
-import com.kdt.team04.domain.user.dto.UserRequest;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
 @Service
@@ -37,7 +38,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public AuthResponse.SignInResponse signIn(String username, String password) {
+	public SignInResponse signIn(String username, String password) {
 		UserResponse foundUser;
 		try {
 			foundUser = userService.findByUsername(username);
@@ -63,7 +64,7 @@ public class AuthService {
 			jwt.getAuthorities(jwt.verify(accessToken)));
 		tokenService.save(refreshToken, foundUser.id());
 
-		return new AuthResponse.SignInResponse(
+		return new SignInResponse(
 			foundUser.id(),
 			username,
 			foundUser.nickname(),
@@ -79,10 +80,10 @@ public class AuthService {
 	}
 
 	@Transactional
-	public AuthResponse.SignUpResponse signUp(AuthRequest.SignUpRequest request) {
+	public SignUpResponse signUp(SignUpRequest request) {
 		String encodedPassword = passwordEncoder.encode(request.password());
 		Long userId = userService.create(
-			new UserRequest.CreateRequest(
+			new UserCreateRequest(
 				request.username(),
 				encodedPassword,
 				request.nickname(),
@@ -90,6 +91,6 @@ public class AuthService {
 				null,
 				Role.USER));
 
-		return new AuthResponse.SignUpResponse(userId);
+		return new SignUpResponse(userId);
 	}
 }

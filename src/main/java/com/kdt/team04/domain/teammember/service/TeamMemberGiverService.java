@@ -10,7 +10,7 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.teammember.dto.TeamMemberConverter;
-import com.kdt.team04.domain.teammember.dto.TeamMemberResponse;
+import com.kdt.team04.domain.teammember.dto.response.TeamMemberResponse;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.teammember.repository.TeamMemberRepository;

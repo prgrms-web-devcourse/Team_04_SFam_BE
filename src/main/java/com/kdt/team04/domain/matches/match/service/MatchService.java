@@ -12,20 +12,22 @@ import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
-import com.kdt.team04.domain.matches.match.dto.MatchRequest;
-import com.kdt.team04.domain.matches.match.dto.MatchResponse;
+import com.kdt.team04.domain.matches.match.dto.request.MatchCreateRequest;
+import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
+import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.AuthorResponse;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
@@ -58,15 +60,15 @@ public class MatchService {
 	}
 
 	@Transactional
-	public Long create(Long userId, MatchRequest.MatchCreateRequest request) {
-		Match match = request.matchType() == MatchType.TEAM_MATCH ?
+	public Long create(Long userId, MatchCreateRequest request) {
+		Match match = request.matchType().isTeam() ?
 			teamMatchCreate(userId, request) : individualMatchCreate(userId, request);
 		Match savedMatch = matchRepository.save(match);
 
 		return savedMatch.getId();
 	}
 
-	private Match individualMatchCreate(Long userId, MatchRequest.MatchCreateRequest request) {
+	private Match individualMatchCreate(Long userId, MatchCreateRequest request) {
 		if (request.participants() != 1) {
 			throw new BusinessException(ErrorCode.MATCH_INVALID_PARTICIPANTS,
 				MessageFormat.format("userId = {0}, participants = {1}", userId, request.participants()));
@@ -75,10 +77,7 @@ public class MatchService {
 		UserResponse userResponse = userService.findById(userId);
 		User user = userConverter.toUser(userResponse);
 
-		if (user.getLocation() == null) {
-			throw new BusinessException(ErrorCode.LOCATION_NOT_FOUND,
-				MessageFormat.format("User id = {0} location is null", user.getId()));
-		}
+		verifyUserLocation(user);
 
 		return Match.builder()
 			.title(request.title())
@@ -92,7 +91,7 @@ public class MatchService {
 			.build();
 	}
 
-	private Match teamMatchCreate(Long userId, MatchRequest.MatchCreateRequest request) {
+	private Match teamMatchCreate(Long userId, MatchCreateRequest request) {
 		if (request.teamId() == null) {
 			throw new BusinessException(ErrorCode.METHOD_ARGUMENT_NOT_VALID, "teamId is null");
 		}
@@ -104,10 +103,7 @@ public class MatchService {
 		User teamLeader = userConverter.toUser(teamResponse.leader());
 		Team team = teamConverter.toTeam(teamResponse, teamLeader);
 
-		if (teamLeader.getLocation() == null) {
-			throw new BusinessException(ErrorCode.LOCATION_NOT_FOUND,
-				MessageFormat.format("User id = {0} location is null", teamLeader.getId()));
-		}
+		verifyUserLocation(teamLeader);
 
 		return Match.builder()
 			.title(request.title())
@@ -122,13 +118,12 @@ public class MatchService {
 			.build();
 	}
 
-	public PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> findMatches(Long myId,
+	public PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> findMatches(Long myId,
 		PageDto.MatchCursorPageRequest request) {
 		UserResponse foundUser = userService.findById(myId);
-		if (foundUser.location() == null) {
-			throw new BusinessException(ErrorCode.LOCATION_NOT_FOUND,
-				MessageFormat.format("User id = {0} location is null", myId));
-		}
+
+		verifyUserLocation(userConverter.toUser(foundUser));
+
 		Location location = foundUser.location();
 
 		return matchRepository.findByLocationPaging(
@@ -141,11 +136,11 @@ public class MatchService {
 				MessageFormat.format("matchId = {0}", id)));
 
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
-		UserResponse.AuthorResponse authorResponse = new UserResponse.AuthorResponse(author.id(), author.nickname());
+		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname());
 
-		if (foundMatch.getMatchType() == MatchType.TEAM_MATCH) {
+		if (foundMatch.getMatchType().isTeam()) {
 			Team team = foundMatch.getTeam();
-			TeamResponse.SimpleResponse teamResponse = new TeamResponse.SimpleResponse(team.getId(), team.getName(),
+			TeamSimpleResponse teamResponse = new TeamSimpleResponse(team.getId(), team.getName(),
 				team.getSportsCategory(), team.getLogoImageUrl());
 
 			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);
@@ -161,20 +156,19 @@ public class MatchService {
 				MessageFormat.format("matchId = {0}", id)));
 
 		if (match.getStatus().isMatched()) {
-			throw new BusinessException(ErrorCode.MATCH_INVALID_DELETE_REQUEST, MessageFormat.format("matchId = {0}", id));
+			throw new BusinessException(ErrorCode.MATCH_INVALID_DELETE_REQUEST,
+				MessageFormat.format("matchId = {0}", id));
 		}
 
-		if (!Objects.equals(match.getUser().getId(), userId)) {
-			throw new BusinessException(ErrorCode.AUTHOR_NOT_MATCHED,
-				MessageFormat.format("userId = {0}, matchId = {1}", userId, match.getId()));
-		}
+		verifyAuthor(match, userId);
+
 		matchProposalService.deleteByMatches(id);
 		matchRepository.delete(match);
 	}
 
 	@Transactional
 	public void updateStatusExceptEnd(Long id, Long userId, MatchStatus status) {
-		if (Objects.equals(status, MatchStatus.END)) {
+		if (status.isEnded()) {
 			throw new BusinessException(ErrorCode.MATCH_CANNOT_UPDATE_END,
 				MessageFormat.format("matchId = {0}, userId = {1}, status = {2}", id, userId, status));
 		}
@@ -183,21 +177,32 @@ public class MatchService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
 				MessageFormat.format("matchId = {0}", id)));
 
-		if (!Objects.equals(match.getUser().getId(), userId)) {
-			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
-				MessageFormat.format("matchId = {0} , userId = {1}", id, userId));
-		}
+		verifyAuthor(match, userId);
 
 		if (Objects.equals(match.getStatus(), status)) {
 			throw new BusinessException(ErrorCode.MATCH_ALREADY_CHANGED_STATUS,
 				MessageFormat.format("matchId = {0} , status = {1}", id, status));
 		}
 
-		if (Objects.equals(match.getStatus(), MatchStatus.END)) {
+		if (match.getStatus().isEnded()) {
 			throw new BusinessException(ErrorCode.MATCH_ENDED,
 				MessageFormat.format("matchId = {0} , status = {1}", id, status));
 		}
 
 		match.updateStatus(status);
+	}
+
+	private void verifyUserLocation(User user) {
+		if (user.getLocation() == null) {
+			throw new BusinessException(ErrorCode.LOCATION_NOT_FOUND,
+				MessageFormat.format("User id = {0} location is null", user.getId()));
+		}
+	}
+
+	private void verifyAuthor(Match match, Long userId) {
+		if (!Objects.equals(match.getUser().getId(), userId)) {
+			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
+				MessageFormat.format("userId = {0}, matchId = {1}", userId, match.getId()));
+		}
 	}
 }

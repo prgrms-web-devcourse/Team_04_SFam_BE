@@ -11,23 +11,26 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
-import com.kdt.team04.domain.matches.match.dto.MatchResponse;
+import com.kdt.team04.domain.matches.match.dto.response.MatchAuthorResponse;
+import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
-import com.kdt.team04.domain.matches.proposal.dto.MatchChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalRequest;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
+import com.kdt.team04.domain.matches.proposal.dto.request.ProposalCreateRequest;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
 import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -68,7 +71,7 @@ public class MatchProposalService {
 	}
 
 	@Transactional
-	public Long create(Long proposerId, Long matchId, MatchProposalRequest.ProposalCreate request) {
+	public Long create(Long proposerId, Long matchId, ProposalCreateRequest request) {
 		MatchResponse matchResponse = matchGiver.findById(matchId);
 
 		if (matchResponse.status().isMatched()) {
@@ -109,7 +112,7 @@ public class MatchProposalService {
 	}
 
 	private MatchProposal teamProposalCreate(User author, User proposer, MatchResponse matchResponse,
-		MatchProposalRequest.ProposalCreate request) {
+		ProposalCreateRequest request) {
 		if (request.teamId() == null) {
 			throw new BusinessException(ErrorCode.METHOD_ARGUMENT_NOT_VALID, "Request team is null");
 		}
@@ -151,8 +154,8 @@ public class MatchProposalService {
 		return proposal.getStatus();
 	}
 
-	public List<MatchProposalResponse.Chat> findAllProposals(Long matchId, Long authorId) {
-		MatchResponse.MatchAuthorResponse matchAuthor = matchGiver.findMatchAuthorById(matchId);
+	public List<ProposalChatResponse> findAllProposals(Long matchId, Long authorId) {
+		MatchAuthorResponse matchAuthor = matchGiver.findMatchAuthorById(matchId);
 		if (!Objects.equals(matchAuthor.author().id(), authorId)) {
 			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
 				MessageFormat.format("Don't have permission to access match with matchId={0}, authorId={1}, userId={2}",
@@ -169,18 +172,18 @@ public class MatchProposalService {
 			.map(MatchProposal::getId)
 			.toList();
 
-		Map<Long, MatchChatResponse.LastChat> lastChats = matchChatService.findAllLastChats(matchProposalIds);
-		List<MatchProposalResponse.Chat> proposals = matchProposals.stream()
+		Map<Long, ChatLastResponse> lastChats = matchChatService.findAllLastChats(matchProposalIds);
+		List<ProposalChatResponse> proposals = matchProposals.stream()
 			.map(proposal -> {
-				MatchChatResponse.LastChat lastChat = lastChats.get(proposal.getId());
-				UserResponse.ChatTargetProfile chatTargetProfile
-					= new UserResponse.ChatTargetProfile(proposal.getUser().getNickname());
+				ChatLastResponse chatLastResponse = lastChats.get(proposal.getId());
+				ChatTargetProfileResponse chatTargetProfile
+					= new ChatTargetProfileResponse(proposal.getUser().getNickname());
 
-				return new MatchProposalResponse.Chat(
+				return new ProposalChatResponse(
 					proposal.getId(),
 					proposal.getContent(),
 					chatTargetProfile,
-					lastChat
+					chatLastResponse
 				);
 			})
 			.toList();
@@ -191,8 +194,8 @@ public class MatchProposalService {
 	@Transactional
 	public void deleteByMatches(Long matchId) {
 		List<MatchProposal> foundProposals = proposalRepository.findAllByMatchId(matchId);
-		List<MatchProposalResponse.SimpleProposal> proposalResponses = foundProposals.stream()
-			.map(response -> new MatchProposalResponse.SimpleProposal(response.getId()))
+		List<ProposalSimpleResponse> proposalResponses = foundProposals.stream()
+			.map(response -> new ProposalSimpleResponse(response.getId()))
 			.toList();
 		matchChatService.deleteAllByProposals(proposalResponses);
 		proposalRepository.deleteAllByMatchId(matchId);

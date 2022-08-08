@@ -39,14 +39,13 @@ public enum ErrorCode {
 	//MATCHES
 	MATCH_NOT_FOUND("M0001", "Not found match", HttpStatus.NOT_FOUND),
 	MATCH_INVALID_PARTICIPANTS("M0002", "Invalid match participants", HttpStatus.BAD_REQUEST),
-	AUTHOR_NOT_MATCHED("M0003", "Author not matched", HttpStatus.BAD_REQUEST),
-	MATCH_ACCESS_DENIED("M0004", "Don't have permission to access match", HttpStatus.FORBIDDEN),
-	MATCH_ALREADY_CHANGED_STATUS("M0005", "Already been changed to that state.", HttpStatus.BAD_REQUEST),
-	MATCH_ENDED("M0006", "Match Already ended.", HttpStatus.BAD_REQUEST),
-	MATCH_CANNOT_UPDATE_END("M0007", "Match cannot update to end.", HttpStatus.BAD_REQUEST),
-	MATCH_INVALID_DELETE_REQUEST("MP0008", "Invalid delete request", HttpStatus.BAD_REQUEST),
-	MATCH_NOT_IN_GAME("M0009", "Match is not in game.", HttpStatus.BAD_REQUEST),
-	MATCH_NOT_ENDED("M0010", "Match not ended", HttpStatus.BAD_REQUEST),
+	MATCH_ACCESS_DENIED("M0003", "Don't have permission to access match", HttpStatus.FORBIDDEN),
+	MATCH_ALREADY_CHANGED_STATUS("M0004", "Already been changed to that state.", HttpStatus.BAD_REQUEST),
+	MATCH_ENDED("M0005", "Match Already ended.", HttpStatus.BAD_REQUEST),
+	MATCH_CANNOT_UPDATE_END("M0006", "Match cannot update to end.", HttpStatus.BAD_REQUEST),
+	MATCH_INVALID_DELETE_REQUEST("MP0007", "Invalid delete request", HttpStatus.BAD_REQUEST),
+	MATCH_NOT_IN_GAME("M0008", "Match is not in game.", HttpStatus.BAD_REQUEST),
+	MATCH_NOT_ENDED("M0009", "Match not ended", HttpStatus.BAD_REQUEST),
 
 	//MATCH_PROPOSAL
 	PROPOSAL_NOT_FOUND("MP0001", "Not found proposal", HttpStatus.NOT_FOUND),

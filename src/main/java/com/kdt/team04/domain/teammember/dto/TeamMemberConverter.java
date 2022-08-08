@@ -3,6 +3,7 @@ package com.kdt.team04.domain.teammember.dto;
 import org.springframework.stereotype.Component;
 
 import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.teammember.dto.response.TeamMemberResponse;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.user.entity.User;
 

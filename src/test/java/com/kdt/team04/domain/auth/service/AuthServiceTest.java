@@ -27,11 +27,12 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtConfig;
-import com.kdt.team04.domain.auth.dto.AuthRequest;
-import com.kdt.team04.domain.auth.dto.AuthResponse;
+import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
+import com.kdt.team04.domain.auth.dto.response.SignInResponse;
+import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
 import com.kdt.team04.domain.user.Role;
-import com.kdt.team04.domain.user.dto.UserRequest;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
 @Transactional
@@ -59,7 +60,8 @@ class AuthServiceTest {
 		//given
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null, "test00@gmail.com", null, Role.USER);
+		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null,
+			"test00@gmail.com", null, Role.USER);
 		List<GrantedAuthority> authorities = new ArrayList<>(
 			Collections.singleton(new SimpleGrantedAuthority("USER")));
 		Jwt.Claims claims = Jwt.Claims.builder()
@@ -77,7 +79,7 @@ class AuthServiceTest {
 		given(jwt.refreshTokenProperties()).willReturn(new JwtConfig.TokenProperties("refreshToken", 120));
 
 		//when
-		AuthResponse.SignInResponse signInResponse = authService.signIn(userResponse.username(), password);
+		SignInResponse signInResponse = authService.signIn(userResponse.username(), password);
 
 		//then
 		verify(passwordEncoder, times(1)).matches(password, encodedPassword);
@@ -100,7 +102,8 @@ class AuthServiceTest {
 		//given
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null, "test00@gmail.com", null, Role.USER);
+		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null,
+			"test00@gmail.com", null, Role.USER);
 		given(userService.findByUsername(userResponse.username())).willReturn(userResponse);
 		given(passwordEncoder.matches(password, encodedPassword)).willReturn(false);
 		//when, then
@@ -134,15 +137,15 @@ class AuthServiceTest {
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
 		Long userId = 1L;
-		UserRequest.CreateRequest createRequest = new UserRequest.CreateRequest("username", encodedPassword,
+		UserCreateRequest userCreateRequest = new UserCreateRequest("username", encodedPassword,
 			"nickname", "username@gmail.com", null, Role.USER);
-		AuthRequest.SignUpRequest signUpRequest = new AuthRequest.SignUpRequest("username", password, "nickname", createRequest.email());
+		SignUpRequest signUpRequest = new SignUpRequest("username", password, "nickname", userCreateRequest.email());
 
 		given(passwordEncoder.encode(password)).willReturn(encodedPassword);
-		given(userService.create(createRequest)).willReturn(userId);
+		given(userService.create(userCreateRequest)).willReturn(userId);
 
 		//when
-		AuthResponse.SignUpResponse signUpResponse = authService.signUp(signUpRequest);
+		SignUpResponse signUpResponse = authService.signUp(signUpRequest);
 
 		//then
 		assertThat(signUpResponse.id()).isEqualTo(userId);

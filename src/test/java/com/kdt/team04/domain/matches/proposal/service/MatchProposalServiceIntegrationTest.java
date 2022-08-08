@@ -27,8 +27,8 @@ import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalRequest;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalResponse;
+import com.kdt.team04.domain.matches.proposal.dto.request.ProposalCreateRequest;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
@@ -79,7 +79,7 @@ class MatchProposalServiceIntegrationTest {
 			.content("content")
 			.build();
 		entityManager.persist(match);
-		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(null, "개인전 신청합니다.");
+		ProposalCreateRequest request = new ProposalCreateRequest(null, "개인전 신청합니다.");
 
 		//when
 		Long createdProposer = matchProposalService.create(proposer.getId(), match.getId(), request);
@@ -141,7 +141,7 @@ class MatchProposalServiceIntegrationTest {
 
 		entityManager.persist(match);
 
-		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(proposerTeam.getId(),
+		ProposalCreateRequest request = new ProposalCreateRequest(proposerTeam.getId(),
 			"팀전 신청합니다.");
 
 		//when
@@ -197,7 +197,7 @@ class MatchProposalServiceIntegrationTest {
 
 		entityManager.persist(match);
 
-		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(proposerTeam.getId(),
+		ProposalCreateRequest request = new ProposalCreateRequest(proposerTeam.getId(),
 			"팀전 신청합니다.");
 
 		//when, then
@@ -243,7 +243,7 @@ class MatchProposalServiceIntegrationTest {
 			.content("content")
 			.build();
 		entityManager.persist(match);
-		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(null, "팀전 신청합니다.");
+		ProposalCreateRequest request = new ProposalCreateRequest(null, "팀전 신청합니다.");
 
 		//when, then
 		assertThatThrownBy(() -> matchProposalService.create(proposer.getId(), match.getId(), request))
@@ -268,7 +268,7 @@ class MatchProposalServiceIntegrationTest {
 			.content("content")
 			.build();
 		entityManager.persist(match);
-		MatchProposalRequest.ProposalCreate request = new MatchProposalRequest.ProposalCreate(null, "개인전 신청합니다.");
+		ProposalCreateRequest request = new ProposalCreateRequest(null, "개인전 신청합니다.");
 
 		//when, then
 		assertThatThrownBy(() -> matchProposalService.create(author.getId(), match.getId(), request)).isInstanceOf(
@@ -351,7 +351,7 @@ class MatchProposalServiceIntegrationTest {
 		});
 
 		//when
-		List<MatchProposalResponse.Chat> foundProposlas = matchProposalService.findAllProposals(match.getId(),
+		List<ProposalChatResponse> foundProposlas = matchProposalService.findAllProposals(match.getId(),
 			author.getId());
 
 		//then

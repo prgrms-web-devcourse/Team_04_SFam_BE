@@ -1,7 +1,7 @@
 package com.kdt.team04.domain.matches.review.repository;
 
-import com.kdt.team04.domain.matches.review.dto.MatchRecordResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchRecordTotalResponse;
 
 public interface MatchRecordRepositoryCustom {
-	MatchRecordResponse.TotalCount getTeamTotalCount(Long teamId);
+	MatchRecordTotalResponse getTeamTotalCount(Long teamId);
 }

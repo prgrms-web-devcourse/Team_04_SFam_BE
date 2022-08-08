@@ -17,8 +17,10 @@ import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
-import com.kdt.team04.domain.matches.match.dto.MatchRequest;
-import com.kdt.team04.domain.matches.match.dto.MatchResponse;
+import com.kdt.team04.domain.matches.match.dto.request.MatchCreateRequest;
+import com.kdt.team04.domain.matches.match.dto.request.MatchStatusUpdateRequest;
+import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
+import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.service.MatchService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +41,7 @@ public class MatchController {
 	@Operation(summary = "매치 공고 생성", description = "사용자는 매칭 공고를 작성할 수 있습니다. ")
 	@PostMapping
 	public void post(@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
-		@RequestBody @Valid MatchRequest.MatchCreateRequest request) {
+		@RequestBody @Valid MatchCreateRequest request) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
@@ -49,9 +51,9 @@ public class MatchController {
 
 	@Operation(summary = "매치 공고 리스트 조회", description = "매칭 상태별, 종목별 공고 리스트를 최신글 순으로 커서방식 페이징한다.")
 	@GetMapping
-	public ApiResponse<PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor>> getWithCursorPaging(
+	public ApiResponse<PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor>> getWithCursorPaging(
 		@AuthenticationPrincipal JwtAuthentication auth, @Valid PageDto.MatchCursorPageRequest pageRequest) {
-		PageDto.CursorResponse<MatchResponse.ListViewResponse, MatchPagingCursor> matches = matchService.findMatches(
+		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> matches = matchService.findMatches(
 			auth.id(), pageRequest);
 
 		return new ApiResponse<>(matches);
@@ -83,7 +85,7 @@ public class MatchController {
 	public void updateStatus(
 		@AuthenticationPrincipal JwtAuthentication authentication,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long id,
-		@Valid @RequestBody MatchRequest.MatchStatusUpdateRequest request
+		@Valid @RequestBody MatchStatusUpdateRequest request
 	) {
 		if (authentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");

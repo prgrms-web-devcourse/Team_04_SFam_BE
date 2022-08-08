@@ -12,13 +12,18 @@ import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.ImagePath;
 import com.kdt.team04.common.file.service.S3Uploader;
-import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.UserRequest;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
+import com.kdt.team04.domain.user.dto.request.UserUpdateLocationRequest;
+import com.kdt.team04.domain.user.dto.request.UserUpdateRequest;
+import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
+import com.kdt.team04.domain.user.dto.response.UpdateLocationResponse;
+import com.kdt.team04.domain.user.dto.response.UserFindResponse;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.repository.UserRepository;
@@ -66,15 +71,15 @@ public class UserService {
 		return userConverter.toUserResponse(foundUser);
 	}
 
-	public UserResponse.FindProfile findProfileById(Long id) {
+	public FindProfileResponse findProfileById(Long id) {
 		User foundUser = userRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", id)));
 
-		MatchReviewResponse.TotalCount review = matchReviewGiver.findTotalReviewByUserId(id);
-		List<TeamResponse.SimpleResponse> teams = teamGiver.findAllByTeamMemberUserId(id);
+		MatchReviewTotalResponse review = matchReviewGiver.findTotalReviewByUserId(id);
+		List<TeamSimpleResponse> teams = teamGiver.findAllByTeamMemberUserId(id);
 
-		return new UserResponse.FindProfile(
+		return new FindProfileResponse(
 			foundUser.getNickname(),
 			foundUser.getProfileImageUrl(),
 			review,
@@ -83,16 +88,16 @@ public class UserService {
 	}
 
 	@Transactional
-	public Long create(UserRequest.CreateRequest request) {
+	public Long create(UserCreateRequest request) {
 		User user = userConverter.toUser(request);
 
 		return userRepository.save(user).getId();
 	}
 
-	public List<UserResponse.UserFindResponse> findAllByNickname(String nickname) {
+	public List<UserFindResponse> findAllByNickname(String nickname) {
 		return userRepository.findByNicknameContaining(nickname).stream()
 			.map(
-				user -> new UserResponse.UserFindResponse(
+				user -> new UserFindResponse(
 					user.getId(),
 					user.getUsername(),
 					user.getNickname(),
@@ -103,14 +108,14 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserResponse.UpdateLocationResponse updateLocation(Long targetId,
-		UserRequest.UpdateLocationRequest request) {
+	public UpdateLocationResponse updateLocation(Long targetId,
+		UserUpdateLocationRequest request) {
 		User foundUser = this.userRepository.findById(targetId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", targetId)));
 		foundUser.updateLocation(new Location(request.latitude(), request.longitude()));
 
-		return new UserResponse.UpdateLocationResponse(request.latitude(), request.longitude());
+		return new UpdateLocationResponse(request.latitude(), request.longitude());
 	}
 
 	public Boolean usernameDuplicationCheck(String username) {
@@ -121,7 +126,7 @@ public class UserService {
 		return userRepository.existsByNickname(nickname);
 	}
 
-	public void update(Long targetId, UserRequest.Update request) {
+	public void update(Long targetId, UserUpdateRequest request) {
 		User foundUser = this.userRepository.findById(targetId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", targetId)));

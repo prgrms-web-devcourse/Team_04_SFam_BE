@@ -2,7 +2,7 @@ package com.kdt.team04.domain.matches.review.service;
 
 import org.springframework.stereotype.Service;
 
-import com.kdt.team04.domain.matches.review.dto.MatchRecordResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchRecordTotalResponse;
 import com.kdt.team04.domain.matches.review.repository.MatchRecordRepository;
 
 @Service
@@ -14,7 +14,7 @@ public class MatchRecordGiverService {
 		this.matchRecordRepository = matchRecordRepository;
 	}
 
-	public MatchRecordResponse.TotalCount findByTeamTotalRecord(Long id) {
+	public MatchRecordTotalResponse findByTeamTotalRecord(Long id) {
 		return matchRecordRepository.getTeamTotalCount(id);
 	}
 }

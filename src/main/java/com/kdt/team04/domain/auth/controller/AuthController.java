@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.security.CookieConfigProperties;
-import com.kdt.team04.domain.auth.dto.AuthRequest;
-import com.kdt.team04.domain.auth.dto.AuthResponse;
 import com.kdt.team04.domain.auth.dto.TokenDto;
+import com.kdt.team04.domain.auth.dto.request.SignInRequest;
+import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
+import com.kdt.team04.domain.auth.dto.response.SignInResponse;
+import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
 import com.kdt.team04.domain.auth.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,9 +41,9 @@ public class AuthController {
 
 	@Operation(summary = "로그인", description = "로그인을 통해 토큰을 획득합니다.")
 	@PostMapping("/signin")
-	public ApiResponse<AuthResponse.SignInResponse> signIn(HttpServletRequest request, HttpServletResponse response,
-		@RequestBody @Valid AuthRequest.SignInRequest signInRequest) {
-		AuthResponse.SignInResponse signInResponse = this.authService.signIn(
+	public ApiResponse<SignInResponse> signIn(HttpServletRequest request, HttpServletResponse response,
+		@RequestBody @Valid SignInRequest signInRequest) {
+		SignInResponse signInResponse = this.authService.signIn(
 			signInRequest.username(),
 			signInRequest.password()
 		);
@@ -51,8 +53,10 @@ public class AuthController {
 
 		TokenDto accessToken = signInResponse.accessToken();
 		TokenDto refreshToken = signInResponse.refreshToken();
-		ResponseCookie accessTokenCookie = createCookie(accessToken.header(), accessToken.token(), refreshToken.expirySeconds());
-		ResponseCookie refreshTokenCookie = createCookie(refreshToken.header(), refreshToken.token(), refreshToken.expirySeconds());
+		ResponseCookie accessTokenCookie = createCookie(accessToken.header(), accessToken.token(),
+			refreshToken.expirySeconds());
+		ResponseCookie refreshTokenCookie = createCookie(refreshToken.header(), refreshToken.token(),
+			refreshToken.expirySeconds());
 		response.setHeader(SET_COOKIE, accessTokenCookie.toString());
 		response.addHeader(SET_COOKIE, refreshTokenCookie.toString());
 
@@ -71,7 +75,7 @@ public class AuthController {
 
 	@Operation(summary = "회원가입")
 	@PostMapping("/signup")
-	public ApiResponse<AuthResponse.SignUpResponse> signUp(@RequestBody @Valid AuthRequest.SignUpRequest request) {
+	public ApiResponse<SignUpResponse> signUp(@RequestBody @Valid SignUpRequest request) {
 		return new ApiResponse<>(authService.signUp(request));
 	}
 }

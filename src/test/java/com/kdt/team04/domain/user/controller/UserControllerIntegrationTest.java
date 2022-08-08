@@ -39,15 +39,16 @@ import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
-import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.entity.MatchReview;
 import com.kdt.team04.domain.matches.review.entity.MatchReviewValue;
 import com.kdt.team04.domain.security.WithMockJwtAuthentication;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.user.Role;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
+import com.kdt.team04.domain.user.dto.response.UserFindResponse;
 import com.kdt.team04.domain.user.entity.User;
 
 @SpringBootTest
@@ -138,14 +139,15 @@ class UserControllerIntegrationTest {
 		entityManager.persist(match);
 		entityManager.persist(review);
 
-		MatchReviewResponse.TotalCount reviewResponse = new MatchReviewResponse.TotalCount(1, 0, 0);
-		List<TeamResponse.SimpleResponse> teamResponses = Arrays.asList(
-			new TeamResponse.SimpleResponse(findUserTeam1.getId(), findUserTeam1.getName(),
+		MatchReviewTotalResponse reviewResponse = new MatchReviewTotalResponse(1, 0, 0);
+		List<TeamSimpleResponse> teamResponses = Arrays.asList(
+			new TeamSimpleResponse(findUserTeam1.getId(), findUserTeam1.getName(),
 				findUserTeam1.getSportsCategory(), findUserTeam1.getLogoImageUrl()),
-			new TeamResponse.SimpleResponse(findUserTeam2.getId(), findUserTeam2.getName(),
+			new TeamSimpleResponse(findUserTeam2.getId(), findUserTeam2.getName(),
 				findUserTeam2.getSportsCategory(), findUserTeam2.getLogoImageUrl())
 		);
-		UserResponse.FindProfile profileResponse = new UserResponse.FindProfile(findUser.getNickname(),  findUser.getProfileImageUrl(), reviewResponse,
+		FindProfileResponse profileResponse = new FindProfileResponse(findUser.getNickname(),
+			findUser.getProfileImageUrl(), reviewResponse,
 			teamResponses);
 
 		String response = objectMapper.writeValueAsString(new ApiResponse<>(profileResponse));
@@ -175,17 +177,17 @@ class UserControllerIntegrationTest {
 		LongStream.range(1, 6)
 			.mapToObj(id ->
 				User.builder()
-					.username("test00"+id)
-					.nickname("test00"+id)
+					.username("test00" + id)
+					.nickname("test00" + id)
 					.password(passwordEncoder.encode("12345"))
-					.profileImageUrl("test00"+id)
+					.profileImageUrl("test00" + id)
 					.build()
 			)
 			.forEach(user -> entityManager.persist(user));
 
-		List<UserResponse.UserFindResponse> responses = LongStream.range(1, 6)
+		List<UserFindResponse> responses = LongStream.range(1, 6)
 			.mapToObj(id ->
-				new UserResponse.UserFindResponse(id, "test00" + id, "test00" + id, "test00" + id))
+				new UserFindResponse(id, "test00" + id, "test00" + id, "test00" + id))
 			.toList();
 
 		String response = objectMapper.writeValueAsString(new ApiResponse<>(responses));
@@ -218,7 +220,7 @@ class UserControllerIntegrationTest {
 			)
 			.forEach(user -> entityManager.persist(user));
 
-		List<UserResponse.UserFindResponse> responses = Collections.emptyList();
+		List<UserFindResponse> responses = Collections.emptyList();
 
 		String response = objectMapper.writeValueAsString(new ApiResponse<>(responses));
 

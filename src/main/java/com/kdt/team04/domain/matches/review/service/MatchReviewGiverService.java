@@ -2,7 +2,7 @@ package com.kdt.team04.domain.matches.review.service;
 
 import org.springframework.stereotype.Service;
 
-import com.kdt.team04.domain.matches.review.dto.MatchReviewResponse;
+import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.repository.MatchReviewRepository;
 
 @Service
@@ -14,11 +14,11 @@ public class MatchReviewGiverService {
 		this.matchReviewRepository = matchReviewRepository;
 	}
 
-	public MatchReviewResponse.TotalCount findByTeamTotalReview(Long teamId) {
+	public MatchReviewTotalResponse findByTeamTotalReview(Long teamId) {
 		return matchReviewRepository.getTeamTotalCount(teamId);
 	}
 
-	public MatchReviewResponse.TotalCount findTotalReviewByUserId(Long userId) {
+	public MatchReviewTotalResponse findTotalReviewByUserId(Long userId) {
 		return matchReviewRepository.getTeamTotalCountByUserId(userId);
 	}
 }

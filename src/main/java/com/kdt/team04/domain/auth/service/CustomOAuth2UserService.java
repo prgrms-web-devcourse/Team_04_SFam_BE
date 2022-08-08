@@ -17,8 +17,9 @@ import com.kdt.team04.common.security.oauth.CustomOAuth2User;
 import com.kdt.team04.domain.auth.dto.JwtClaimsAttributes;
 import com.kdt.team04.domain.auth.dto.OAuthAttributes;
 import com.kdt.team04.domain.user.Role;
-import com.kdt.team04.domain.user.dto.UserRequest;
-import com.kdt.team04.domain.user.dto.UserResponse;
+import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
+import com.kdt.team04.domain.user.dto.request.UserUpdateRequest;
+import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
 @Service
@@ -60,7 +61,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		JwtClaimsAttributes jwtClaimsAttributes;
 		try {
 			UserResponse foundUserResponse = userService.findByEmail((String)attributes.get("email"));
-			UserRequest.Update updateRequest = new UserRequest.Update(null, null, (String)attributes.get("email"));
+			UserUpdateRequest updateRequest = new UserUpdateRequest(null, null, (String)attributes.get("email"));
 			userService.update(foundUserResponse.id(), updateRequest);
 			jwtClaimsAttributes = new JwtClaimsAttributes(
 				foundUserResponse.id(),
@@ -71,7 +72,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 			return jwtClaimsAttributes;
 		} catch (EntityNotFoundException e) {
-			UserRequest.CreateRequest createRequest = attributeToCreateUserRequest(attributes);
+			UserCreateRequest createRequest = attributeToCreateUserRequest(attributes);
 			Long userId = userService.create(createRequest);
 
 			jwtClaimsAttributes = new JwtClaimsAttributes(
@@ -85,7 +86,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		}
 	}
 
-	private UserRequest.CreateRequest attributeToCreateUserRequest(Map<String, Object> attributes) {
+	private UserCreateRequest attributeToCreateUserRequest(Map<String, Object> attributes) {
 		String email = (String)attributes.get("email");
 		String username = email.split("@")[0];
 		String nickname = generateOAuthNickname(username);
@@ -93,7 +94,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		String profileImageUrl = (String)attributes.get("picture");
 		String encodedRandomPassword = UUID.randomUUID().toString();
 
-		return new UserRequest.CreateRequest(usernameWithUUID, encodedRandomPassword, nickname, email, profileImageUrl,
+		return new UserCreateRequest(usernameWithUUID, encodedRandomPassword, nickname, email, profileImageUrl,
 			Role.USER);
 	}
 

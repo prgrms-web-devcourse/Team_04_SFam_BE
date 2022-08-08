@@ -20,8 +20,9 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.team.dto.TeamRequest;
-import com.kdt.team04.domain.team.dto.TeamResponse;
+import com.kdt.team04.domain.team.dto.request.TeamCreateRequest;
+import com.kdt.team04.domain.team.dto.response.TeamResponse;
+import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.service.TeamService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,13 +44,13 @@ public class TeamController {
 	@PostMapping
 	public void create(
 		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
-		@RequestBody @Valid TeamRequest.CreateRequest requestDto
+		@RequestBody @Valid TeamCreateRequest requestDto
 	) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
 
-		teamService.create(jwtAuthentication.id(),requestDto);
+		teamService.create(jwtAuthentication.id(), requestDto);
 	}
 
 	@Operation(summary = "팀 프로필 조회", description = "해당 ID의 팀 프로필을 조회한다.")
@@ -64,14 +65,14 @@ public class TeamController {
 
 	@Operation(summary = "해당 회원이 리더인 팀 조회", description = "해당 ID의 회원이 리더인 팀을 조회한다.")
 	@GetMapping("/me/leader")
-	public ApiResponse<List<TeamResponse.SimpleResponse>> getByLeaderId(
+	public ApiResponse<List<TeamSimpleResponse>> getByLeaderId(
 		@AuthenticationPrincipal JwtAuthentication jwtAuthentication
 	) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
 
-		List<TeamResponse.SimpleResponse> teams = teamService.findByLeaderId(jwtAuthentication.id());
+		List<TeamSimpleResponse> teams = teamService.findByLeaderId(jwtAuthentication.id());
 
 		return new ApiResponse<>(teams);
 	}
