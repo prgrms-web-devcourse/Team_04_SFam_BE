@@ -48,7 +48,7 @@ public class TeamInvitationController {
 		return new ApiResponse<>(result);
 	}
 
-	@PostMapping("/{teamId}/invitations")
+	@PostMapping("/{teamId}/invitations") // 14, 12
 	@Operation(summary = "팀원 초대", description = "팀 ID와 초대 대상 회원 ID를 받아 팀으로 초대한다.")
 	public ApiResponse<TeamInviteResponse> invite(
 		@AuthenticationPrincipal JwtAuthentication auth,
