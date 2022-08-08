@@ -26,7 +26,7 @@ import com.kdt.team04.domain.matches.review.service.MatchRecordGiverService;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.request.TeamCreateRequest;
+import com.kdt.team04.domain.team.dto.request.CreateTeamRequest;
 import com.kdt.team04.domain.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.repository.TeamRepository;
@@ -68,7 +68,7 @@ class TeamServiceTest {
 		Role.USER);
 	private final UserResponse USER_RESPONSE = new UserResponse(USER.getId(), USER.getUsername(), USER.getPassword(),
 		USER.getNickname(), null, USER.getEmail(), USER.getProfileImageUrl(), USER.getRole());
-	private final TeamCreateRequest CREATE_REQUEST = new TeamCreateRequest("team1", "first team",
+	private final CreateTeamRequest CREATE_REQUEST = new CreateTeamRequest("team1", "first team",
 		SportsCategory.BADMINTON);
 	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),
 		CREATE_REQUEST.sportsCategory(), USER, null);
@@ -90,7 +90,7 @@ class TeamServiceTest {
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.build();
-		TeamCreateRequest teamCreateRequest = new TeamCreateRequest("team1", "first team",
+		CreateTeamRequest teamCreateRequest = new CreateTeamRequest("team1", "first team",
 			SportsCategory.BADMINTON);
 
 		given(userService.findById(any(Long.class))).willReturn(userResponse);

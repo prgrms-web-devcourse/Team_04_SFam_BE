@@ -11,7 +11,7 @@ import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 import com.kdt.team04.domain.teaminvitation.service.TeamInvitationGiverService;
 import com.kdt.team04.domain.teammember.dto.TeamMemberConverter;
-import com.kdt.team04.domain.teammember.dto.request.TeamMemberRegisterRequest;
+import com.kdt.team04.domain.teammember.dto.request.RegisterTeamMemberRequest;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.teammember.repository.TeamMemberRepository;
@@ -47,7 +47,7 @@ public class TeamMemberService {
 	}
 
 	@Transactional
-	public void registerTeamMember(Long teamId, TeamMemberRegisterRequest teamMemberRegisterRequest) {
+	public void registerTeamMember(Long teamId, RegisterTeamMemberRequest teamMemberRegisterRequest) {
 		if (existsTeamMember(teamId, teamMemberRegisterRequest.userId())) {
 			throw new BusinessException(ErrorCode.ALREADY_TEAM_MEMBER);
 		}

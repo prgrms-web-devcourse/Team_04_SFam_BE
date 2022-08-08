@@ -31,7 +31,7 @@ import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
 import com.kdt.team04.domain.auth.dto.response.SignInResponse;
 import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
 import com.kdt.team04.domain.user.Role;
-import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
+import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -137,7 +137,7 @@ class AuthServiceTest {
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
 		Long userId = 1L;
-		UserCreateRequest userCreateRequest = new UserCreateRequest("username", encodedPassword,
+		CreateUserRequest userCreateRequest = new CreateUserRequest("username", encodedPassword,
 			"nickname", "username@gmail.com", null, Role.USER);
 		SignUpRequest signUpRequest = new SignUpRequest("username", password, "nickname", userCreateRequest.email());
 

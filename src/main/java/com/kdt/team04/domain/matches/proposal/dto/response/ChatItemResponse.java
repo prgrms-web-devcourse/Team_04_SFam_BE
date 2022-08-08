@@ -6,7 +6,7 @@ import com.kdt.team04.domain.user.dto.response.ChatWriterProfileResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ChatResponse(
+public record ChatItemResponse(
 	@Schema(description = "채팅 내용")
 	String content,
 

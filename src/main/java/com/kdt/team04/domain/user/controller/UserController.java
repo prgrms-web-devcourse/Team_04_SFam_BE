@@ -24,7 +24,7 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.user.dto.request.UserUpdateLocationRequest;
+import com.kdt.team04.domain.user.dto.request.UpdateUserLocationRequest;
 import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UpdateLocationResponse;
 import com.kdt.team04.domain.user.dto.response.UserFindResponse;
@@ -69,7 +69,7 @@ public class UserController {
 	@PutMapping("/location")
 	public ApiResponse<UpdateLocationResponse> update(
 		@AuthenticationPrincipal JwtAuthentication auth,
-		@RequestBody @Valid @NotNull UserUpdateLocationRequest request
+		@RequestBody @Valid @NotNull UpdateUserLocationRequest request
 	) {
 		if (auth == null) {
 			throw new NotAuthenticationException("not authenticated");

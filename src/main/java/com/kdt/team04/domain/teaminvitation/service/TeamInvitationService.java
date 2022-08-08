@@ -16,7 +16,7 @@ import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.team.service.TeamService;
 import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationCursor;
 import com.kdt.team04.domain.teaminvitation.dto.response.TeamInviteResponse;
-import com.kdt.team04.domain.teaminvitation.dto.response.TeamInvitesResponse;
+import com.kdt.team04.domain.teaminvitation.dto.response.TeamInvitationResponse;
 import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 import com.kdt.team04.domain.teaminvitation.entity.TeamInvitation;
 import com.kdt.team04.domain.teaminvitation.repository.TeamInvitationRepository;
@@ -48,7 +48,7 @@ public class TeamInvitationService {
 		this.teamService = teamService;
 	}
 
-	public PageDto.CursorResponse<TeamInvitesResponse, TeamInvitationCursor> getInvitations(Long targetId,
+	public PageDto.CursorResponse<TeamInvitationResponse, TeamInvitationCursor> getInvitations(Long targetId,
 		PageDto.TeamInvitationCursorPageRequest request) {
 		return teamInvitationRepository.getInvitations(targetId, request);
 	}

@@ -20,7 +20,7 @@ import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.team.dto.request.TeamCreateRequest;
+import com.kdt.team04.domain.team.dto.request.CreateTeamRequest;
 import com.kdt.team04.domain.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.service.TeamService;
@@ -44,7 +44,7 @@ public class TeamController {
 	@PostMapping
 	public void create(
 		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
-		@RequestBody @Valid TeamCreateRequest requestDto
+		@RequestBody @Valid CreateTeamRequest requestDto
 	) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");

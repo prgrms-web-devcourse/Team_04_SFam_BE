@@ -20,7 +20,7 @@ import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.team.SportsCategory;
-import com.kdt.team04.domain.team.dto.request.TeamCreateRequest;
+import com.kdt.team04.domain.team.dto.request.CreateTeamRequest;
 import com.kdt.team04.domain.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
@@ -51,7 +51,7 @@ class TeamServiceIntegrationTest {
 	void testCreateSuccess() {
 		//given
 		User teamCreator = getDemoUser();
-		TeamCreateRequest requestDto = new TeamCreateRequest("team1", "first team",
+		CreateTeamRequest requestDto = new CreateTeamRequest("team1", "first team",
 			SportsCategory.BADMINTON);
 
 		//when

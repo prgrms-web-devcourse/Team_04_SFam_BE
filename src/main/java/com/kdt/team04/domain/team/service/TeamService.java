@@ -17,7 +17,7 @@ import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalRespons
 import com.kdt.team04.domain.matches.review.service.MatchRecordGiverService;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.request.TeamCreateRequest;
+import com.kdt.team04.domain.team.dto.request.CreateTeamRequest;
 import com.kdt.team04.domain.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
@@ -57,7 +57,7 @@ public class TeamService {
 	}
 
 	@Transactional
-	public Long create(Long userId, TeamCreateRequest requestDto) {
+	public Long create(Long userId, CreateTeamRequest requestDto) {
 		User user = userConverter.toUser(userService.findById(userId));
 		Team savedTeam = teamRepository.save(
 			Team.builder()

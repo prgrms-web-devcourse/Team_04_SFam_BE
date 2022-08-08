@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.matches.proposal.dto.request.ProposalCreateRequest;
-import com.kdt.team04.domain.matches.proposal.dto.request.ProposalReactRequest;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
+import com.kdt.team04.domain.matches.proposal.dto.request.ReactProposalRequest;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +41,7 @@ public class MatchProposalController {
 	public void propose(
 		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
-		@RequestBody @Valid ProposalCreateRequest request) {
+		@RequestBody @Valid CreateProposalRequest request) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
@@ -54,13 +54,13 @@ public class MatchProposalController {
 	public void proposeReact(
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
 		@Parameter(description = "매칭 신청 ID") @PathVariable Long id,
-		@RequestBody @Valid ProposalReactRequest request) {
+		@RequestBody @Valid ReactProposalRequest request) {
 		matchProposalService.react(matchId, id, request.status());
 	}
 
 	@Operation(summary = "신청 목록 조회", description = "해당 대결의 신청 목록이 조회된다.")
 	@GetMapping
-	public ApiResponse<List<ProposalChatResponse>> findAllChats(
+	public ApiResponse<List<ChatRoomResponse>> findAllChats(
 		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId
 	) {
@@ -68,7 +68,7 @@ public class MatchProposalController {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
 
-		List<ProposalChatResponse> proposals = matchProposalService.findAllProposals(
+		List<ChatRoomResponse> proposals = matchProposalService.findAllProposalChats(
 			matchId,
 			jwtAuthentication.id()
 		);

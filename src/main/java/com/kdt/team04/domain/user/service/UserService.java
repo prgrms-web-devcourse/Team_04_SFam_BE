@@ -17,9 +17,9 @@ import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.service.TeamGiverService;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
-import com.kdt.team04.domain.user.dto.request.UserUpdateLocationRequest;
-import com.kdt.team04.domain.user.dto.request.UserUpdateRequest;
+import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
+import com.kdt.team04.domain.user.dto.request.UpdateUserLocationRequest;
+import com.kdt.team04.domain.user.dto.request.UpdateUserRequest;
 import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UpdateLocationResponse;
 import com.kdt.team04.domain.user.dto.response.UserFindResponse;
@@ -88,7 +88,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public Long create(UserCreateRequest request) {
+	public Long create(CreateUserRequest request) {
 		User user = userConverter.toUser(request);
 
 		return userRepository.save(user).getId();
@@ -109,7 +109,7 @@ public class UserService {
 
 	@Transactional
 	public UpdateLocationResponse updateLocation(Long targetId,
-		UserUpdateLocationRequest request) {
+		UpdateUserLocationRequest request) {
 		User foundUser = this.userRepository.findById(targetId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", targetId)));
@@ -126,7 +126,7 @@ public class UserService {
 		return userRepository.existsByNickname(nickname);
 	}
 
-	public void update(Long targetId, UserUpdateRequest request) {
+	public void update(Long targetId, UpdateUserRequest request) {
 		User foundUser = this.userRepository.findById(targetId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", targetId)));

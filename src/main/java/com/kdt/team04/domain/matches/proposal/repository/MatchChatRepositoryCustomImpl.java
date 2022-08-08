@@ -8,7 +8,7 @@ import javax.persistence.Query;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.stereotype.Repository;
 
-import com.kdt.team04.domain.matches.proposal.dto.MatchChatPartitionByProposalIdQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.QueryMatchChatPartitionByProposalIdResponse;
 
 @Repository
 public class MatchChatRepositoryCustomImpl implements MatchChatRepositoryCustom {
@@ -20,7 +20,7 @@ public class MatchChatRepositoryCustomImpl implements MatchChatRepositoryCustom 
 	}
 
 	@Override
-	public List<MatchChatPartitionByProposalIdQueryDto> findAllPartitionByProposalIdOrderByChattedAtDesc(List<Long> matchProposalIds) {
+	public List<QueryMatchChatPartitionByProposalIdResponse> findAllPartitionByProposalIdOrderByChattedAtDesc(List<Long> matchProposalIds) {
 		String sql =
 			"SELECT ROW_NUMBER() OVER (PARTITION BY match_proposal_id ORDER BY id DESC), match_proposal_id, content" +
 			" FROM match_chat mc" +
@@ -33,7 +33,7 @@ public class MatchChatRepositoryCustomImpl implements MatchChatRepositoryCustom 
 
 		return jpaResultMapper.list(
 			nativeQuery,
-			MatchChatPartitionByProposalIdQueryDto.class
+			QueryMatchChatPartitionByProposalIdResponse.class
 		);
 	}
 

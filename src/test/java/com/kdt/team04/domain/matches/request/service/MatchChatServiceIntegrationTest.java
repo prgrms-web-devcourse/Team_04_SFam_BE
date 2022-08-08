@@ -33,10 +33,10 @@ import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
-import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ChattingResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatMatchResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatItemResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatViewMatchResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
@@ -423,9 +423,9 @@ class MatchChatServiceIntegrationTest {
 				});
 		});
 
-		Map<Long, ChatLastResponse> expected = new HashMap<>();
+		Map<Long, LastChatResponse> expected = new HashMap<>();
 		proposals.forEach(proposal -> {
-			expected.put(proposal.getId(), new ChatLastResponse(lastChat + proposal.getId()));
+			expected.put(proposal.getId(), new LastChatResponse(lastChat + proposal.getId()));
 		});
 
 		List<Long> matchProposalIds = proposals.stream()
@@ -433,7 +433,7 @@ class MatchChatServiceIntegrationTest {
 			.toList();
 
 		//when
-		Map<Long, ChatLastResponse> foundChats = matchChatService.findAllLastChats(matchProposalIds);
+		Map<Long, LastChatResponse> foundChats = matchChatService.findAllLastChats(matchProposalIds);
 
 		//then
 		assertThat(foundChats.size(), is(2));
@@ -472,8 +472,8 @@ class MatchChatServiceIntegrationTest {
 			entityManager.persist(chat);
 		});
 
-		List<ChatResponse> expected = chats.stream()
-			.map(chat -> new ChatResponse(
+		List<ChatItemResponse> expected = chats.stream()
+			.map(chat -> new ChatItemResponse(
 				chat.getContent(),
 				chat.getChattedAt(),
 				new ChatWriterProfileResponse(chat.getUser().getId())
@@ -481,16 +481,16 @@ class MatchChatServiceIntegrationTest {
 			.toList();
 
 		//when
-		ChattingResponse response
+		MatchChatResponse response
 			= matchChatService.findChatsByProposalId(proposal.getId(), author.getId());
 
 		//then
-		ProposalChatMatchResponse matchResponse = response.match();
+		MatchChatViewMatchResponse matchResponse = response.match();
 		assertThat(matchResponse.title(), is(match.getTitle()));
 		assertThat(matchResponse.status(), is(match.getStatus()));
 		assertThat(matchResponse.targetProfile().nickname(), is(target.getNickname()));
 
-		List<ChatResponse> chatResponse = response.chats();
+		List<ChatItemResponse> chatResponse = response.chats();
 		assertThat(chatResponse, containsInAnyOrder(expected.toArray()));
 	}
 

@@ -17,7 +17,7 @@ import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 import com.kdt.team04.domain.teaminvitation.entity.TeamInvitation;
-import com.kdt.team04.domain.teammember.dto.request.TeamMemberRegisterRequest;
+import com.kdt.team04.domain.teammember.dto.request.RegisterTeamMemberRequest;
 import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.user.entity.User;
@@ -62,7 +62,7 @@ class TeamMemberServiceTest {
 		entityManager.flush();
 
 		// when
-		TeamMemberRegisterRequest request = new TeamMemberRegisterRequest(userB.getId());
+		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(userB.getId());
 		teamMemberService.registerTeamMember(team.getId(), request);
 
 		// then
@@ -95,7 +95,7 @@ class TeamMemberServiceTest {
 		entityManager.flush();
 
 		// when
-		TeamMemberRegisterRequest request = new TeamMemberRegisterRequest(userB.getId());
+		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(userB.getId());
 
 		// then
 		Assertions.assertThatThrownBy(() -> teamMemberService.registerTeamMember(team.getId(), request))
@@ -127,7 +127,7 @@ class TeamMemberServiceTest {
 		entityManager.persist(teamInvitationA);
 
 		// when
-		TeamMemberRegisterRequest request = new TeamMemberRegisterRequest(userB.getId());
+		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(userB.getId());
 
 		// then
 		Assertions.assertThatThrownBy(() -> teamMemberService.registerTeamMember(team.getId(), request))

@@ -7,7 +7,7 @@ import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
 import com.querydsl.core.annotations.QueryProjection;
 
-public class MatchProposalQueryDto {
+public class QueryMatchProposalResponse {
 	private Long id;
 	private Long proposerId;
 	private Long proposerTeamId;
@@ -19,7 +19,7 @@ public class MatchProposalQueryDto {
 	private Long authorTeamId;
 
 	@QueryProjection
-	public MatchProposalQueryDto(
+	public QueryMatchProposalResponse(
 		Long id,
 		Long proposerId,
 		Long proposerTeamId,

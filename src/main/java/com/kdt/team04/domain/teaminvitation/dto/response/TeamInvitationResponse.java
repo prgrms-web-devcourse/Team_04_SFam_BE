@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record TeamInvitesResponse(
+public record TeamInvitationResponse(
 	@Schema(description = "팀 초대 ID(고유 PK)")
 	Long invitationId,
 

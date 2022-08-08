@@ -13,7 +13,7 @@ import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
-import com.kdt.team04.domain.matches.match.dto.request.MatchCreateRequest;
+import com.kdt.team04.domain.matches.match.dto.request.CreateMatchRequest;
 import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
@@ -62,7 +62,7 @@ public class MatchService {
 	}
 
 	@Transactional
-	public Long create(Long userId, MatchCreateRequest request) {
+	public Long create(Long userId, CreateMatchRequest request) {
 		Match match = request.matchType().isTeam() ?
 			teamMatchCreate(userId, request) : individualMatchCreate(userId, request);
 		Match savedMatch = matchRepository.save(match);
@@ -70,7 +70,7 @@ public class MatchService {
 		return savedMatch.getId();
 	}
 
-	private Match individualMatchCreate(Long userId, MatchCreateRequest request) {
+	private Match individualMatchCreate(Long userId, CreateMatchRequest request) {
 		if (request.participants() != 1) {
 			throw new BusinessException(ErrorCode.MATCH_INVALID_PARTICIPANTS,
 				MessageFormat.format("userId = {0}, participants = {1}", userId, request.participants()));
@@ -93,7 +93,7 @@ public class MatchService {
 			.build();
 	}
 
-	private Match teamMatchCreate(Long userId, MatchCreateRequest request) {
+	private Match teamMatchCreate(Long userId, CreateMatchRequest request) {
 		if (request.teamId() == null) {
 			throw new BusinessException(ErrorCode.METHOD_ARGUMENT_NOT_VALID, "teamId is null");
 		}

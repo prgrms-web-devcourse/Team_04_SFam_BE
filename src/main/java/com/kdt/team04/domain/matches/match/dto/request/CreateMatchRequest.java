@@ -14,7 +14,7 @@ import com.kdt.team04.domain.team.SportsCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record MatchCreateRequest(
+public record CreateMatchRequest(
 	@Schema(description = "매칭 제목, 2자 이상 10자 이하", required = true)
 	@NotBlank
 	@Size(min = 2, max = 10)

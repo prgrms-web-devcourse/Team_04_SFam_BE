@@ -14,7 +14,7 @@ import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.matches.proposal.dto.request.MatchChatRequest;
-import com.kdt.team04.domain.matches.proposal.dto.response.ChattingResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,7 +54,7 @@ public class MatchChatController {
 
 	@Operation(summary = "채팅 조회", description = "채팅 기록을 조회할 수 있다.")
 	@GetMapping("/{id}/chats")
-	public ApiResponse<ChattingResponse> chat(
+	public ApiResponse<MatchChatResponse> chat(
 		@AuthenticationPrincipal JwtAuthentication authentication,
 		@Parameter(description = "매칭 신청 ID") @PathVariable Long id
 	) {
@@ -62,7 +62,7 @@ public class MatchChatController {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
 
-		ChattingResponse chats = matchChatService.findChatsByProposalId(id, authentication.id());
+		MatchChatResponse chats = matchChatService.findChatsByProposalId(id, authentication.id());
 
 		return new ApiResponse<>(chats);
 	}

@@ -8,7 +8,7 @@ import com.kdt.team04.domain.team.SportsCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record TeamCreateRequest(
+public record CreateTeamRequest(
 
 	@Schema(description = "팀 이름, 2자 이상 10자 이하", required = true)
 	@NotBlank

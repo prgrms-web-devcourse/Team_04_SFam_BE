@@ -2,7 +2,7 @@ package com.kdt.team04.domain.auth.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
-import com.kdt.team04.domain.auth.dto.TokenDto;
+import com.kdt.team04.domain.auth.dto.JwtToken;
 import com.kdt.team04.domain.user.Role;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,10 +27,10 @@ public record SignInResponse(
 	Role role,
 
 	@JsonIgnore
-	TokenDto accessToken,
+	JwtToken accessToken,
 
 	@JsonIgnore
-	TokenDto refreshToken,
+	JwtToken refreshToken,
 
 	@JsonIgnore
 	JwtAuthenticationToken jwtAuthenticationToken

@@ -6,7 +6,7 @@ import com.kdt.team04.domain.matches.review.entity.MatchRecordValue;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record MatchRecordRequest(
+public record CreateMatchRecordRequest(
 	@Schema(description = "매칭 신청 ID(고유 PK)", required = true)
 	@NotNull
 	Long proposalId,

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.matches.review.dto.request.MatchRecordRequest;
+import com.kdt.team04.domain.matches.review.dto.request.CreateMatchRecordRequest;
 import com.kdt.team04.domain.matches.review.service.MatchRecordService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +33,7 @@ public class MatchRecordController {
 	public void endGame(
 		@AuthenticationPrincipal JwtAuthentication authentication,
 		@PathVariable Long id,
-		@Valid @RequestBody MatchRecordRequest request
+		@Valid @RequestBody CreateMatchRecordRequest request
 	) {
 		if (authentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");

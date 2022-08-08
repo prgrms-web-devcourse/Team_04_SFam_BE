@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kdt.team04.domain.teammember.dto.request.TeamMemberRegisterRequest;
+import com.kdt.team04.domain.teammember.dto.request.RegisterTeamMemberRequest;
 import com.kdt.team04.domain.teammember.service.TeamMemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +28,7 @@ public class TeamMemberController {
 	@PostMapping
 	@Operation(summary = "팀원 등록", description = "팀에 해당 회원을 팀원으로 등록한다.")
 	public void registerMember(@PathVariable Long teamId,
-		@RequestBody @Valid TeamMemberRegisterRequest teamMemberRegisterRequest) {
+		@RequestBody @Valid RegisterTeamMemberRequest teamMemberRegisterRequest) {
 		teamMemberService.registerTeamMember(teamId, teamMemberRegisterRequest);
 	}
 

@@ -31,7 +31,7 @@ import com.kdt.team04.common.security.WebSecurityConfig;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
-import com.kdt.team04.domain.auth.dto.TokenDto;
+import com.kdt.team04.domain.auth.dto.JwtToken;
 import com.kdt.team04.domain.auth.dto.request.SignInRequest;
 import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
 import com.kdt.team04.domain.auth.dto.response.SignInResponse;
@@ -88,8 +88,8 @@ class AuthControllerTest {
 			null,
 			null,
 			Role.USER,
-			new TokenDto("accessToken", "accessToken", 3600),
-			new TokenDto("refreshToken", "refreshToken", 3600),
+			new JwtToken("accessToken", "accessToken", 3600),
+			new JwtToken("refreshToken", "refreshToken", 3600),
 			new JwtAuthenticationToken(new JwtAuthentication("accessToken", user.getId(), username, user.getEmail()),
 				null,
 				authorities

@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.kdt.team04.common.PageDto;
 import com.kdt.team04.domain.teaminvitation.dto.TeamInvitationCursor;
-import com.kdt.team04.domain.teaminvitation.dto.response.TeamInvitesResponse;
+import com.kdt.team04.domain.teaminvitation.dto.response.TeamInvitationResponse;
 import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
@@ -25,7 +25,7 @@ public class TeamInvitationRepositoryCustomImpl implements TeamInvitationReposit
 	}
 
 	@Override
-	public PageDto.CursorResponse<TeamInvitesResponse, TeamInvitationCursor> getInvitations(Long targetId,
+	public PageDto.CursorResponse<TeamInvitationResponse, TeamInvitationCursor> getInvitations(Long targetId,
 		PageDto.TeamInvitationCursorPageRequest request) {
 		Long lastId = request.getId();
 		LocalDateTime createdAt = request.getCreatedAt();
@@ -43,9 +43,9 @@ public class TeamInvitationRepositoryCustomImpl implements TeamInvitationReposit
 					.and(asNumber(teamInvitation.id).lt(lastId))
 			);
 
-		List<TeamInvitesResponse> responses = jpaQueryFactory
+		List<TeamInvitationResponse> responses = jpaQueryFactory
 			.select(
-				Projections.constructor(TeamInvitesResponse.class,
+				Projections.constructor(TeamInvitationResponse.class,
 					teamInvitation.id,
 					teamInvitation.team.id,
 					teamInvitation.team.name,

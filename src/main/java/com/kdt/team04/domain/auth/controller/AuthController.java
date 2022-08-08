@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.security.CookieConfigProperties;
-import com.kdt.team04.domain.auth.dto.TokenDto;
+import com.kdt.team04.domain.auth.dto.JwtToken;
 import com.kdt.team04.domain.auth.dto.request.SignInRequest;
 import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
 import com.kdt.team04.domain.auth.dto.response.SignInResponse;
@@ -51,8 +51,8 @@ public class AuthController {
 		signInResponse.jwtAuthenticationToken().setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 		SecurityContextHolder.getContext().setAuthentication(signInResponse.jwtAuthenticationToken());
 
-		TokenDto accessToken = signInResponse.accessToken();
-		TokenDto refreshToken = signInResponse.refreshToken();
+		JwtToken accessToken = signInResponse.accessToken();
+		JwtToken refreshToken = signInResponse.refreshToken();
 		ResponseCookie accessTokenCookie = createCookie(accessToken.header(), accessToken.token(),
 			refreshToken.expirySeconds());
 		ResponseCookie refreshTokenCookie = createCookie(refreshToken.header(), refreshToken.token(),

@@ -17,8 +17,8 @@ import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
-import com.kdt.team04.domain.matches.match.dto.request.MatchCreateRequest;
-import com.kdt.team04.domain.matches.match.dto.request.MatchStatusUpdateRequest;
+import com.kdt.team04.domain.matches.match.dto.request.CreateMatchRequest;
+import com.kdt.team04.domain.matches.match.dto.request.UpdateMatchStatusRequest;
 import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.service.MatchService;
@@ -41,7 +41,7 @@ public class MatchController {
 	@Operation(summary = "매치 공고 생성", description = "사용자는 매칭 공고를 작성할 수 있습니다. ")
 	@PostMapping
 	public void post(@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
-		@RequestBody @Valid MatchCreateRequest request) {
+		@RequestBody @Valid CreateMatchRequest request) {
 		if (jwtAuthentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");
 		}
@@ -90,7 +90,7 @@ public class MatchController {
 	public void updateStatus(
 		@AuthenticationPrincipal JwtAuthentication authentication,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long id,
-		@Valid @RequestBody MatchStatusUpdateRequest request
+		@Valid @RequestBody UpdateMatchStatusRequest request
 	) {
 		if (authentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");

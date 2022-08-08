@@ -4,7 +4,7 @@ import org.hibernate.validator.constraints.Range;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record UserUpdateLocationRequest(
+public record UpdateUserLocationRequest(
 	@Schema(description = "사용자 위치 - 위도, -90 ~ 90")
 	@Range(min = -90, max = 90)
 	double latitude,

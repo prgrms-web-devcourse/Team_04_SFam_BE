@@ -5,12 +5,12 @@ import java.math.BigInteger;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class MatchChatPartitionByProposalIdQueryDto {
+public class QueryMatchChatPartitionByProposalIdResponse {
 	private final Long rowNumber;
 	private final Long matchProposalId;
 	private final String lastChat;
 
-	public MatchChatPartitionByProposalIdQueryDto(BigInteger rowNumber, BigInteger matchProposalId, String lastChat) {
+	public QueryMatchChatPartitionByProposalIdResponse(BigInteger rowNumber, BigInteger matchProposalId, String lastChat) {
 		this.rowNumber = rowNumber.longValue();
 		this.matchProposalId = matchProposalId.longValue();
 		this.lastChat = lastChat;

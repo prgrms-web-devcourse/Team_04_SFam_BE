@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.matches.review.dto.request.MatchReviewRequest;
+import com.kdt.team04.domain.matches.review.dto.request.CreateMatchReviewRequest;
 import com.kdt.team04.domain.matches.review.service.MatchReviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +33,7 @@ public class MatchReviewController {
 	public void review(
 		@AuthenticationPrincipal JwtAuthentication authentication,
 		@PathVariable Long id,
-		@Valid @RequestBody MatchReviewRequest request
+		@Valid @RequestBody CreateMatchReviewRequest request
 	) {
 		if (authentication == null) {
 			throw new NotAuthenticationException("Not Authenticated");

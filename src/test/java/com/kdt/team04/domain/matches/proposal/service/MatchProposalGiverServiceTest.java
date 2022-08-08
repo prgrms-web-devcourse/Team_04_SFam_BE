@@ -28,9 +28,9 @@ import com.kdt.team04.common.file.service.S3Uploader;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatMatchResponse;
+import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalResponse;
+import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalSimpleResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatViewMatchResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.team.SportsCategory;
@@ -78,7 +78,7 @@ class MatchProposalGiverServiceTest {
 		entityManager.persist(match);
 		entityManager.persist(matchProposal);
 
-		MatchProposalQueryDto expectedQueryDto = new MatchProposalQueryDto(
+		QueryMatchProposalResponse expectedQueryDto = new QueryMatchProposalResponse(
 			matchProposal.getId(),
 			matchProposal.getUser().getId(),
 			matchProposal.getTeam().getId(),
@@ -90,7 +90,7 @@ class MatchProposalGiverServiceTest {
 		);
 
 		//when
-		MatchProposalQueryDto fixedProposal = matchProposalGiver.findFixedProposalByMatchId(match.getId());
+		QueryMatchProposalResponse fixedProposal = matchProposalGiver.findFixedProposalByMatchId(match.getId());
 
 		//then
 		assertThat(fixedProposal, samePropertyValuesAs(expectedQueryDto));
@@ -147,7 +147,7 @@ class MatchProposalGiverServiceTest {
 		entityManager.persist(match);
 		entityManager.persist(proposal);
 
-		MatchProposalSimpleQueryDto expected = new MatchProposalSimpleQueryDto(
+		QueryMatchProposalSimpleResponse expected = new QueryMatchProposalSimpleResponse(
 			proposal.getId(),
 			proposal.getStatus(),
 			target.getId(),
@@ -156,7 +156,7 @@ class MatchProposalGiverServiceTest {
 		);
 
 		//when
-		MatchProposalSimpleQueryDto response = matchProposalGiver.findSimpleProposalById(proposal.getId());
+		QueryMatchProposalSimpleResponse response = matchProposalGiver.findSimpleProposalById(proposal.getId());
 
 		//then
 		assertThat(response, samePropertyValuesAs(expected));
@@ -276,7 +276,7 @@ class MatchProposalGiverServiceTest {
 		entityManager.persist(proposal);
 
 		//when
-		ProposalChatMatchResponse chatMatch
+		MatchChatViewMatchResponse chatMatch
 			= matchProposalGiver.findChatMatchByProposalId(proposal.getId(), author.getId());
 
 		//then
