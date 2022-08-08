@@ -1,9 +1,11 @@
 package com.kdt.team04.domain.matches.match.dto.response;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.team.SportsCategory;
 import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.user.dto.response.AuthorResponse;
@@ -41,6 +43,9 @@ public record MatchResponse(
 	MatchType matchType,
 
 	@Schema(description = "매칭 글 내용")
-	String content
+	String content,
+
+	@Schema(description = "매칭 신청 정보(로그인한 사용자가 신청했다면 정보 포함 | 아니라면 null 반환)")
+	Optional<ProposalSimpleResponse> proposer
 ) {
 }

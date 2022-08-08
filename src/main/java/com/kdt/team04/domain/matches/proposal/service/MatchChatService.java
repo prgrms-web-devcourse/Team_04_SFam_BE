@@ -21,7 +21,7 @@ import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChattingResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatMatchResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
@@ -124,7 +124,7 @@ public class MatchChatService {
 	}
 
 	@Transactional
-	public void deleteAllByProposals(List<ProposalSimpleResponse> proposalResponses) {
+	public void deleteAllByProposals(List<ProposalIdResponse> proposalResponses) {
 		List<MatchProposal> proposals = proposalResponses.stream()
 			.map((proposal -> MatchProposal.builder()
 				.id(proposal.id())

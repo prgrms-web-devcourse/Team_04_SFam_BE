@@ -2,6 +2,7 @@ package com.kdt.team04.domain.matches.match.service;
 
 import java.text.MessageFormat;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
 import com.kdt.team04.domain.matches.match.entity.MatchStatus;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 import com.kdt.team04.domain.team.dto.TeamConverter;
 import com.kdt.team04.domain.team.dto.response.TeamResponse;
@@ -130,7 +132,7 @@ public class MatchService {
 			location.getLatitude(), location.getLongitude(), request);
 	}
 
-	public MatchResponse findById(Long id) {
+	public MatchResponse findById(Long id, Long userId) {
 		Match foundMatch = matchRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.MATCH_NOT_FOUND,
 				MessageFormat.format("matchId = {0}", id)));
@@ -138,15 +140,17 @@ public class MatchService {
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
 		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname());
 
+		Optional<ProposalSimpleResponse> proposalResponse = matchProposalService.findByMatchIdAndUserId(id, userId);
+
 		if (foundMatch.getMatchType().isTeam()) {
 			Team team = foundMatch.getTeam();
 			TeamSimpleResponse teamResponse = new TeamSimpleResponse(team.getId(), team.getName(),
 				team.getSportsCategory(), team.getLogoImageUrl());
 
-			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);
+			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse, proposalResponse);
 		}
 
-		return matchConverter.toMatchResponse(foundMatch, authorResponse);
+		return matchConverter.toMatchResponse(foundMatch, authorResponse, proposalResponse);
 	}
 
 	@Transactional

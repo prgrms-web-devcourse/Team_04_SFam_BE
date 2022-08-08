@@ -207,7 +207,7 @@ class MatchServiceIntegrationTest {
 			.build());
 
 		//when
-		MatchResponse foundMatch = matchService.findById(savedMatch.getId());
+		MatchResponse foundMatch = matchService.findById(savedMatch.getId(), user.getId());
 
 		//then
 		assertThat(foundMatch.title()).isEqualTo(savedMatch.getTitle());
@@ -224,7 +224,8 @@ class MatchServiceIntegrationTest {
 		//given
 		Long invalidId = 1234L;
 		//when, then
-		assertThatThrownBy(() -> matchService.findById(invalidId)).isInstanceOf(EntityNotFoundException.class);
+		assertThatThrownBy(() -> matchService.findById(invalidId, 1L))
+			.isInstanceOf(EntityNotFoundException.class);
 	}
 
 	@Test
