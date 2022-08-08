@@ -1,26 +1,23 @@
-package com.kdt.team04.common.file.config;
+package com.kdt.team04.common.aws.s3;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.kdt.team04.common.aws.config.AwsConfigProperties;
 
-@Profile({"local", "dev", "real"})
-@Configuration
-@EnableConfigurationProperties({AwsConfigProperties.class, S3ConfigProperties.class})
-public class AwsConfig {
+@EnableConfigurationProperties({S3ConfigProperties.class})
+public class S3Config {
 
-	private final AwsConfigProperties awsConfigProperties;
-
-	public AwsConfig(AwsConfigProperties awsConfigProperties) {
+	public S3Config(AwsConfigProperties awsConfigProperties) {
 		this.awsConfigProperties = awsConfigProperties;
 	}
+
+	private final AwsConfigProperties awsConfigProperties;
 
 	@Bean(name = "amazonS3")
 	public AmazonS3 amazonS3Client() {
@@ -34,5 +31,4 @@ public class AwsConfig {
 			.withRegion(awsConfigProperties.region())
 			.build();
 	}
-
 }

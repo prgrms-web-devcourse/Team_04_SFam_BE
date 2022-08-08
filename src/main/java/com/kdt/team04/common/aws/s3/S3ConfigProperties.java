@@ -1,4 +1,4 @@
-package com.kdt.team04.common.file.config;
+package com.kdt.team04.common.aws.s3;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;

@@ -1,4 +1,4 @@
-package com.kdt.team04.common.file.service;
+package com.kdt.team04.common.aws.s3;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,10 +17,11 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.kdt.team04.common.file.FileStorage;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.FileValidator;
-import com.kdt.team04.common.file.config.S3ConfigProperties;
+import com.kdt.team04.common.file.Path;
 
 @Component
 @Profile({"local", "dev", "real"})
@@ -38,11 +39,11 @@ public class S3Uploader implements FileStorage {
 	}
 
 	@Override
-	public String uploadByPath(Resource resource, String path) {
+	public String uploadByPath(Resource resource, Path path) {
 		fileValidator.validate(resource);
 
 		String extension = fileValidator.getExtension(resource.getFilename());
-		String key = path + UUID.randomUUID() + "." + extension;
+		String key = path.getPath() + UUID.randomUUID() + "." + extension;
 		write(resource, key);
 
 		return s3.url() + key;

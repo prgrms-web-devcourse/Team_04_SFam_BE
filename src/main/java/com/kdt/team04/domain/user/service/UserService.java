@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.ImagePath;
-import com.kdt.team04.common.file.service.S3Uploader;
+import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
@@ -143,7 +143,7 @@ public class UserService {
 			.ifPresentOrElse(
 				key -> s3Uploader.uploadByKey(file.getResource(), key),
 				() -> {
-					String key = s3Uploader.uploadByPath(file.getResource(), ImagePath.USERS_PROFILES.getPath());
+					String key = s3Uploader.uploadByPath(file.getResource(), ImagePath.USERS_PROFILES);
 					foundUser.updateImageUrl(key);
 				}
 			);
