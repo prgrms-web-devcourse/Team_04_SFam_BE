@@ -19,6 +19,7 @@ public enum ErrorCode {
 	//AUTHENTICATION & TOKEN
 	AUTHENTICATION_FAILED("A0001", "Authentication failed", HttpStatus.BAD_REQUEST),
 	TOKEN_NOT_FOUND("A0002", "Not found token", HttpStatus.NOT_FOUND),
+	NOT_AUTHENTICATED("A0003", "Not Authenticated", HttpStatus.UNAUTHORIZED),
 
 	//USER
 	USER_NOT_FOUND("U0001", "Not found user", HttpStatus.NOT_FOUND),

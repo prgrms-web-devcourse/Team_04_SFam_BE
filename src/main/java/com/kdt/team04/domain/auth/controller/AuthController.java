@@ -9,14 +9,17 @@ import javax.validation.Valid;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.security.CookieConfigProperties;
-import com.kdt.team04.domain.auth.dto.TokenDto;
+import com.kdt.team04.common.security.jwt.JwtAuthentication;
+import com.kdt.team04.domain.auth.dto.JwtToken;
 import com.kdt.team04.domain.auth.dto.request.SignInRequest;
 import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
 import com.kdt.team04.domain.auth.dto.response.SignInResponse;
@@ -51,8 +54,8 @@ public class AuthController {
 		signInResponse.jwtAuthenticationToken().setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 		SecurityContextHolder.getContext().setAuthentication(signInResponse.jwtAuthenticationToken());
 
-		TokenDto accessToken = signInResponse.accessToken();
-		TokenDto refreshToken = signInResponse.refreshToken();
+		JwtToken accessToken = signInResponse.accessToken();
+		JwtToken refreshToken = signInResponse.refreshToken();
 		ResponseCookie accessTokenCookie = createCookie(accessToken.header(), accessToken.token(),
 			refreshToken.expirySeconds());
 		ResponseCookie refreshTokenCookie = createCookie(refreshToken.header(), refreshToken.token(),
@@ -77,5 +80,11 @@ public class AuthController {
 	@PostMapping("/signup")
 	public ApiResponse<SignUpResponse> signUp(@RequestBody @Valid SignUpRequest request) {
 		return new ApiResponse<>(authService.signUp(request));
+	}
+
+	@Operation(summary = "로그아웃")
+	@DeleteMapping("/signout")
+	public ApiResponse<String> signOut(@AuthUser JwtAuthentication auth) {
+		return new ApiResponse<>("signed out");
 	}
 }

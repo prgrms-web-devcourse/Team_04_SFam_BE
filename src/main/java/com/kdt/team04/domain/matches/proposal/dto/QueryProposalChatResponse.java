@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,7 +21,7 @@ public class QueryProposalChatResponse {
 	private final ChatTargetProfileResponse target;
 
 	@Schema(description = "마지막 채팅 정보")
-	private final ChatLastResponse lastChat;
+	private final LastChatResponse lastChat;
 
 	public QueryProposalChatResponse(
 		BigInteger id,
@@ -32,7 +32,7 @@ public class QueryProposalChatResponse {
 		this.id = id.longValue();
 		this.content = content;
 		this.target = new ChatTargetProfileResponse(targetNickname);
-		this.lastChat = new ChatLastResponse(lastChat);
+		this.lastChat = new LastChatResponse(lastChat);
 	}
 
 	public Long getId() {
@@ -47,7 +47,7 @@ public class QueryProposalChatResponse {
 		return target;
 	}
 
-	public ChatLastResponse getLastChat() {
+	public LastChatResponse getLastChat() {
 		return lastChat;
 	}
 

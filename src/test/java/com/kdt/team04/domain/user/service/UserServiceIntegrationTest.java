@@ -14,10 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.kdt.team04.common.file.service.S3Uploader;
+import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.domain.user.Role;
-import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
-import com.kdt.team04.domain.user.dto.request.UserUpdateLocationRequest;
+import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
+import com.kdt.team04.domain.user.dto.request.UpdateUserLocationRequest;
 import com.kdt.team04.domain.user.dto.response.UpdateLocationResponse;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
@@ -49,7 +49,7 @@ class UserServiceIntegrationTest {
 	@DisplayName("새로운 유저는 위치정보가 처음엔 null이다.")
 	void newbieLocationIsNull() {
 		//given
-		UserCreateRequest request = new UserCreateRequest("test1234", "@Test1234", "nickname",
+		CreateUserRequest request = new CreateUserRequest("test1234", "@Test1234", "nickname",
 			"test1234@gmail.com", null, Role.USER);
 
 		//when
@@ -68,7 +68,7 @@ class UserServiceIntegrationTest {
 		entityManager.persist(user);
 		Location location = new Location(1.2, 2.2);
 		Integer searchDistance = 10;
-		UserUpdateLocationRequest request = new UserUpdateLocationRequest(1.2, 2.2, 10);
+		UpdateUserLocationRequest request = new UpdateUserLocationRequest(1.2, 2.2, 10);
 		//when
 		UpdateLocationResponse response = userService.updateLocation(user.getId(), request);
 		User foundUser = entityManager.find(User.class, user.getId());

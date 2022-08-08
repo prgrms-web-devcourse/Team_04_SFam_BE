@@ -19,9 +19,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.team.SportsCategory;
-import com.kdt.team04.domain.teaminvitation.entity.InvitationStatus;
+import com.kdt.team04.domain.matches.match.model.MatchStatus;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
+import com.kdt.team04.domain.teams.teaminvitation.model.InvitationStatus;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Builder;

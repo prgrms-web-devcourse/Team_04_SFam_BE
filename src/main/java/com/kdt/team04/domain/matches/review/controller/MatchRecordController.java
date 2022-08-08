@@ -2,16 +2,15 @@ package com.kdt.team04.domain.matches.review.controller;
 
 import javax.validation.Valid;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kdt.team04.common.exception.NotAuthenticationException;
+import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.matches.review.dto.request.MatchRecordRequest;
+import com.kdt.team04.domain.matches.review.dto.request.CreateMatchRecordRequest;
 import com.kdt.team04.domain.matches.review.service.MatchRecordService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,14 +30,10 @@ public class MatchRecordController {
 	@Operation(summary = "경기 결과 등록", description = "경기 결과를 등록한다.")
 	@PostMapping
 	public void endGame(
-		@AuthenticationPrincipal JwtAuthentication authentication,
+		@AuthUser JwtAuthentication authentication,
 		@PathVariable Long id,
-		@Valid @RequestBody MatchRecordRequest request
+		@Valid @RequestBody CreateMatchRecordRequest request
 	) {
-		if (authentication == null) {
-			throw new NotAuthenticationException("Not Authenticated");
-		}
-
 		matchRecordService.endGame(id, request.proposalId(), request.result(), authentication.id());
 	}
 }

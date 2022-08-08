@@ -17,8 +17,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.kdt.team04.domain.BaseEntity;
-import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
 import lombok.Builder;

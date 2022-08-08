@@ -11,15 +11,15 @@ import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.response.MatchAuthorResponse;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatMatchResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalFixedResponse;
+import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalResponse;
+import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalSimpleResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatViewMatchResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.FixedProposalResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
-import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
-import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.user.dto.response.AuthorResponse;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -36,15 +36,15 @@ public class MatchProposalGiverService {
 		this.matchGiver = matchGiver;
 	}
 
-	public MatchProposalSimpleQueryDto findSimpleProposalById(Long id) {
-		MatchProposalSimpleQueryDto matchProposal = matchProposalRepository.findSimpleProposalById(id)
+	public QueryMatchProposalSimpleResponse findSimpleProposalById(Long id) {
+		QueryMatchProposalSimpleResponse matchProposal = matchProposalRepository.findSimpleProposalById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("matchProposalId = {0}", id)));
 
 		return matchProposal;
 	}
 
-	public ProposalChatMatchResponse findChatMatchByProposalId(Long id, Long userId) {
+	public MatchChatViewMatchResponse findChatMatchByProposalId(Long id, Long userId) {
 		MatchProposal matchProposal = matchProposalRepository.findProposalWithUserById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("matchProposalId = {0}", id)));
@@ -61,7 +61,7 @@ public class MatchProposalGiverService {
 			matchProposal.getUser().getNickname() :
 			match.author().nickname();
 
-		return new ProposalChatMatchResponse(
+		return new MatchChatViewMatchResponse(
 			match.title(),
 			match.status(),
 			new ChatTargetProfileResponse(targetNickname)
@@ -73,8 +73,8 @@ public class MatchProposalGiverService {
 			&& !Objects.equals(match.author().id(), userId);
 	}
 
-	public MatchProposalQueryDto findFixedProposalByMatchId(Long matchId) {
-		MatchProposalQueryDto matchProposal = matchProposalRepository.findFixedProposalByMatchId(matchId)
+	public QueryMatchProposalResponse findFixedProposalByMatchId(Long matchId) {
+		QueryMatchProposalResponse matchProposal = matchProposalRepository.findFixedProposalByMatchId(matchId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("matchId = {0}", matchId)));
 
@@ -82,7 +82,7 @@ public class MatchProposalGiverService {
 	}
 
 	@Transactional
-	public ProposalFixedResponse updateToFixed(Long id) {
+	public FixedProposalResponse updateToFixed(Long id) {
 		MatchProposal matchProposal = matchProposalRepository.findProposalById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("matchProposalId = {0}", id)));
@@ -104,7 +104,7 @@ public class MatchProposalGiverService {
 				: new TeamSimpleResponse(team.getId(), team.getName(),
 				team.getSportsCategory(), team.getLogoImageUrl());
 
-		return new ProposalFixedResponse(
+		return new FixedProposalResponse(
 			matchProposal.getId(),
 			userResponse,
 			teamResponse

@@ -2,8 +2,8 @@ package com.kdt.team04.domain.matches.match.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.kdt.team04.domain.matches.match.entity.MatchType;
-import com.kdt.team04.domain.team.SportsCategory;
+import com.kdt.team04.domain.matches.match.model.MatchType;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

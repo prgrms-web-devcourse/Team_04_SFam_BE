@@ -99,4 +99,13 @@ public class CommonRestControllerAdvice {
 
 		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
 	}
+
+	@ResponseStatus(code = HttpStatus.UNAUTHORIZED)
+	@ExceptionHandler(NotAuthenticationException.class)
+	public ResponseEntity<ErrorResponse<ErrorCode>> handleNotAuthenticationException(NotAuthenticationException e) {
+		this.log.warn("{}", e.toString(), e);
+		ErrorCode errorCode = ErrorCode.NOT_AUTHENTICATED;
+
+		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+	}
 }

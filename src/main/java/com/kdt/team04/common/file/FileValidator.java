@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.common.file.MimeType;
 
 @Component
 public class FileValidator {

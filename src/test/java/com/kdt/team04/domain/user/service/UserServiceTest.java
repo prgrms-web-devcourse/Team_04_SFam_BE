@@ -27,12 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
-import com.kdt.team04.domain.team.SportsCategory;
-import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
-import com.kdt.team04.domain.team.service.TeamGiverService;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
+import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
+import com.kdt.team04.domain.teams.team.service.TeamGiverService;
 import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.UserConverter;
-import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
+import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
 import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UserFindResponse;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
@@ -64,7 +64,7 @@ class UserServiceTest {
 	@DisplayName("유저 생성 성공 테스트")
 	void testCreateSuccess() {
 		//given
-		UserCreateRequest request = new UserCreateRequest("test00", "@Test1234", "nickname",
+		CreateUserRequest request = new CreateUserRequest("test00", "@Test1234", "nickname",
 			"test00@gmail.com", null, Role.USER);
 		User user = User.builder()
 			.id(1L)
@@ -93,7 +93,7 @@ class UserServiceTest {
 	@DisplayName("username으로 유저 조회 성공 테스트")
 	void testFindByUsernameSuccess() {
 		//given
-		UserCreateRequest request = new UserCreateRequest("test00", "@Test1234", "nickname",
+		CreateUserRequest request = new CreateUserRequest("test00", "@Test1234", "nickname",
 			"test00@gmail.com", null, Role.USER);
 		User user = User.builder()
 			.id(1L)
@@ -208,7 +208,7 @@ class UserServiceTest {
 	@DisplayName("id로 유저 조회 성공 테스트")
 	void testFindByIdSuccess() {
 		//given
-		UserCreateRequest request = new UserCreateRequest("test00", "@Test1234", "nickname",
+		CreateUserRequest request = new CreateUserRequest("test00", "@Test1234", "nickname",
 			"test00@gmail.com", null, Role.USER);
 		User user = User.builder()
 			.id(1L)

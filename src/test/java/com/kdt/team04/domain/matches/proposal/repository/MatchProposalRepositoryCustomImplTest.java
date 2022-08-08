@@ -21,16 +21,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.kdt.team04.common.file.service.S3Uploader;
-import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.common.aws.s3.S3Uploader;
+import com.kdt.team04.domain.matches.match.model.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.MatchType;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
-import com.kdt.team04.domain.team.SportsCategory;
-import com.kdt.team04.domain.team.entity.Team;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.user.entity.User;
 
 @Transactional
@@ -86,9 +86,12 @@ class MatchProposalRepositoryCustomImplTest {
 		entityManager.persist(chat);
 
 		List<QueryProposalChatResponse> expected = new ArrayList<>();
-		expected.add(new QueryProposalChatResponse(BigInteger.valueOf(proposal2.getId()), proposal2.getContent(), target2.getNickname(), chat.getContent()));
-		expected.add(new QueryProposalChatResponse(BigInteger.valueOf(proposal3.getId()), proposal3.getContent(), target3.getNickname(), null));
-		expected.add(new QueryProposalChatResponse(BigInteger.valueOf(proposal1.getId()), proposal1.getContent(), target1.getNickname(), null));
+		expected.add(new QueryProposalChatResponse(BigInteger.valueOf(proposal2.getId()), proposal2.getContent(),
+			target2.getNickname(), chat.getContent()));
+		expected.add(new QueryProposalChatResponse(BigInteger.valueOf(proposal3.getId()), proposal3.getContent(),
+			target3.getNickname(), null));
+		expected.add(new QueryProposalChatResponse(BigInteger.valueOf(proposal1.getId()), proposal1.getContent(),
+			target1.getNickname(), null));
 
 		//when
 		List<QueryProposalChatResponse> response

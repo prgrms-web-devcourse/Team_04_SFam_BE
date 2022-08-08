@@ -1,6 +1,6 @@
 package com.kdt.team04.domain.matches.review.service;
 
-import static com.kdt.team04.domain.matches.match.entity.MatchType.INDIVIDUAL_MATCH;
+import static com.kdt.team04.domain.matches.match.model.MatchType.INDIVIDUAL_MATCH;
 
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalQueryDto;
+import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalGiverService;
 import com.kdt.team04.domain.matches.review.dto.MatchReviewConverter;
-import com.kdt.team04.domain.matches.review.entity.MatchReview;
-import com.kdt.team04.domain.matches.review.entity.MatchReviewValue;
+import com.kdt.team04.domain.matches.review.model.entity.MatchReview;
+import com.kdt.team04.domain.matches.review.model.MatchReviewValue;
 import com.kdt.team04.domain.matches.review.repository.MatchReviewRepository;
 
 @Service
@@ -38,7 +38,7 @@ public class MatchReviewService {
 
 	@Transactional
 	public Long review(Long matchId, MatchReviewValue review, Long userId) {
-		MatchProposalQueryDto proposalQueryDto = matchProposalGiver.findFixedProposalByMatchId(matchId);
+		QueryMatchProposalResponse proposalQueryDto = matchProposalGiver.findFixedProposalByMatchId(matchId);
 
 		if (!proposalQueryDto.getMatchStatus().isEnded()) {
 			throw new BusinessException(ErrorCode.MATCH_NOT_ENDED,
@@ -68,7 +68,7 @@ public class MatchReviewService {
 	}
 
 	private MatchReview createTeamReview(
-		MatchProposalQueryDto proposalDto,
+		QueryMatchProposalResponse proposalDto,
 		MatchReviewValue review,
 		Long loginId
 	) {
@@ -83,7 +83,7 @@ public class MatchReviewService {
 	}
 
 	private MatchReview createIndividualReview(
-		MatchProposalQueryDto proposalDto,
+		QueryMatchProposalResponse proposalDto,
 		MatchReviewValue review,
 		Long loginId
 	) {

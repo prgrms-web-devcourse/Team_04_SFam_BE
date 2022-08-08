@@ -22,19 +22,19 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
-import com.kdt.team04.common.file.service.S3Uploader;
+import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
-import com.kdt.team04.domain.matches.match.dto.request.MatchCreateRequest;
+import com.kdt.team04.domain.matches.match.dto.request.CreateMatchRequest;
 import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
-import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
+import com.kdt.team04.domain.matches.match.model.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
-import com.kdt.team04.domain.team.SportsCategory;
-import com.kdt.team04.domain.team.entity.Team;
-import com.kdt.team04.domain.teammember.entity.TeamMember;
-import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
+import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
+import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.entity.UserSettings;
@@ -79,7 +79,7 @@ class MatchServiceIntegrationTest {
 		entityManager.persist(new TeamMember(team, leader, TeamMemberRole.LEADER));
 		entityManager.persist(new TeamMember(team, user1, TeamMemberRole.MEMBER));
 		entityManager.persist(new TeamMember(team, user2, TeamMemberRole.MEMBER));
-		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
+		CreateMatchRequest request = new CreateMatchRequest("match1", LocalDate.now(),
 			MatchType.TEAM_MATCH,
 			team.getId(), 3, SportsCategory.BADMINTON, "content");
 
@@ -97,7 +97,7 @@ class MatchServiceIntegrationTest {
 		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(user);
 		user.updateSettings(new UserSettings(1.1, 1.2, 10));
-		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
+		CreateMatchRequest request = new CreateMatchRequest("match1", LocalDate.now(),
 			MatchType.INDIVIDUAL_MATCH,
 			null, 1, SportsCategory.BADMINTON, "content");
 
@@ -115,7 +115,7 @@ class MatchServiceIntegrationTest {
 		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 
 		entityManager.persist(user);
-		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
+		CreateMatchRequest request = new CreateMatchRequest("match1", LocalDate.now(),
 			MatchType.INDIVIDUAL_MATCH,
 			null, 2, SportsCategory.BADMINTON, "content");
 
@@ -138,7 +138,7 @@ class MatchServiceIntegrationTest {
 			.leader(leader)
 			.build();
 		entityManager.persist(team);
-		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
+		CreateMatchRequest request = new CreateMatchRequest("match1", LocalDate.now(),
 			MatchType.TEAM_MATCH,
 			team.getId(), 1, SportsCategory.BADMINTON, "content");
 
@@ -159,7 +159,7 @@ class MatchServiceIntegrationTest {
 			.leader(user)
 			.build();
 		entityManager.persist(team);
-		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
+		CreateMatchRequest request = new CreateMatchRequest("match1", LocalDate.now(),
 			MatchType.TEAM_MATCH,
 			null, 3, SportsCategory.BADMINTON, "content");
 
@@ -181,7 +181,7 @@ class MatchServiceIntegrationTest {
 			.leader(user)
 			.build();
 		entityManager.persist(team);
-		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
+		CreateMatchRequest request = new CreateMatchRequest("match1", LocalDate.now(),
 			MatchType.TEAM_MATCH,
 			null, 3, SportsCategory.BADMINTON, "content");
 

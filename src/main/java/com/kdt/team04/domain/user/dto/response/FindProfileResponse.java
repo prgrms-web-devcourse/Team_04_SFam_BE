@@ -3,7 +3,7 @@ package com.kdt.team04.domain.user.dto.response;
 import java.util.List;
 
 import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
-import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
+import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

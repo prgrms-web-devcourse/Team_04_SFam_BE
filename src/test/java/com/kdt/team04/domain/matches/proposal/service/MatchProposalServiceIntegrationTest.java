@@ -23,20 +23,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.exception.BusinessException;
-import com.kdt.team04.common.file.service.S3Uploader;
-import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
-import com.kdt.team04.domain.matches.match.entity.MatchType;
-import com.kdt.team04.domain.matches.proposal.dto.request.ProposalCreateRequest;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
+import com.kdt.team04.common.aws.s3.S3Uploader;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
+import com.kdt.team04.domain.matches.match.model.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.MatchType;
+import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
-import com.kdt.team04.domain.team.SportsCategory;
-import com.kdt.team04.domain.team.entity.Team;
-import com.kdt.team04.domain.teammember.entity.TeamMember;
-import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
+import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
+import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.entity.UserSettings;
@@ -80,7 +80,7 @@ class MatchProposalServiceIntegrationTest {
 			.content("content")
 			.build();
 		entityManager.persist(match);
-		ProposalCreateRequest request = new ProposalCreateRequest(null, "개인전 신청합니다.");
+		CreateProposalRequest request = new CreateProposalRequest(null, "개인전 신청합니다.");
 
 		//when
 		Long createdProposer = matchProposalService.create(proposer.getId(), match.getId(), request);
@@ -142,7 +142,7 @@ class MatchProposalServiceIntegrationTest {
 
 		entityManager.persist(match);
 
-		ProposalCreateRequest request = new ProposalCreateRequest(proposerTeam.getId(),
+		CreateProposalRequest request = new CreateProposalRequest(proposerTeam.getId(),
 			"팀전 신청합니다.");
 
 		//when
@@ -198,7 +198,7 @@ class MatchProposalServiceIntegrationTest {
 
 		entityManager.persist(match);
 
-		ProposalCreateRequest request = new ProposalCreateRequest(proposerTeam.getId(),
+		CreateProposalRequest request = new CreateProposalRequest(proposerTeam.getId(),
 			"팀전 신청합니다.");
 
 		//when, then
@@ -244,7 +244,7 @@ class MatchProposalServiceIntegrationTest {
 			.content("content")
 			.build();
 		entityManager.persist(match);
-		ProposalCreateRequest request = new ProposalCreateRequest(null, "팀전 신청합니다.");
+		CreateProposalRequest request = new CreateProposalRequest(null, "팀전 신청합니다.");
 
 		//when, then
 		assertThatThrownBy(() -> matchProposalService.create(proposer.getId(), match.getId(), request))
@@ -269,7 +269,7 @@ class MatchProposalServiceIntegrationTest {
 			.content("content")
 			.build();
 		entityManager.persist(match);
-		ProposalCreateRequest request = new ProposalCreateRequest(null, "개인전 신청합니다.");
+		CreateProposalRequest request = new CreateProposalRequest(null, "개인전 신청합니다.");
 
 		//when, then
 		assertThatThrownBy(() -> matchProposalService.create(author.getId(), match.getId(), request)).isInstanceOf(
@@ -352,7 +352,7 @@ class MatchProposalServiceIntegrationTest {
 		});
 
 		//when
-		List<ProposalChatResponse> foundProposlas = matchProposalService.findAllProposals(match.getId(),
+		List<ChatRoomResponse> foundProposlas = matchProposalService.findAllProposalChats(match.getId(),
 			author.getId());
 
 		//then
@@ -403,7 +403,7 @@ class MatchProposalServiceIntegrationTest {
 
 		//when, then
 		assertThatThrownBy(() -> {
-			matchProposalService.findAllProposals(match.getId(), author.getId());
+			matchProposalService.findAllProposalChats(match.getId(), author.getId());
 		}).isInstanceOf(BusinessException.class);
 	}
 
@@ -485,7 +485,7 @@ class MatchProposalServiceIntegrationTest {
 
 		//when, then
 		assertThatThrownBy(() -> {
-			matchProposalService.findAllProposals(match.getId(), invalidUserId);
+			matchProposalService.findAllProposalChats(match.getId(), invalidUserId);
 		}).isInstanceOf(BusinessException.class);
 	}
 

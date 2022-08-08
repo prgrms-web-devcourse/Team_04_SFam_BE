@@ -1,6 +1,6 @@
 package com.kdt.team04.common.file;
 
-public enum ImagePath {
+public enum ImagePath implements Path{
 	USERS_PROFILES("users/profile/"),
 	TEAMS_LOGO("teams/logo/");
 
@@ -10,6 +10,7 @@ public enum ImagePath {
 		this.path = path;
 	}
 
+	@Override
 	public String getPath() {
 		return path;
 	}

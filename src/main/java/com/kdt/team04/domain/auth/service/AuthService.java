@@ -12,12 +12,12 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
-import com.kdt.team04.domain.auth.dto.TokenDto;
+import com.kdt.team04.domain.auth.dto.JwtToken;
 import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
 import com.kdt.team04.domain.auth.dto.response.SignInResponse;
 import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
 import com.kdt.team04.domain.user.Role;
-import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
+import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.UserSettings;
 import com.kdt.team04.domain.user.service.UserService;
@@ -77,9 +77,9 @@ public class AuthService {
 			foundUserSettings.getLocation().getLatitude(),
 			foundUserSettings.getLocation().getLongitude(),
 			foundUserSettings.getSearchDistance(),
-			new TokenDto(jwt.accessTokenProperties().header(), accessToken,
+			new JwtToken(jwt.accessTokenProperties().header(), accessToken,
 				jwt.accessTokenProperties().expirySeconds()),
-			new TokenDto(jwt.refreshTokenProperties().header(), refreshToken,
+			new JwtToken(jwt.refreshTokenProperties().header(), refreshToken,
 				jwt.refreshTokenProperties().expirySeconds()),
 			authenticationToken
 		);
@@ -89,7 +89,7 @@ public class AuthService {
 	public SignUpResponse signUp(SignUpRequest request) {
 		String encodedPassword = passwordEncoder.encode(request.password());
 		Long userId = userService.create(
-			new UserCreateRequest(
+			new CreateUserRequest(
 				request.username(),
 				encodedPassword,
 				request.nickname(),

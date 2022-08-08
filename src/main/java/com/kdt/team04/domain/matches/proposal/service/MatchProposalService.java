@@ -14,23 +14,23 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.response.MatchAuthorResponse;
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
-import com.kdt.team04.domain.matches.match.entity.Match;
-import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.match.model.MatchType;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
 import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.request.ProposalCreateRequest;
-import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
-import com.kdt.team04.domain.team.dto.TeamConverter;
-import com.kdt.team04.domain.team.dto.response.TeamResponse;
-import com.kdt.team04.domain.team.entity.Team;
-import com.kdt.team04.domain.team.service.TeamGiverService;
-import com.kdt.team04.domain.teammember.service.TeamMemberGiverService;
+import com.kdt.team04.domain.teams.team.dto.TeamConverter;
+import com.kdt.team04.domain.teams.team.dto.response.TeamResponse;
+import com.kdt.team04.domain.teams.team.model.entity.Team;
+import com.kdt.team04.domain.teams.team.service.TeamGiverService;
+import com.kdt.team04.domain.teams.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
@@ -74,7 +74,7 @@ public class MatchProposalService {
 	}
 
 	@Transactional
-	public Long create(Long proposerId, Long matchId, ProposalCreateRequest request) {
+	public Long create(Long proposerId, Long matchId, CreateProposalRequest request) {
 		MatchResponse matchResponse = matchGiver.findById(matchId);
 
 		if (matchResponse.status().isMatched()) {
@@ -115,7 +115,7 @@ public class MatchProposalService {
 	}
 
 	private MatchProposal teamProposalCreate(User author, User proposer, MatchResponse matchResponse,
-		ProposalCreateRequest request) {
+		CreateProposalRequest request) {
 		if (request.teamId() == null) {
 			throw new BusinessException(ErrorCode.METHOD_ARGUMENT_NOT_VALID, "Request team is null");
 		}
@@ -157,7 +157,7 @@ public class MatchProposalService {
 		return proposal.getStatus();
 	}
 
-	public List<ProposalChatResponse> findAllProposals(Long matchId, Long authorId) {
+	public List<ChatRoomResponse> findAllProposalChats(Long matchId, Long authorId) {
 		MatchAuthorResponse matchAuthor = matchGiver.findMatchAuthorById(matchId);
 		if (!Objects.equals(matchAuthor.author().id(), authorId)) {
 			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
@@ -175,14 +175,14 @@ public class MatchProposalService {
 			.map(MatchProposal::getId)
 			.toList();
 
-		Map<Long, ChatLastResponse> lastChats = matchChatService.findAllLastChats(matchProposalIds);
-		List<ProposalChatResponse> proposals = matchProposals.stream()
+		Map<Long, LastChatResponse> lastChats = matchChatService.findAllLastChats(matchProposalIds);
+		List<ChatRoomResponse> proposalChats = matchProposals.stream()
 			.map(proposal -> {
-				ChatLastResponse chatLastResponse = lastChats.get(proposal.getId());
+				LastChatResponse chatLastResponse = lastChats.get(proposal.getId());
 				ChatTargetProfileResponse chatTargetProfile
 					= new ChatTargetProfileResponse(proposal.getUser().getNickname());
 
-				return new ProposalChatResponse(
+				return new ChatRoomResponse(
 					proposal.getId(),
 					proposal.getContent(),
 					chatTargetProfile,
@@ -191,7 +191,7 @@ public class MatchProposalService {
 			})
 			.toList();
 
-		return proposals;
+		return proposalChats;
 	}
 
 	public List<QueryProposalChatResponse> findAllProposals(Long userId) {

@@ -13,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.domain.matches.match.entity.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.MatchStatus;
 import com.kdt.team04.domain.matches.proposal.dto.MatchChatConverter;
-import com.kdt.team04.domain.matches.proposal.dto.MatchChatPartitionByProposalIdQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.MatchProposalSimpleQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ChattingResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatMatchResponse;
+import com.kdt.team04.domain.matches.proposal.dto.QueryMatchChatPartitionByProposalIdResponse;
+import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalSimpleResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatItemResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatViewMatchResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
@@ -47,7 +47,7 @@ public class MatchChatService {
 
 	@Transactional
 	public void chat(Long proposalId, Long writerId, Long targetId, String content, LocalDateTime chattedAt) {
-		MatchProposalSimpleQueryDto matchProposalDto = matchProposalGiver.findSimpleProposalById(proposalId);
+		QueryMatchProposalSimpleResponse matchProposalDto = matchProposalGiver.findSimpleProposalById(proposalId);
 
 		if (matchProposalDto.getStatus() != MatchProposalStatus.APPROVED) {
 			throw new BusinessException(
@@ -89,30 +89,31 @@ public class MatchChatService {
 		);
 	}
 
-	public Map<Long, ChatLastResponse> findAllLastChats(List<Long> matchProposalIds) {
-		List<MatchChatPartitionByProposalIdQueryDto> chatQueryDtos
+	public Map<Long, LastChatResponse> findAllLastChats(List<Long> matchProposalIds) {
+		List<QueryMatchChatPartitionByProposalIdResponse> chatQueryDtos
 			= matchChatRepository.findAllPartitionByProposalIdOrderByChattedAtDesc(matchProposalIds);
 
-		Map<Long, ChatLastResponse> lastChats = chatQueryDtos.stream()
+		Map<Long, LastChatResponse> lastChats = chatQueryDtos.stream()
 			.filter(chat -> chat.getRowNumber() == 1L)
 			.collect(toMap(
-				MatchChatPartitionByProposalIdQueryDto::getMatchProposalId,
-				chat -> new ChatLastResponse(chat.getLastChat())
+				QueryMatchChatPartitionByProposalIdResponse::getMatchProposalId,
+				chat -> new LastChatResponse(chat.getLastChat())
 			));
 
 		return lastChats;
 	}
 
-	public ChattingResponse findChatsByProposalId(Long proposalId, Long userId) {
-		ProposalChatMatchResponse match
+	//특정 매치의 나의 채팅 기록
+	public MatchChatResponse findChatsByProposalId(Long proposalId, Long userId) {
+		MatchChatViewMatchResponse match
 			= matchProposalGiver.findChatMatchByProposalId(proposalId, userId);
 
 		List<MatchChat> matchChats = matchChatRepository.findAllByProposalId(proposalId);
-		List<ChatResponse> chats = matchChats.stream()
+		List<ChatItemResponse> chats = matchChats.stream()
 			.map(chat -> {
 				ChatWriterProfileResponse writer = new ChatWriterProfileResponse(chat.getUser().getId());
 
-				return new ChatResponse(
+				return new ChatItemResponse(
 					chat.getContent(),
 					chat.getChattedAt(),
 					writer
@@ -120,7 +121,7 @@ public class MatchChatService {
 			})
 			.toList();
 
-		return new ChattingResponse(match, chats);
+		return new MatchChatResponse(match, chats);
 	}
 
 	@Transactional

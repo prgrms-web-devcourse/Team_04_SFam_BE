@@ -2,7 +2,7 @@ package com.kdt.team04.domain.user;
 
 import org.springframework.stereotype.Component;
 
-import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
+import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 
@@ -18,7 +18,7 @@ public class UserConverter {
 			.build();
 	}
 
-	public User toUser(UserCreateRequest userCreateRequest) {
+	public User toUser(CreateUserRequest userCreateRequest) {
 		return User.builder()
 			.username(userCreateRequest.username())
 			.password(userCreateRequest.password())

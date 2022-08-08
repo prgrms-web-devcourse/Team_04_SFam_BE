@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,12 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
+import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.request.ProposalCreateRequest;
-import com.kdt.team04.domain.matches.proposal.dto.request.ProposalReactRequest;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
+import com.kdt.team04.domain.matches.proposal.dto.request.ReactProposalRequest;
+import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,14 +40,10 @@ public class MatchProposalController {
 	@Operation(summary = "대결 신청", description = "사용자는 대결을 신청할 수 있다.")
 	@PostMapping("/{matchId}/proposals")
 	public void propose(
-		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
+		@AuthUser JwtAuthentication auth,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
-		@RequestBody @Valid ProposalCreateRequest request) {
-		if (jwtAuthentication == null) {
-			throw new NotAuthenticationException("Not Authenticated");
-		}
-
-		matchProposalService.create(jwtAuthentication.id(), matchId, request);
+		@RequestBody @Valid CreateProposalRequest request) {
+		matchProposalService.create(auth.id(), matchId, request);
 	}
 
 	@Operation(summary = "신청 수락 및 거절", description = "대결 공고자는 대결 신청을 수락 또는 거절 할 수 있다.")
@@ -55,23 +51,19 @@ public class MatchProposalController {
 	public void proposeReact(
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
 		@Parameter(description = "매칭 신청 ID") @PathVariable Long id,
-		@RequestBody @Valid ProposalReactRequest request) {
+		@RequestBody @Valid ReactProposalRequest request) {
 		matchProposalService.react(matchId, id, request.status());
 	}
 
 	@Operation(summary = "신청 목록 조회", description = "해당 대결의 신청 목록이 조회된다.")
 	@GetMapping("/{matchId}/proposals")
-	public ApiResponse<List<ProposalChatResponse>> findAllChats(
-		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
+	public ApiResponse<List<ChatRoomResponse>> findAllChats(
+		@AuthUser JwtAuthentication auth,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId
 	) {
-		if (jwtAuthentication == null) {
-			throw new NotAuthenticationException("Not Authenticated");
-		}
-
-		List<ProposalChatResponse> proposals = matchProposalService.findAllProposals(
+		List<ChatRoomResponse> proposals = matchProposalService.findAllProposalChats(
 			matchId,
-			jwtAuthentication.id()
+			auth.id()
 		);
 
 		return new ApiResponse<>(proposals);
@@ -80,14 +72,10 @@ public class MatchProposalController {
 	@Operation(summary = "사용자 전체 신청 목록 조회", description = "로그인된 사용자의 전체 신청 목록이 조회된다.")
 	@GetMapping("/proposals")
 	public ApiResponse<List<QueryProposalChatResponse>> findAllChats(
-		@AuthenticationPrincipal JwtAuthentication jwtAuthentication
+		@AuthUser JwtAuthentication auth
 	) {
-		if (jwtAuthentication == null) {
-			throw new NotAuthenticationException("Not Authenticated");
-		}
-
 		List<QueryProposalChatResponse> proposals = matchProposalService.findAllProposals(
-			jwtAuthentication.id()
+			auth.id()
 		);
 
 		return new ApiResponse<>(proposals);

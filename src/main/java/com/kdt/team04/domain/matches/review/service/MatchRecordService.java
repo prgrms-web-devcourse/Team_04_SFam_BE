@@ -7,15 +7,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
-import com.kdt.team04.domain.matches.match.entity.MatchType;
+import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalFixedResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.FixedProposalResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalGiverService;
 import com.kdt.team04.domain.matches.review.dto.MatchRecordConverter;
-import com.kdt.team04.domain.matches.review.entity.MatchRecord;
-import com.kdt.team04.domain.matches.review.entity.MatchRecordValue;
+import com.kdt.team04.domain.matches.review.model.entity.MatchRecord;
+import com.kdt.team04.domain.matches.review.model.MatchRecordValue;
 import com.kdt.team04.domain.matches.review.repository.MatchRecordRepository;
-import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
+import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.user.dto.response.AuthorResponse;
 
 @Service
@@ -40,7 +40,7 @@ public class MatchRecordService {
 		MatchResponse match = matchGiver.endGame(matchId, userId);
 		AuthorResponse author = match.author();
 
-		ProposalFixedResponse fixedProposal = matchProposalGiver.updateToFixed(proposalId);
+		FixedProposalResponse fixedProposal = matchProposalGiver.updateToFixed(proposalId);
 		AuthorResponse proposer = fixedProposal.proposer();
 
 		List<MatchRecord> records = new ArrayList<>();
