@@ -1,19 +1,28 @@
 package com.kdt.team04.common.config;
 
+import java.util.List;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.kdt.team04.common.config.resolver.CustomAuthenticationPrincipalArgumentResolver;
 
 @Configuration
 @EnableConfigurationProperties({CorsConfigProperties.class, DivisionApiProperties.class})
 public class WebMvcConfig implements WebMvcConfigurer {
 
 	private final CorsConfigProperties corsConfigProperties;
+	private final CustomAuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver;
 
-	public WebMvcConfig(CorsConfigProperties corsConfigProperties) {
+	public WebMvcConfig(CorsConfigProperties corsConfigProperties,
+		CustomAuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver) {
 		this.corsConfigProperties = corsConfigProperties;
+		this.authenticationPrincipalArgumentResolver = authenticationPrincipalArgumentResolver;
 	}
+
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
@@ -22,5 +31,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
 			.allowedMethods(corsConfigProperties.method())
 			.allowCredentials(true).maxAge(3600)
 		;
+	}
+
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+		resolvers.add(authenticationPrincipalArgumentResolver);
 	}
 }
