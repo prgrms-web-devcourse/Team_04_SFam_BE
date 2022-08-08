@@ -1,9 +1,12 @@
 package com.kdt.team04.domain.matches.match.dto;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.entity.Match;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.team.entity.Team;
 import com.kdt.team04.domain.user.dto.response.AuthorResponse;
@@ -25,8 +28,30 @@ public class MatchConverter {
 			.build();
 	}
 
-	public MatchResponse toMatchResponse(Match match, AuthorResponse user,
-		TeamSimpleResponse team) {
+	public MatchResponse toMatchResponse(
+		Match match,
+		AuthorResponse user,
+		Optional<ProposalSimpleResponse> proposer
+	) {
+		return MatchResponse.builder()
+			.id(match.getId())
+			.title(match.getTitle())
+			.status(match.getStatus())
+			.sportsCategory(match.getSportsCategory())
+			.author(user)
+			.participants(match.getParticipants())
+			.matchDate(match.getMatchDate())
+			.matchType(match.getMatchType())
+			.content(match.getContent())
+			.proposer(proposer)
+			.build();
+	}
+
+	public MatchResponse toMatchResponse(
+		Match match,
+		AuthorResponse user,
+		TeamSimpleResponse team
+	) {
 		return MatchResponse.builder()
 			.id(match.getId())
 			.title(match.getTitle())
@@ -38,6 +63,27 @@ public class MatchConverter {
 			.matchDate(match.getMatchDate())
 			.matchType(match.getMatchType())
 			.content(match.getContent())
+			.build();
+	}
+
+	public MatchResponse toMatchResponse(
+		Match match,
+		AuthorResponse user,
+		TeamSimpleResponse team,
+		Optional<ProposalSimpleResponse> proposer
+	) {
+		return MatchResponse.builder()
+			.id(match.getId())
+			.title(match.getTitle())
+			.status(match.getStatus())
+			.sportsCategory(match.getSportsCategory())
+			.author(user)
+			.team(team)
+			.participants(match.getParticipants())
+			.matchDate(match.getMatchDate())
+			.matchType(match.getMatchType())
+			.content(match.getContent())
+			.proposer(proposer)
 			.build();
 	}
 

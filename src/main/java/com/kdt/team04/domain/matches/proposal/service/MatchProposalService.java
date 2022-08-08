@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import com.kdt.team04.domain.matches.proposal.dto.request.ProposalCreateRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalIdResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
@@ -199,5 +201,14 @@ public class MatchProposalService {
 			.toList();
 		matchChatService.deleteAllByProposals(proposalResponses);
 		proposalRepository.deleteAllByMatchId(matchId);
+	}
+
+	public Optional<ProposalSimpleResponse> findByMatchIdAndUserId(Long matchId, Long userId) {
+		return proposalRepository.findByMatchIdAndUserId(matchId, userId)
+			.map(proposal -> new ProposalSimpleResponse(
+				proposal.getId(),
+				proposal.getStatus(),
+				proposal.getContent()
+			));
 	}
 }

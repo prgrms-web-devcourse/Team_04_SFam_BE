@@ -62,9 +62,14 @@ public class MatchController {
 	@Operation(summary = "매치 공고 상세 조회", description = "매칭 공고의 세부 정보를 조회할 수 있다.")
 	@GetMapping("/{id}")
 	public ApiResponse<MatchResponse> getById(
-		@Parameter(description = "매칭 공고 ID") @PathVariable Long id
+		@Parameter(description = "매칭 공고 ID") @PathVariable Long id,
+		@AuthenticationPrincipal JwtAuthentication auth
 	) {
-		return new ApiResponse<>(matchService.findById(id));
+		if (auth == null) {
+			throw new NotAuthenticationException("Not Authenticated");
+		}
+
+		return new ApiResponse<>(matchService.findById(id, auth.id()));
 	}
 
 	@Operation(summary = "매칭 공고 삭제", description = "매칭 공고를 삭제할 수 있다.")
