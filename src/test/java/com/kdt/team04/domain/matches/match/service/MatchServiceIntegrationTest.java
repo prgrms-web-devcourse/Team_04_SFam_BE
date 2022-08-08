@@ -37,6 +37,7 @@ import com.kdt.team04.domain.teammember.entity.TeamMember;
 import com.kdt.team04.domain.teammember.entity.TeamMemberRole;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
+import com.kdt.team04.domain.user.entity.UserSettings;
 
 @Transactional
 @SpringBootTest
@@ -67,7 +68,7 @@ class MatchServiceIntegrationTest {
 		entityManager.persist(leader);
 		entityManager.persist(user1);
 		entityManager.persist(user2);
-		leader.updateLocation(new Location(1.1, 1.2));
+		leader.updateSettings(new UserSettings(1.1, 1.2, 10));
 		Team team = Team.builder()
 			.name("team1")
 			.description("first team")
@@ -95,7 +96,7 @@ class MatchServiceIntegrationTest {
 		//given
 		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(user);
-		user.updateLocation(new Location(1.1, 1.2));
+		user.updateSettings(new UserSettings(1.1, 1.2, 10));
 		MatchCreateRequest request = new MatchCreateRequest("match1", LocalDate.now(),
 			MatchType.INDIVIDUAL_MATCH,
 			null, 1, SportsCategory.BADMINTON, "content");
@@ -231,20 +232,20 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("작성자와 공고글 사이의 거리가 1.51km이고 검색범위가 1.50면 검색이 안된다.")
 	void testFindMatchesCursorPagingTooFar() {
-		Location myLocation = new Location(37.3947122, 127.111253);
-		Location authorLocation = new Location(37.3956683, 127.128228);
+		UserSettings mySettings = new UserSettings(37.3947122, 127.111253,10);
+		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
 		User leader = User.builder()
 			.username("test1234")
 			.nickname("nicknameA")
 			.password("$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.")
-			.location(authorLocation)
+			.userSettings(authorSettings)
 			.build();
 		User member = User.builder()
 			.username("test1235")
 			.nickname("nicknameB")
 			.password("$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.")
-			.location(myLocation)
+			.userSettings(mySettings)
 			.build();
 		entityManager.persist(leader);
 		entityManager.persist(member);
@@ -264,7 +265,7 @@ class MatchServiceIntegrationTest {
 			.sportsCategory(SportsCategory.BADMINTON)
 			.matchDate(LocalDate.now())
 			.matchType(MatchType.INDIVIDUAL_MATCH)
-			.location(authorLocation)
+			.location(authorSettings.getLocation())
 			.status(MatchStatus.WAITING)
 			.user(leader)
 			.participants(1)
@@ -289,20 +290,20 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("두 지점 간 거리 1.51km 5개 매치 불러오기")
 	void testFindMatchesCursorPaging() {
-		Location myLocation = new Location(37.3947122, 127.111253);
-		Location authorLocation = new Location(37.3956683, 127.128228);
+		UserSettings mySettings = new UserSettings(37.3947122, 127.111253,10);
+		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
 		User leader = User.builder()
 			.username("test1234")
 			.nickname("nicknameA")
 			.password("$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.")
-			.location(authorLocation)
+			.userSettings(authorSettings)
 			.build();
 		User member = User.builder()
 			.username("test1235")
 			.nickname("nicknameB")
 			.password("$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.")
-			.location(myLocation)
+			.userSettings(mySettings)
 			.build();
 		entityManager.persist(leader);
 		entityManager.persist(member);
@@ -325,7 +326,7 @@ class MatchServiceIntegrationTest {
 					.sportsCategory(SportsCategory.BADMINTON)
 					.matchDate(LocalDate.now())
 					.matchType(MatchType.INDIVIDUAL_MATCH)
-					.location(authorLocation)
+					.location(authorSettings.getLocation())
 					.status(MatchStatus.WAITING)
 					.user(leader)
 					.participants(1)
@@ -354,20 +355,20 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("축구매치 3개, 배트민턴 2개일때 매치 불러오기")
 	void testFindMatchesCursorPagingDifferentCategory() {
-		Location myLocation = new Location(37.3947122, 127.111253);
-		Location authorLocation = new Location(37.3956683, 127.128228);
+		UserSettings mySettings = new UserSettings(37.3947122, 127.111253,10);
+		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
 		User leader = User.builder()
 			.username("test1234")
 			.nickname("nicknameA")
 			.password("$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.")
-			.location(authorLocation)
+			.userSettings(authorSettings)
 			.build();
 		User member = User.builder()
 			.username("test1235")
 			.nickname("nicknameB")
 			.password("$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.")
-			.location(myLocation)
+			.userSettings(mySettings)
 			.build();
 		entityManager.persist(leader);
 		entityManager.persist(member);
@@ -390,7 +391,7 @@ class MatchServiceIntegrationTest {
 					.sportsCategory(SportsCategory.SOCCER)
 					.matchDate(LocalDate.now())
 					.matchType(MatchType.INDIVIDUAL_MATCH)
-					.location(authorLocation)
+					.location(authorSettings.getLocation())
 					.status(MatchStatus.WAITING)
 					.user(leader)
 					.participants(1)
@@ -407,7 +408,7 @@ class MatchServiceIntegrationTest {
 					.sportsCategory(SportsCategory.BADMINTON)
 					.matchDate(LocalDate.now())
 					.matchType(MatchType.INDIVIDUAL_MATCH)
-					.location(authorLocation)
+					.location(authorSettings.getLocation())
 					.status(MatchStatus.WAITING)
 					.user(leader)
 					.participants(1)
@@ -436,20 +437,20 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("두 지점 간 거리 1.51km 5개 매치 불러오기 - 2번째 페이징")
 	void testFindMatchesCursorPagingTwice() {
-		Location myLocation = new Location(37.3947122, 127.111253);
-		Location authorLocation = new Location(37.3956683, 127.128228);
+		UserSettings mySettings = new UserSettings(37.3947122, 127.111253,10);
+		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
 		User leader = User.builder()
 			.username("test1234")
 			.nickname("nicknameA")
 			.password("$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.")
-			.location(authorLocation)
+			.userSettings(authorSettings)
 			.build();
 		User member = User.builder()
 			.username("test1235")
 			.nickname("nicknameB")
 			.password("$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.")
-			.location(myLocation)
+			.userSettings(mySettings)
 			.build();
 		entityManager.persist(leader);
 		entityManager.persist(member);
@@ -472,7 +473,7 @@ class MatchServiceIntegrationTest {
 					.sportsCategory(SportsCategory.BADMINTON)
 					.matchDate(LocalDate.now())
 					.matchType(MatchType.INDIVIDUAL_MATCH)
-					.location(authorLocation)
+					.location(authorSettings.getLocation())
 					.status(MatchStatus.WAITING)
 					.user(leader)
 					.participants(1)
@@ -515,20 +516,20 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("페이징 커서가 없다면 전체 내림차순으로 조회한다.")
 	void testFindAllMatchesIfNullPagingRequest() {
-		Location myLocation = new Location(37.3947122, 127.111253);
-		Location authorLocation = new Location(37.3956683, 127.128228);
+		UserSettings mySettings = new UserSettings(37.3947122, 127.111253,10);
+		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 
 		User leader = User.builder()
 			.username("test1234")
 			.nickname("nicknameA")
 			.password("$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.")
-			.location(authorLocation)
+			.userSettings(authorSettings)
 			.build();
 		User member = User.builder()
 			.username("test1235")
 			.nickname("nicknameB")
 			.password("$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.")
-			.location(myLocation)
+			.userSettings(mySettings)
 			.build();
 		entityManager.persist(leader);
 		entityManager.persist(member);
@@ -551,7 +552,7 @@ class MatchServiceIntegrationTest {
 					.sportsCategory(SportsCategory.BADMINTON)
 					.matchDate(LocalDate.now())
 					.matchType(MatchType.INDIVIDUAL_MATCH)
-					.location(authorLocation)
+					.location(authorSettings.getLocation())
 					.status(MatchStatus.WAITING)
 					.user(leader)
 					.participants(1)

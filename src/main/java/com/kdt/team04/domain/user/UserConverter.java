@@ -14,7 +14,7 @@ public class UserConverter {
 			.id(userResponse.id())
 			.username(userResponse.username())
 			.nickname(userResponse.nickname())
-			.location(userResponse.location())
+			.userSettings(userResponse.userSettings())
 			.build();
 	}
 
@@ -35,7 +35,7 @@ public class UserConverter {
 			.username(user.getUsername())
 			.nickname(user.getNickname())
 			.password(user.getPassword())
-			.location(user.getLocation())
+			.userSettings(user.getUserSettings())
 			.email(user.getEmail())
 			.profileImageUrl(user.getProfileImageUrl())
 			.role(user.getRole())
