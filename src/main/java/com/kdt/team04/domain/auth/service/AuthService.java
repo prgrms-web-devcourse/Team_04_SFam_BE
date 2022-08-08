@@ -1,9 +1,6 @@
 package com.kdt.team04.domain.auth.service;
 
 import java.text.MessageFormat;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,15 +12,12 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
-import com.kdt.team04.common.security.jwt.JwtConfig;
-import com.kdt.team04.domain.auth.dto.JwtClaimsAttributes;
 import com.kdt.team04.domain.auth.dto.TokenDto;
 import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
 import com.kdt.team04.domain.auth.dto.response.SignInResponse;
 import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
 import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.dto.request.UserCreateRequest;
-import com.kdt.team04.domain.user.dto.request.UserUpdateRequest;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -98,88 +92,5 @@ public class AuthService {
 				Role.USER));
 
 		return new SignUpResponse(userId);
-	}
-
-	public TokenDto generateAccessToken(JwtClaimsAttributes jwtClaimsAttributes) {
-		Jwt.Claims claims = Jwt.Claims.builder()
-			.userId(jwtClaimsAttributes.id())
-			.username(jwtClaimsAttributes.username())
-			.email(jwtClaimsAttributes.email())
-			.roles(new String[] {String.valueOf(jwtClaimsAttributes.role())})
-			.build();
-
-		String accessToken = jwt.generateAccessToken(claims);
-
-		JwtConfig.TokenProperties accessTokenProperties = jwt.accessTokenProperties();
-
-		return new TokenDto(accessTokenProperties.header(), accessToken,
-			accessTokenProperties.expirySeconds());
-	}
-
-	@Transactional
-	public TokenDto generateRefreshToken(Long userId) {
-		JwtConfig.TokenProperties refreshTokenProperties = jwt.refreshTokenProperties();
-		String refreshToken = jwt.generateRefreshToken();
-
-		tokenService.save(refreshToken, userId);
-
-		return new TokenDto(refreshTokenProperties.header(), refreshToken,
-			refreshTokenProperties.expirySeconds());
-	}
-
-	@Transactional
-	public JwtClaimsAttributes saveOrUpdate(Map<String, Object> attributes) {
-		JwtClaimsAttributes jwtClaimsAttributes;
-		try {
-			UserResponse foundUserResponse = userService.findByEmail((String)attributes.get("email"));
-			UserUpdateRequest updateRequest = new UserUpdateRequest(null, null,
-				(String)attributes.get("email"));
-			userService.update(foundUserResponse.id(), updateRequest);
-			jwtClaimsAttributes = new JwtClaimsAttributes(
-				foundUserResponse.id(),
-				foundUserResponse.username(),
-				foundUserResponse.email(),
-				foundUserResponse.role()
-			);
-
-			return jwtClaimsAttributes;
-		} catch (EntityNotFoundException e) {
-			UserCreateRequest userCreateRequest = attributeToCreateUserRequest(attributes);
-			Long userId = userService.create(userCreateRequest);
-
-			jwtClaimsAttributes = new JwtClaimsAttributes(
-				userId,
-				userCreateRequest.username(),
-				userCreateRequest.email(),
-				userCreateRequest.role()
-			);
-
-			return jwtClaimsAttributes;
-		}
-	}
-
-	private UserCreateRequest attributeToCreateUserRequest(Map<String, Object> attributes) {
-		String email = (String)attributes.get("email");
-		String username = email.split("@")[0];
-		String nickname = generateRandomNickname(username);
-		String usernameWithUUID = username + "_" + UUID.randomUUID().toString().replace('-', '_');
-		String profileImageUrl = (String)attributes.get("picture");
-		String encodedRandomPassword = UUID.randomUUID().toString();
-		nickname = generateRandomNicknameRecursive(nickname);
-
-		return new UserCreateRequest(usernameWithUUID, encodedRandomPassword, nickname, email,
-			profileImageUrl,
-			Role.USER);
-	}
-
-	private String generateRandomNickname(String username) {
-		int randomSuffix = new Random().nextInt(9999);
-		String zeroFilledSuffix = String.format("%04d", randomSuffix);
-
-		return username + "#" + zeroFilledSuffix;
-	}
-
-	private String generateRandomNicknameRecursive(String nickname) {
-		return userService.nicknameDuplicationCheck(nickname) ? generateRandomNicknameRecursive(nickname) : nickname;
 	}
 }
