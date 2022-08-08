@@ -25,6 +25,7 @@ import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
 import com.kdt.team04.domain.auth.dto.response.SignInResponse;
 import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
 import com.kdt.team04.domain.auth.service.AuthService;
+import com.kdt.team04.domain.auth.dto.SignOutResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -84,7 +85,19 @@ public class AuthController {
 
 	@Operation(summary = "로그아웃")
 	@DeleteMapping("/signout")
-	public ApiResponse<String> signOut(@AuthUser JwtAuthentication auth) {
+	public ApiResponse<String> signOut(@AuthUser JwtAuthentication auth, HttpServletResponse response) {
+		SignOutResponse signOutResponse = authService.signOut();
+		ResponseCookie accessTokenCookie = ResponseCookie.from(signOutResponse.accessTokenHeader(), "")
+			.path("/")
+			.maxAge(0)
+			.build();
+		ResponseCookie refreshTokenCookie = ResponseCookie.from(signOutResponse.refreshTokenHeader(), "")
+			.path("/")
+			.maxAge(0)
+			.build();
+		response.setHeader(SET_COOKIE, accessTokenCookie.toString());
+		response.addHeader(SET_COOKIE, refreshTokenCookie.toString());
+
 		return new ApiResponse<>("signed out");
 	}
 }

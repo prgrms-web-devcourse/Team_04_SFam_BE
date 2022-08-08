@@ -13,6 +13,7 @@ import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationToken;
 import com.kdt.team04.domain.auth.dto.JwtToken;
+import com.kdt.team04.domain.auth.dto.SignOutResponse;
 import com.kdt.team04.domain.auth.dto.request.SignUpRequest;
 import com.kdt.team04.domain.auth.dto.response.SignInResponse;
 import com.kdt.team04.domain.auth.dto.response.SignUpResponse;
@@ -98,5 +99,12 @@ public class AuthService {
 				Role.USER));
 
 		return new SignUpResponse(userId);
+	}
+
+	public SignOutResponse signOut() {
+		return new SignOutResponse(
+			jwt.accessTokenProperties().header(),
+			jwt.refreshTokenProperties().header()
+		);
 	}
 }
