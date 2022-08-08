@@ -15,5 +15,5 @@ public record UserUpdateLocationRequest(
 
 	@Schema(description = "조회 거리설정 - 5km ~ 40km")
 	@Range(min = 5, max = 40)
-	Integer searchDistance) {
+	int searchDistance) {
 }
