@@ -1,6 +1,6 @@
 package com.kdt.team04.domain.teams.teaminvitation.repository;
 
-import static com.kdt.team04.domain.teaminvitation.model.QTeamInvitation.teamInvitation;
+import static com.kdt.team04.domain.teams.teaminvitation.model.entity.QTeamInvitation.teamInvitation;
 import static com.querydsl.core.types.dsl.Expressions.asDateTime;
 import static com.querydsl.core.types.dsl.Expressions.asNumber;
 
@@ -16,11 +16,11 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-public class TeamInvitationRepositoryCustomImpl implements TeamInvitationRepositoryCustom {
+public class CustomTeamInvitationRepositoryImpl implements CustomTeamInvitationRepository {
 
 	private final JPAQueryFactory jpaQueryFactory;
 
-	public TeamInvitationRepositoryCustomImpl(JPAQueryFactory jpaQueryFactory) {
+	public CustomTeamInvitationRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
 		this.jpaQueryFactory = jpaQueryFactory;
 	}
 

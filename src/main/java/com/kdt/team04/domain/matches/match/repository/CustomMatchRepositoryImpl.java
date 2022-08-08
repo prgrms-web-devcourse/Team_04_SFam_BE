@@ -1,6 +1,6 @@
 package com.kdt.team04.domain.matches.match.repository;
 
-import static com.kdt.team04.domain.matches.match.model.QMatch.match;
+import static com.kdt.team04.domain.matches.match.model.entity.QMatch.match;
 import static com.querydsl.core.types.dsl.Expressions.asDateTime;
 import static com.querydsl.core.types.dsl.Expressions.asNumber;
 import static com.querydsl.core.types.dsl.MathExpressions.acos;

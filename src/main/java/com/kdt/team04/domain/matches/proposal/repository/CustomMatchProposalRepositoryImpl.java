@@ -1,6 +1,6 @@
 package com.kdt.team04.domain.matches.proposal.repository;
 
-import static com.kdt.team04.domain.matches.match.model.QMatch.match;
+import static com.kdt.team04.domain.matches.match.model.entity.QMatch.match;
 import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.FIXED;
 import static com.kdt.team04.domain.matches.proposal.entity.QMatchProposal.matchProposal;
 
@@ -8,10 +8,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
+import com.kdt.team04.domain.matches.proposal.dto.QQueryMatchProposalResponse;
+import com.kdt.team04.domain.matches.proposal.dto.QQueryMatchProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalSimpleResponse;
-import com.kdt.team04.domain.matches.proposal.dto.QMatchProposalQueryDto;
-import com.kdt.team04.domain.matches.proposal.dto.QMatchProposalSimpleQueryDto;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -27,7 +27,7 @@ public class CustomMatchProposalRepositoryImpl implements CustomMatchProposalRep
 	@Override
 	public Optional<QueryMatchProposalSimpleResponse> findSimpleProposalById(Long id) {
 		QueryMatchProposalSimpleResponse matchProposalDto = queryFactory
-			.select(new QMatchProposalSimpleQueryDto(
+			.select(new QQueryMatchProposalSimpleResponse(
 				Expressions.asNumber(id).as("id"),
 				matchProposal.status,
 				matchProposal.user.id,
@@ -45,7 +45,7 @@ public class CustomMatchProposalRepositoryImpl implements CustomMatchProposalRep
 	@Override
 	public Optional<QueryMatchProposalResponse> findFixedProposalByMatchId(Long matchId) {
 		QueryMatchProposalResponse matchProposalDto = queryFactory
-			.select(new QMatchProposalQueryDto(
+			.select(new QQueryMatchProposalResponse(
 				matchProposal.id,
 				matchProposal.user.id,
 				matchProposal.team.id,

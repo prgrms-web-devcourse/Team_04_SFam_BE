@@ -1,6 +1,6 @@
 package com.kdt.team04.domain.matches.review.repository;
 
-import static com.kdt.team04.domain.matches.review.model.QMatchReview.matchReview;
+import static com.kdt.team04.domain.matches.review.model.entity.QMatchReview.matchReview;
 
 import org.springframework.stereotype.Repository;
 
