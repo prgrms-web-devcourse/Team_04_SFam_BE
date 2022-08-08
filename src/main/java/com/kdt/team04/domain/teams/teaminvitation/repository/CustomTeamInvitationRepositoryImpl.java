@@ -16,11 +16,11 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-public class TeamInvitationRepositoryCustomImpl implements TeamInvitationRepositoryCustom {
+public class CustomTeamInvitationRepositoryImpl implements CustomTeamInvitationRepository {
 
 	private final JPAQueryFactory jpaQueryFactory;
 
-	public TeamInvitationRepositoryCustomImpl(JPAQueryFactory jpaQueryFactory) {
+	public CustomTeamInvitationRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
 		this.jpaQueryFactory = jpaQueryFactory;
 	}
 
