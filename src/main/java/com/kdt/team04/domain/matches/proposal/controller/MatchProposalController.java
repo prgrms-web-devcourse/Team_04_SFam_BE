@@ -27,7 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "매칭 신청 API")
 @RestController
-@RequestMapping("/api/matches/{matchId}/proposals")
+@RequestMapping("/api/matches")
 public class MatchProposalController {
 
 	private final MatchProposalService matchProposalService;
@@ -37,7 +37,7 @@ public class MatchProposalController {
 	}
 
 	@Operation(summary = "대결 신청", description = "사용자는 대결을 신청할 수 있다.")
-	@PostMapping
+	@PostMapping("/{matchId}/proposals")
 	public void propose(
 		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
@@ -50,7 +50,7 @@ public class MatchProposalController {
 	}
 
 	@Operation(summary = "신청 수락 및 거절", description = "대결 공고자는 대결 신청을 수락 또는 거절 할 수 있다.")
-	@PatchMapping("/{id}")
+	@PatchMapping("/{matchId}/proposals/{id}")
 	public void proposeReact(
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
 		@Parameter(description = "매칭 신청 ID") @PathVariable Long id,
@@ -59,7 +59,7 @@ public class MatchProposalController {
 	}
 
 	@Operation(summary = "신청 목록 조회", description = "해당 대결의 신청 목록이 조회된다.")
-	@GetMapping
+	@GetMapping("/{matchId}/proposals")
 	public ApiResponse<List<ProposalChatResponse>> findAllChats(
 		@AuthenticationPrincipal JwtAuthentication jwtAuthentication,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId
@@ -75,4 +75,6 @@ public class MatchProposalController {
 
 		return new ApiResponse<>(proposals);
 	}
+
+
 }
