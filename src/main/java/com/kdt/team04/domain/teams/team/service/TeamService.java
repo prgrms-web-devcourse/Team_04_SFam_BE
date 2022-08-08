@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.ImagePath;
@@ -58,6 +59,13 @@ public class TeamService {
 
 	@Transactional
 	public Long create(Long userId, CreateTeamRequest requestDto) {
+		boolean existsName = teamRepository.existsByName(requestDto.name());
+
+		if (existsName) {
+			throw new BusinessException(ErrorCode.TEAM_DUPLICATE_NAME,
+				MessageFormat.format("teamName={0}, userId={1}", requestDto.name(), userId));
+		}
+
 		User user = userConverter.toUser(userService.findById(userId));
 		Team savedTeam = teamRepository.save(
 			Team.builder()

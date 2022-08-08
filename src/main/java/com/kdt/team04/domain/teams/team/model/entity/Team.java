@@ -1,5 +1,6 @@
 package com.kdt.team04.domain.teams.team.model.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -31,6 +32,7 @@ public class Team extends BaseEntity {
 
 	@NotBlank
 	@Size(min = 2, max = 10)
+	@Column(unique = true)
 	private String name;
 
 	@NotBlank
