@@ -37,7 +37,7 @@ import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChattingResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatMatchResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
@@ -362,9 +362,9 @@ class MatchChatServiceIntegrationTest {
 		matchChatRepository.save(chat2);
 		matchChatRepository.save(chat3);
 
-		List<ProposalSimpleResponse> proposals = List.of(
-			new ProposalSimpleResponse(matchProposal1.getId()),
-			new ProposalSimpleResponse(matchProposal2.getId()));
+		List<ProposalIdResponse> proposals = List.of(
+			new ProposalIdResponse(matchProposal1.getId()),
+			new ProposalIdResponse(matchProposal2.getId()));
 		//when
 		matchChatService.deleteAllByProposals(proposals);
 

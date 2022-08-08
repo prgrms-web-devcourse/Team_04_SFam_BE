@@ -19,7 +19,7 @@ import com.kdt.team04.domain.matches.match.service.MatchGiverService;
 import com.kdt.team04.domain.matches.proposal.dto.request.ProposalCreateRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatLastResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
@@ -194,8 +194,8 @@ public class MatchProposalService {
 	@Transactional
 	public void deleteByMatches(Long matchId) {
 		List<MatchProposal> foundProposals = proposalRepository.findAllByMatchId(matchId);
-		List<ProposalSimpleResponse> proposalResponses = foundProposals.stream()
-			.map(response -> new ProposalSimpleResponse(response.getId()))
+		List<ProposalIdResponse> proposalResponses = foundProposals.stream()
+			.map(response -> new ProposalIdResponse(response.getId()))
 			.toList();
 		matchChatService.deleteAllByProposals(proposalResponses);
 		proposalRepository.deleteAllByMatchId(matchId);
