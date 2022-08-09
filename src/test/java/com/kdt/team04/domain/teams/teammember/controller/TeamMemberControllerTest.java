@@ -1,10 +1,11 @@
 package com.kdt.team04.domain.teams.teammember.controller;
 
-import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.common.exception.ErrorResponse;
 import com.kdt.team04.common.security.WebSecurityConfig;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.domain.auth.service.TokenService;
@@ -71,7 +75,30 @@ public class TeamMemberControllerTest {
 		// given
 		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(DEFAULT_INVITATION_MEMBER_ID);
 
-		willDoNothing().given(teamMemberService).registerTeamMember(DEFAULT_TEAM_ID, request);
+		// when
+		ResultActions resultActions = mockMvc.perform(
+			post(BASE_END_POINT + "/" + DEFAULT_TEAM_ID + "/members")
+				.content(objectMapper.writeValueAsString(request))
+				.contentType(MediaType.APPLICATION_JSON)
+		).andDo(print());
+
+		// then
+		verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_TEAM_ID, request);
+		//verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_TEAM_ID, request);
+		resultActions.andExpect(status().isOk());
+	}
+
+	@Test
+	@DisplayName("이미 팀원이면 ALREADY_TEAM_MEMBER와 400 에러를 반환한다.")
+	void registerFailIfAlreadyMember() throws Exception {
+		// given
+		ErrorCode errorCode = ErrorCode.ALREADY_TEAM_MEMBER;
+
+		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(DEFAULT_INVITATION_MEMBER_ID);
+		ErrorResponse<ErrorCode> response = new ErrorResponse<>(errorCode);
+
+		doThrow(new BusinessException(errorCode)).when(teamMemberService)
+			.registerTeamMember(DEFAULT_TEAM_ID, request);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
@@ -82,7 +109,33 @@ public class TeamMemberControllerTest {
 
 		// then
 		verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_TEAM_ID, request);
-		resultActions.andExpect(status().isOk());
+
+		resultActions.andExpect(status().isBadRequest())
+			.andExpect(content().string(objectMapper.writeValueAsString(response)));
 	}
 
+	@Test
+	@DisplayName("초대를 하지 않았다면 팀원으로 등록시 INVALID_TEAM_INVITATION과 400 에러를 반환한다.")
+	void registerFailIfNotExistsInvitation() throws Exception {
+		// given
+		ErrorCode errorCode = ErrorCode.INVALID_TEAM_INVITATION;
+
+		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(DEFAULT_INVITATION_MEMBER_ID);
+		ErrorResponse<ErrorCode> response = new ErrorResponse<>(errorCode);
+
+		doThrow(new BusinessException(errorCode)).when(teamMemberService).registerTeamMember(DEFAULT_TEAM_ID, request);
+
+		// when
+		ResultActions resultActions = mockMvc.perform(
+			post(BASE_END_POINT + "/" + DEFAULT_TEAM_ID + "/members")
+				.content(objectMapper.writeValueAsString(request))
+				.contentType(MediaType.APPLICATION_JSON)
+		).andDo(print());
+
+		// then
+		verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_TEAM_ID, request);
+
+		resultActions.andExpect(status().isBadRequest())
+			.andExpect(content().string(objectMapper.writeValueAsString(response)));
+	}
 }
