@@ -89,15 +89,15 @@ public class MatchChatService {
 		);
 	}
 
-	public Map<Long, LastChatResponse> findAllLastChats(List<Long> matchProposalIds) {
+	public Map<Long, QueryMatchChatPartitionByProposalIdResponse> findAllLastChats(List<Long> matchProposalIds) {
 		List<QueryMatchChatPartitionByProposalIdResponse> chatQueryDtos
 			= matchChatRepository.findAllPartitionByProposalIdOrderByChattedAtDesc(matchProposalIds);
 
-		Map<Long, LastChatResponse> lastChats = chatQueryDtos.stream()
+		Map<Long, QueryMatchChatPartitionByProposalIdResponse> lastChats = chatQueryDtos.stream()
 			.filter(chat -> chat.getRowNumber() == 1L)
 			.collect(toMap(
 				QueryMatchChatPartitionByProposalIdResponse::getMatchProposalId,
-				chat -> new LastChatResponse(chat.getLastChat())
+				chat -> chat
 			));
 
 		return lastChats;

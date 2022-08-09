@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,13 +29,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
-import com.kdt.team04.common.aws.s3.S3Uploader;
-import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.model.MatchStatus;
 import com.kdt.team04.domain.matches.match.model.MatchType;
-import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
+import com.kdt.team04.domain.matches.proposal.dto.QueryMatchChatPartitionByProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatItemResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatViewMatchResponse;
@@ -42,7 +44,6 @@ import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchChatRepository;
-import com.kdt.team04.domain.matches.proposal.service.MatchChatService;
 import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.user.dto.response.ChatWriterProfileResponse;
@@ -378,8 +379,6 @@ class MatchChatServiceIntegrationTest {
 	@DisplayName("여러 매칭 신청 ID로 각각 매칭의 마지막 채팅 내용을 조회한다.")
 	void test_findAllLastChats() {
 		//given
-		String lastChat = "마지막 채팅";
-
 		User author = getUser("author");
 		Team authorTeam = getSoccerTeam("author", author);
 		User target = getUser("target");
@@ -408,6 +407,7 @@ class MatchChatServiceIntegrationTest {
 			});
 
 		List<MatchChat> chats = new ArrayList<>();
+		Map<Long, QueryMatchChatPartitionByProposalIdResponse> expected = new HashMap<>();
 		proposals.forEach(proposal -> {
 			IntStream.range(1, 5)
 				.forEach(id -> {
@@ -415,17 +415,21 @@ class MatchChatServiceIntegrationTest {
 						.proposal(proposal)
 						.user(author)
 						.target(target)
-						.content(id == 4 ? lastChat + proposal.getId() : "칫챗")
+						.content("채팅 내용 " + proposal.getId())
 						.chattedAt(now())
 						.build();
 					chats.add(chat);
 					entityManager.persist(chat);
-				});
-		});
 
-		Map<Long, LastChatResponse> expected = new HashMap<>();
-		proposals.forEach(proposal -> {
-			expected.put(proposal.getId(), new LastChatResponse(lastChat + proposal.getId()));
+					if (id == 4) {
+						expected.put(proposal.getId(), new QueryMatchChatPartitionByProposalIdResponse(
+							BigInteger.valueOf(1L),
+							BigInteger.valueOf(proposal.getId()),
+							chat.getContent(),
+							Timestamp.valueOf(chat.getChattedAt())
+						));
+					}
+				});
 		});
 
 		List<Long> matchProposalIds = proposals.stream()
@@ -433,13 +437,16 @@ class MatchChatServiceIntegrationTest {
 			.toList();
 
 		//when
-		Map<Long, LastChatResponse> foundChats = matchChatService.findAllLastChats(matchProposalIds);
+		Map<Long, QueryMatchChatPartitionByProposalIdResponse> response
+			= matchChatService.findAllLastChats(matchProposalIds);
 
 		//then
-		assertThat(foundChats.size(), is(2));
+		assertThat(response.size(), is(2));
 		proposals.forEach(proposal -> {
-			assertThat(foundChats.containsKey(proposal.getId()), is(true));
-			assertThat(foundChats.get(proposal.getId()).content(), is(expected.get(proposal.getId()).content()));
+			assertThat(response.containsKey(proposal.getId()), is(true));
+			assertThat(response.get(proposal.getId()).getRowNumber(), is(1L));
+			assertThat(response.get(proposal.getId()).getLastChat(), is(expected.get(proposal.getId()).getLastChat()));
+			assertThat(response.get(proposal.getId()).getLastChatDate(), is(expected.get(proposal.getId()).getLastChatDate()));
 		});
 	}
 
