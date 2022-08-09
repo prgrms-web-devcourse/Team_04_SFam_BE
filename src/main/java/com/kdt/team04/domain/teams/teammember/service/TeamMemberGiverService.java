@@ -49,10 +49,6 @@ public class TeamMemberGiverService {
 		teamMemberRepository.save(teamMember);
 	}
 
-	public int countByTeamId(Long teamId) {
-		return teamMemberRepository.countAllByTeamId(teamId);
-	}
-
 	public void hasEnoughMemberCount(int participants, Long teamId) {
 		int teamMemberCount = teamMemberRepository.countAllByTeamId(teamId);
 
