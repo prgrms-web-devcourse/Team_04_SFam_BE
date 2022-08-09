@@ -44,28 +44,28 @@ import com.kdt.team04.domain.user.service.UserService;
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTest {
 	@InjectMocks
-	private TeamService teamService;
+	TeamService teamService;
 
 	@Mock
-	private UserService userService;
+	UserService userService;
 
 	@Mock
-	private TeamConverter teamConverter;
+	TeamConverter teamConverter;
 
 	@Mock
-	private UserConverter userConverter;
+	UserConverter userConverter;
 
 	@Mock
-	private TeamRepository teamRepository;
+	TeamRepository teamRepository;
 
 	@Mock
-	private TeamMemberGiverService teamMemberGiver;
+	TeamMemberGiverService teamMemberGiver;
 
 	@Mock
-	private MatchRecordGiverService matchRecordGiver;
+	MatchRecordGiverService matchRecordGiver;
 
 	@Mock
-	private MatchReviewGiverService matchReviewGiver;
+	MatchReviewGiverService matchReviewGiver;
 
 	@Test
 	@DisplayName("팀 생성에 성공합니다.")
@@ -155,7 +155,7 @@ class TeamServiceTest {
 			.name("team1")
 			.description("first team")
 			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(null)
+			.leader(user)
 			.build();
 	}
 

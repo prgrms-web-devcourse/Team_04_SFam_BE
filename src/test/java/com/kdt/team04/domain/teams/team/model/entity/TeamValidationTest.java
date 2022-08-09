@@ -24,11 +24,10 @@ import com.kdt.team04.domain.user.entity.User;
 @DataJpaTest
 public class TeamValidationTest {
 
-	@Autowired
-	private TestEntityManager entityManager;
+	@Autowired TestEntityManager entityManager;
 
 	@Autowired
-	private TeamRepository teamRepository;
+	TeamRepository teamRepository;
 
 	@Test
 	@DisplayName("팀 이름이 2글자 미만이거나 10글자 보다 크면 validation 예외가 발생한다.[공백 및 공백으로 이루어진 문자열 포함]")

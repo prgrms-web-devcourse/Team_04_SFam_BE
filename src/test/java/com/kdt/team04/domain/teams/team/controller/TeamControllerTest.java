@@ -42,13 +42,13 @@ import com.kdt.team04.domain.user.dto.response.UserResponse;
 class TeamControllerTest {
 
 	@Autowired
-	private MockMvc mockMvc;
+	MockMvc mockMvc;
 
 	@Autowired
-	private ObjectMapper objectMapper;
+	ObjectMapper objectMapper;
 
 	@MockBean
-	private TeamService teamService;
+	TeamService teamService;
 
 	@MockBean
 	TokenService tokenService;
@@ -56,14 +56,13 @@ class TeamControllerTest {
 	@MockBean
 	Jwt jwt;
 
-	private final String END_POINT_PREFIX = "/api/teams";
+	final String BASE_END_POINT = "/api/teams";
 
-	private final Long DEFAULT_AUTH_ID = 1L;
+	final Long DEFAULT_AUTH_ID = 1L;
 
 	@Test
 	@DisplayName("인가된 사용자만이 팀을 생성할 수 있다.")
 	void successTeamCreate() throws Exception {
-
 		//given
 		CreateTeamRequest request = new CreateTeamRequest("Deam", "축지법", SportsCategory.SOCCER);
 		Long creatingTeamId = 1L;
@@ -72,7 +71,7 @@ class TeamControllerTest {
 
 		//when
 		ResultActions perform = mockMvc.perform(
-			post(END_POINT_PREFIX).contentType(MediaType.APPLICATION_JSON)
+			post(BASE_END_POINT).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 		).andDo(print());
 
@@ -88,7 +87,6 @@ class TeamControllerTest {
 		//given
 		Long teamId = 1L;
 		List<TeamMemberResponse> members = Collections.emptyList();
-
 		TeamResponse response = TeamResponse.builder()
 			.id(teamId)
 			.name("치투더킨")
@@ -103,12 +101,13 @@ class TeamControllerTest {
 					.nickname("kkyu")
 					.build()
 			).build();
+		ApiResponse<TeamResponse> expectedRealResponse = new ApiResponse<>(response);
 
 		given(teamService.findById(teamId)).willReturn(response);
 
 		//when
 		ResultActions perform = mockMvc.perform(
-			get(END_POINT_PREFIX + "/" + teamId)
+			get(BASE_END_POINT + "/" + teamId)
 		).andDo(print());
 
 		//then
@@ -118,8 +117,7 @@ class TeamControllerTest {
 			.getContentAsString(StandardCharsets.UTF_8);
 
 		Assertions.assertThat(realResponse).isEqualTo(
-			objectMapper.writeValueAsString(
-				new ApiResponse<>(response))
+			objectMapper.writeValueAsString(expectedRealResponse)
 		);
 	}
 
