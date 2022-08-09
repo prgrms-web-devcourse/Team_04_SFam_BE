@@ -23,9 +23,9 @@ import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
-import com.kdt.team04.domain.user.dto.request.UpdateUserLocationRequest;
+import com.kdt.team04.domain.user.dto.request.UpdateUserSettingsRequest;
 import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
-import com.kdt.team04.domain.user.dto.response.UpdateLocationResponse;
+import com.kdt.team04.domain.user.dto.response.UpdateUserSettingsResponse;
 import com.kdt.team04.domain.user.dto.response.UserFindResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -64,11 +64,11 @@ public class UserController {
 
 	@Operation(summary = "회원 위치 정보 업데이트", description = "회원 위치 정보(위도, 경도)를 업데이트 한다.")
 	@PutMapping("/location")
-	public ApiResponse<UpdateLocationResponse> update(
+	public ApiResponse<UpdateUserSettingsResponse> updateSettings(
 		@AuthUser JwtAuthentication auth,
-		@RequestBody @Valid @NotNull UpdateUserLocationRequest request
+		@RequestBody @Valid @NotNull UpdateUserSettingsRequest request
 	) {
-		UpdateLocationResponse response = userService.updateLocation(auth.id(), request);
+		UpdateUserSettingsResponse response = userService.updateSettings(auth.id(), request);
 
 		return new ApiResponse<>(response);
 	}
