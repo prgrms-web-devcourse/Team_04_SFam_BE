@@ -151,6 +151,109 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
+	@DisplayName("이미 신청한 사용자가 개인전 매칭에 중복 신청 시, 오류가 발생한다.")
+	void create_DuplicateIndividualProposal_Fail() {
+		//given
+		User author = new User("author", "author", "aA1234!");
+
+		entityManager.persist(author);
+
+		User proposer = new User("proposer", "proposer", "aA1234!");
+		entityManager.persist(proposer);
+
+		Match match = Match.builder()
+			.title("match")
+			.status(MatchStatus.WAITING)
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(author)
+			.team(null)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build();
+
+		entityManager.persist(match);
+
+		MatchProposal proposal = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(proposer)
+			.team(null)
+			.status(MatchProposalStatus.WAITING)
+			.build();
+
+		entityManager.persist(proposal);
+
+		CreateProposalRequest request = new CreateProposalRequest(null, "팀전 신청합니다.");
+
+		//when, then
+		assertThatThrownBy(() -> matchProposalService.create(proposer.getId(), match.getId(), request))
+			.isInstanceOf(BusinessException.class);
+	}
+
+	@Test
+	@DisplayName("이미 신청한 사용자가 팀전 매칭에 중복 신청 시, 오류가 발생한다.")
+	void create_DuplicateTeamProposal__Fail() {
+		//given
+		User author = new User("author", "author", "aA1234!");
+		Team authorTeam = Team.builder()
+			.name("author")
+			.description("author team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(author)
+			.build();
+
+		entityManager.persist(author);
+		entityManager.persist(authorTeam);
+
+		User proposer = new User("proposer", "proposer", "aA1234!");
+		User proposerPair = new User("proposer_pair", "proposer_pair", "aA1234!");
+		Team proposerTeam = Team.builder()
+			.name("proposer")
+			.description("proposer team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(proposer)
+			.build();
+
+		entityManager.persist(proposer);
+		entityManager.persist(proposerPair);
+		entityManager.persist(proposerTeam);
+		entityManager.persist(new TeamMember(proposerTeam, proposer, TeamMemberRole.LEADER));
+		entityManager.persist(new TeamMember(proposerTeam, proposerPair, TeamMemberRole.MEMBER));
+
+		Match match = Match.builder()
+			.title("match")
+			.status(MatchStatus.WAITING)
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.TEAM_MATCH)
+			.participants(2)
+			.user(author)
+			.team(authorTeam)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build();
+
+		entityManager.persist(match);
+
+		MatchProposal proposal = MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(proposer)
+			.team(proposerTeam)
+			.status(MatchProposalStatus.WAITING)
+			.build();
+
+		entityManager.persist(proposal);
+
+		CreateProposalRequest request = new CreateProposalRequest(proposerTeam.getId(), "팀전 신청합니다.");
+
+		//when, then
+		assertThatThrownBy(() -> matchProposalService.create(proposer.getId(), match.getId(), request))
+			.isInstanceOf(BusinessException.class);
+	}
+
+	@Test
 	@DisplayName("팀전 매칭 신청시 신청자 팀원수보다 매칭 인원이 많으면 예외가 발생한다.")
 	void testTeamProposerCreateFailByTeamMember() {
 		//given

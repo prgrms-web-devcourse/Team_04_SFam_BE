@@ -56,6 +56,7 @@ public enum ErrorCode {
 	ANOTHER_PROPOSAL_ALREADY_FIXED("MP0004", "Fixed another proposal already exists.", HttpStatus.BAD_REQUEST),
 	PROPOSAL_INVALID_REACT("MP0005", "Invalid react", HttpStatus.BAD_REQUEST),
 	PROPOSAL_ACCESS_DENIED("MP0006", "Don't have permission to access match proposal", HttpStatus.FORBIDDEN),
+	PROPOSAL_ALREADY_REQUESTED("MP0007", "Already requested", HttpStatus.BAD_REQUEST),
 
 	//MATCH_CHAT
 	MATCH_CHAT_NOT_CORRECT_CHAT_PARTNER("MC0002", "The chat partner is incorrect.", HttpStatus.BAD_REQUEST),
