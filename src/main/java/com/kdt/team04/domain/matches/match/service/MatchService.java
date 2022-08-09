@@ -34,6 +34,8 @@ import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Transactional(readOnly = true)
 @Service
 public class MatchService {
@@ -197,7 +199,7 @@ public class MatchService {
 	}
 
 	private void verifyUserLocation(User user) {
-		if (user.getUserSettings().getLocation() == null) {
+		if (user.getUserSettings() == null || user.getUserSettings().getLocation() == null) {
 			throw new BusinessException(ErrorCode.LOCATION_NOT_FOUND,
 				MessageFormat.format("User id = {0} location is null", user.getId()));
 		}

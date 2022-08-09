@@ -17,8 +17,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
-import com.kdt.team04.domain.user.dto.request.UpdateUserLocationRequest;
-import com.kdt.team04.domain.user.dto.response.UpdateLocationResponse;
+import com.kdt.team04.domain.user.dto.request.UpdateUserSettingsRequest;
+import com.kdt.team04.domain.user.dto.response.UpdateUserSettingsResponse;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.repository.UserRepository;
@@ -68,9 +68,9 @@ class UserServiceIntegrationTest {
 		entityManager.persist(user);
 		Location location = new Location(1.2, 2.2);
 		Integer searchDistance = 10;
-		UpdateUserLocationRequest request = new UpdateUserLocationRequest(1.2, 2.2, 10);
+		UpdateUserSettingsRequest request = new UpdateUserSettingsRequest(1.2, 2.2, 10);
 		//when
-		UpdateLocationResponse response = userService.updateLocation(user.getId(), request);
+		UpdateUserSettingsResponse response = userService.updateSettings(user.getId(), request);
 		User foundUser = entityManager.find(User.class, user.getId());
 
 		//then
@@ -80,6 +80,7 @@ class UserServiceIntegrationTest {
 		Assertions.assertThat(foundUser.getUserSettings().getSearchDistance()).isEqualTo(searchDistance);
 		Assertions.assertThat(response.latitude()).isEqualTo(location.getLatitude());
 		Assertions.assertThat(response.longitude()).isEqualTo(location.getLongitude());
+		Assertions.assertThat(response.searchDistance()).isEqualTo(searchDistance);
 	}
 
 	@Test

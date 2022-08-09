@@ -8,24 +8,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.ImagePath;
-import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.teams.team.service.TeamGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
-import com.kdt.team04.domain.user.dto.request.UpdateUserLocationRequest;
 import com.kdt.team04.domain.user.dto.request.UpdateUserRequest;
+import com.kdt.team04.domain.user.dto.request.UpdateUserSettingsRequest;
 import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
-import com.kdt.team04.domain.user.dto.response.UpdateLocationResponse;
+import com.kdt.team04.domain.user.dto.response.UpdateUserSettingsResponse;
 import com.kdt.team04.domain.user.dto.response.UserFindResponse;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
-import com.kdt.team04.domain.user.entity.UserSettings;
 import com.kdt.team04.domain.user.repository.UserRepository;
 
 @Service
@@ -108,14 +107,14 @@ public class UserService {
 	}
 
 	@Transactional
-	public UpdateLocationResponse updateLocation(Long targetId,
-		UpdateUserLocationRequest request) {
+	public UpdateUserSettingsResponse updateSettings(Long targetId,
+		UpdateUserSettingsRequest request) {
 		User foundUser = this.userRepository.findById(targetId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", targetId)));
-		foundUser.updateSettings(new UserSettings(request.latitude(), request.longitude(), request.searchDistance()));
+		foundUser.updateSettings(request.latitude(), request.longitude(), request.searchDistance());
 
-		return new UpdateLocationResponse(request.latitude(), request.longitude(), request.searchDistance());
+		return new UpdateUserSettingsResponse(request.latitude(), request.longitude(), request.searchDistance());
 	}
 
 	public Boolean usernameDuplicationCheck(String username) {

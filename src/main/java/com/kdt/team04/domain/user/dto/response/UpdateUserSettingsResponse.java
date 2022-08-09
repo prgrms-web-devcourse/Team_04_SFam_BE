@@ -2,7 +2,7 @@ package com.kdt.team04.domain.user.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record UpdateLocationResponse(
+public record UpdateUserSettingsResponse(
 	@Schema(description = "사용자 위치 - 위도")
 	double latitude,
 

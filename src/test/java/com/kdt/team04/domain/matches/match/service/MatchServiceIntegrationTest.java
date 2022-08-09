@@ -20,22 +20,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.PageDto;
+import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
-import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
 import com.kdt.team04.domain.matches.match.dto.request.CreateMatchRequest;
 import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
-import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.model.MatchStatus;
 import com.kdt.team04.domain.matches.match.model.MatchType;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
-import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
 import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
-import com.kdt.team04.domain.user.entity.Location;
+import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.entity.UserSettings;
 
@@ -68,7 +67,7 @@ class MatchServiceIntegrationTest {
 		entityManager.persist(leader);
 		entityManager.persist(user1);
 		entityManager.persist(user2);
-		leader.updateSettings(new UserSettings(1.1, 1.2, 10));
+		leader.updateSettings(1.1, 1.2, 10);
 		Team team = Team.builder()
 			.name("team1")
 			.description("first team")
@@ -96,7 +95,7 @@ class MatchServiceIntegrationTest {
 		//given
 		User user = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		entityManager.persist(user);
-		user.updateSettings(new UserSettings(1.1, 1.2, 10));
+		user.updateSettings(1.1, 1.2, 10);
 		CreateMatchRequest request = new CreateMatchRequest("match1", LocalDate.now(),
 			MatchType.INDIVIDUAL_MATCH,
 			null, 1, SportsCategory.BADMINTON, "content");
@@ -232,7 +231,7 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("작성자와 공고글 사이의 거리가 1.51km이고 검색범위가 1.50면 검색이 안된다.")
 	void testFindMatchesCursorPagingTooFar() {
-		UserSettings mySettings = new UserSettings(37.3947122, 127.111253,10);
+		UserSettings mySettings = new UserSettings(37.3947122, 127.111253, 10);
 		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
 		User leader = User.builder()
@@ -290,7 +289,7 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("두 지점 간 거리 1.51km 5개 매치 불러오기")
 	void testFindMatchesCursorPaging() {
-		UserSettings mySettings = new UserSettings(37.3947122, 127.111253,10);
+		UserSettings mySettings = new UserSettings(37.3947122, 127.111253, 10);
 		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
 		User leader = User.builder()
@@ -355,7 +354,7 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("축구매치 3개, 배트민턴 2개일때 매치 불러오기")
 	void testFindMatchesCursorPagingDifferentCategory() {
-		UserSettings mySettings = new UserSettings(37.3947122, 127.111253,10);
+		UserSettings mySettings = new UserSettings(37.3947122, 127.111253, 10);
 		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
 		User leader = User.builder()
@@ -437,7 +436,7 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("두 지점 간 거리 1.51km 5개 매치 불러오기 - 2번째 페이징")
 	void testFindMatchesCursorPagingTwice() {
-		UserSettings mySettings = new UserSettings(37.3947122, 127.111253,10);
+		UserSettings mySettings = new UserSettings(37.3947122, 127.111253, 10);
 		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
 		User leader = User.builder()
@@ -516,7 +515,7 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("페이징 커서가 없다면 전체 내림차순으로 조회한다.")
 	void testFindAllMatchesIfNullPagingRequest() {
-		UserSettings mySettings = new UserSettings(37.3947122, 127.111253,10);
+		UserSettings mySettings = new UserSettings(37.3947122, 127.111253, 10);
 		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 
 		User leader = User.builder()

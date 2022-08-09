@@ -22,11 +22,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.aws.s3.S3Uploader;
-import com.kdt.team04.domain.matches.match.model.entity.Match;
+import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.domain.matches.match.model.MatchStatus;
 import com.kdt.team04.domain.matches.match.model.MatchType;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
@@ -35,11 +35,9 @@ import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
 import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
-import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
 import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
-import com.kdt.team04.domain.user.entity.Location;
+import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
 import com.kdt.team04.domain.user.entity.User;
-import com.kdt.team04.domain.user.entity.UserSettings;
 
 @Transactional
 @SpringBootTest
@@ -114,7 +112,7 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.persist(user1);
 		entityManager.persist(user2);
 
-		proposer.updateSettings(new UserSettings(1.1, 1.2, 10));
+		proposer.updateSettings(1.1, 1.2, 10);
 
 		Team proposerTeam = Team.builder()
 			.name("proposer")
@@ -174,7 +172,7 @@ class MatchProposalServiceIntegrationTest {
 
 		entityManager.persist(proposer);
 
-		proposer.updateSettings(new UserSettings(1.1, 1.2, 10));
+		proposer.updateSettings(1.1, 1.2, 10);
 		Team proposerTeam = Team.builder()
 			.name("proposer")
 			.description("first team")
