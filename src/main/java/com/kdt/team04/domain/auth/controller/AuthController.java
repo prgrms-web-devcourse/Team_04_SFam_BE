@@ -72,6 +72,7 @@ public class AuthController {
 			.path("/")
 			.httpOnly(true)
 			.secure(cookieConfigProperties.secure())
+			.domain(cookieConfigProperties.domain())
 			.maxAge(expirySecond)
 			.sameSite(cookieConfigProperties.sameSite().attributeValue())
 			.build();

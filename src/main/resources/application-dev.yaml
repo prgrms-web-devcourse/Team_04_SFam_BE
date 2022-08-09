@@ -47,5 +47,6 @@ encryptor:
   key: ${ENCRYPTOR_KEY}
 
 cookie:
-  secure: true
-  same-site: NONE
+  secure: ${COOKIE_SECURE:true}
+  same-site: ${COOKIE_SAME_SITE:NONE}
+  domain: ${COOKIE_DOMAIN:.dongkyurami.link}
