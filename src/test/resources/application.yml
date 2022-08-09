@@ -24,7 +24,9 @@ jwt:
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
-
+cookie:
+  secure: false
+  same-site: lax
 cloud:
   aws:
     region:

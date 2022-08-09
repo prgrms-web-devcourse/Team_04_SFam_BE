@@ -31,16 +31,19 @@ public class WebSecurityConfig {
 	private final Jwt jwt;
 	private final SecurityConfigProperties securityConfigProperties;
 	private final Optional<OAuth2LoginConfigurer<HttpSecurity>> oAuth2LoginConfigurer;
+	private final CookieConfigProperties cookieConfigProperties;
 
 	public WebSecurityConfig(Jwt jwt, SecurityConfigProperties securityConfigProperties,
-		Optional<OAuth2LoginConfigurer<HttpSecurity>> oAuth2LoginConfigurer) {
+		Optional<OAuth2LoginConfigurer<HttpSecurity>> oAuth2LoginConfigurer,
+		CookieConfigProperties cookieConfigProperties) {
 		this.jwt = jwt;
 		this.securityConfigProperties = securityConfigProperties;
 		this.oAuth2LoginConfigurer = oAuth2LoginConfigurer;
+		this.cookieConfigProperties = cookieConfigProperties;
 	}
 
 	public JwtAuthenticationFilter jwtAuthenticationFilter(Jwt jwt, TokenService tokenService) {
-		return new JwtAuthenticationFilter(jwt, tokenService);
+		return new JwtAuthenticationFilter(jwt, tokenService, cookieConfigProperties);
 	}
 
 	@Bean

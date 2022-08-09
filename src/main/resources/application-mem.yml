@@ -39,6 +39,8 @@ cors:
       - https://localhost:3000
 jwt:
   client-secret: ${JWT_SECRET:DEFAULT_JWT_SECRET}
-
+cookie:
+  secure: ${COOKIE_SECURE:false}
+  same-site: ${COOKIE_SAME_SITE:lax}
 encryptor:
   key: ${ENCRYPTOR_KEY}

@@ -47,6 +47,8 @@ cloud:
     stack:
       auto: false
     region: ${AWS_REGION:ENC(ayPRiqCMtSXBerKcGgVo29E2r606Z1Ht)}
-
+cookie:
+  secure: ${COOKIE_SECURE:false}
+  same-site: ${COOKIE_SAME_SITE:lax}
 encryptor:
   key: ${ENCRYPTOR_KEY}
