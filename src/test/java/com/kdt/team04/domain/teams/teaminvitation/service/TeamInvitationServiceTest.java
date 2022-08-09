@@ -113,33 +113,36 @@ class TeamInvitationServiceTest {
 	}
 
 	@Test
-	@DisplayName("이미 초대를 보냈으면 초대할 수 없다.")
+	@DisplayName("이미 초대 대기상태나 수락 상태인 유저에게 초대를 보낼 수 없다.")
 	void testInviteAlreadySendInviteFail() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
-
 		entityManager.persist(userA);
 		entityManager.persist(userB);
+
 		Team team = Team.builder()
 			.name("teamA")
 			.description("description")
 			.sportsCategory(SportsCategory.BADMINTON)
 			.leader(userA)
 			.build();
-
 		entityManager.persist(team);
+
 		TeamMember teamMemberA = new TeamMember(team, userA, TeamMemberRole.LEADER);
 		entityManager.persist(teamMemberA);
+		TeamInvitation teamInvitation = new TeamInvitation(team, userB, InvitationStatus.WAITING);
+		entityManager.persist(teamInvitation);
+
 		entityManager.flush();
 		entityManager.clear();
-		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
-		teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId());
 
 		//when, then
+		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
+
 		Assertions.assertThatThrownBy(() ->
 			teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId())
-		).isInstanceOf(DataIntegrityViolationException.class);
+		).isInstanceOf(BusinessException.class);
 	}
 
 	@Test
