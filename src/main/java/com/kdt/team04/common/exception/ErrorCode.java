@@ -29,6 +29,7 @@ public enum ErrorCode {
 	//TEAM
 	TEAM_NOT_FOUND("T0001", "Not found team", HttpStatus.NOT_FOUND),
 	NOT_TEAM_LEADER("T0002", "Not team leader", HttpStatus.FORBIDDEN),
+	TEAM_DUPLICATE_NAME("T0003", "Duplicate team name", HttpStatus.BAD_REQUEST),
 
 	//TEAM_INVITATION
 	TEAM_INVITATION_NOT_FOUND("I0001", "Not found invitation", HttpStatus.NOT_FOUND),

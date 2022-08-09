@@ -16,16 +16,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.kdt.team04.common.aws.s3.S3Uploader;
+import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
-import com.kdt.team04.common.aws.s3.S3Uploader;
-import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.dto.request.CreateTeamRequest;
 import com.kdt.team04.domain.teams.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.team.repository.TeamRepository;
-import com.kdt.team04.domain.teams.team.service.TeamService;
 import com.kdt.team04.domain.user.entity.User;
 
 @SpringBootTest
@@ -66,6 +66,23 @@ class TeamServiceIntegrationTest {
 		//then
 		assertThat(savedTeamId).isNotNull();
 		assertThat(teamCreator.getId()).isEqualTo(leaderId);
+	}
+
+	@Test
+	@Transactional
+	@DisplayName("같은 이름으로 팀 등록 시, 중복 오류가 발생한다.")
+	void createFail_DuplicateTeamName() {
+		//given
+		User teamCreator = getDemoUser();
+		CreateTeamRequest requestDto = new CreateTeamRequest("team1", "first team",
+			SportsCategory.BADMINTON);
+
+		teamService.create(teamCreator.getId(), requestDto);
+
+		//when, then
+		assertThatThrownBy(() -> {
+			teamService.create(teamCreator.getId(), requestDto);
+		}).isInstanceOf(BusinessException.class);
 	}
 
 	@Test
