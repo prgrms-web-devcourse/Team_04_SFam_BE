@@ -10,9 +10,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +122,77 @@ class TeamControllerTest {
 		Assertions.assertThat(realResponse).isEqualTo(
 			objectMapper.writeValueAsString(expectedRealResponse)
 		);
+	}
+
+	@Nested
+	@DisplayName("팀을 생성 할 때")
+	class CreateTeamRequestValidationTest {
+
+		@Test
+		@DisplayName("팀 이름이 2자 미만 이거나 혹은 11자 일떄 실패한다.")
+		void failToInvalidTeamName() throws Exception {
+			//given
+			List<String> invalids = List.of("우", "우영우 우영우 우영우", "", "    ");
+			List<CreateTeamRequest> invalidedRequests = invalids.stream()
+				.map(invalid -> new CreateTeamRequest(invalid, "동 to the 뀨 to the 롸미", SportsCategory.BADMINTON))
+				.toList();
+
+			invalidedRequests.forEach(request -> {
+				try {
+					//when
+					//then
+					action(request).andExpect(status().isBadRequest());
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
+
+		@Test
+		@DisplayName("팀 설명이 101자 이상일 때 실패한다.")
+		void faileToInvalidDescription() {
+			//given
+			String graterThan100Letter = Stream.generate(() -> "우")
+				.limit(101).collect(Collectors.joining());
+
+			List<String> invalids = List.of("", "    ", graterThan100Letter);
+			List<CreateTeamRequest> invalidedRequests = invalids.stream()
+				.map(invalid -> new CreateTeamRequest(invalid, "동 to the 뀨 to the 롸미", SportsCategory.BADMINTON))
+				.toList();
+
+			//when
+			invalidedRequests.forEach(request -> {
+				try {
+					//when
+					//then
+					action(request).andExpect(status().isBadRequest());
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
+
+		@Test
+		@DisplayName("팀 종목이 선택되지 않으면 실패한다.")
+		void failToNullSportCategory() throws Exception {
+			//given
+			String graterThan100Letter = Stream.generate(() -> "우")
+				.limit(101).collect(Collectors.joining());
+
+			CreateTeamRequest request = new CreateTeamRequest("우영우김밥", "동 to the 뀨 to the 롸미", null);
+
+			//when
+			//then
+			action(request).andExpect(status().isBadRequest());
+		}
+
+		private ResultActions action(CreateTeamRequest request) throws Exception {
+			return mockMvc.perform(
+				post(BASE_END_POINT)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+			);
+		}
 	}
 
 }
