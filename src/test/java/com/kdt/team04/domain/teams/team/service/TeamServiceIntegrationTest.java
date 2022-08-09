@@ -25,7 +25,6 @@ import com.kdt.team04.domain.teams.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.team.repository.TeamRepository;
-import com.kdt.team04.domain.teams.team.service.TeamService;
 import com.kdt.team04.domain.user.entity.User;
 
 @SpringBootTest
