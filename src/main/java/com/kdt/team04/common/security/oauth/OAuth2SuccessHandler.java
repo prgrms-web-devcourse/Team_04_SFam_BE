@@ -52,6 +52,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 			.path("/")
 			.httpOnly(true)
 			.secure(cookieConfigProperties.secure())
+			.domain(cookieConfigProperties.domain())
 			.maxAge(expirySeconds)
 			.sameSite(cookieConfigProperties.sameSite().attributeValue())
 			.build();
