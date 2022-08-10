@@ -2,6 +2,7 @@ package com.kdt.team04.domain.teams.teaminvitation.controller;
 
 import javax.validation.Valid;
 
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +39,7 @@ public class TeamInvitationController {
 	@GetMapping("/invitations")
 	public ApiResponse<PageDto.CursorResponse<TeamInvitationResponse, TeamInvitationCursor>> getInvitations(
 		@AuthUser JwtAuthentication auth,
-		@Valid PageDto.TeamInvitationCursorPageRequest request
+		@Valid @ParameterObject PageDto.TeamInvitationCursorPageRequest request
 	) {
 		PageDto.CursorResponse<TeamInvitationResponse, TeamInvitationCursor> result =
 			teamInvitationService.getInvitations(auth.id(), request);

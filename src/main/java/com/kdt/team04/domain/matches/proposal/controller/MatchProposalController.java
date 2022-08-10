@@ -1,7 +1,6 @@
 package com.kdt.team04.domain.matches.proposal.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -15,14 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.config.resolver.AuthUser;
-import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.request.ReactProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 
 import io.swagger.v3.oas.annotations.Operation;
