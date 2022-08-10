@@ -137,9 +137,9 @@ class TeamInvitationServiceTest {
 		entityManager.flush();
 		entityManager.clear();
 
-		//when, then
 		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(userB.getId());
 
+		//when, then
 		Assertions.assertThatThrownBy(() ->
 			teamInvitationService.invite(userA.getId(), team.getId(), teamInvitationRequest.targetUserId())
 		).isInstanceOf(BusinessException.class);
