@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.matches.proposal.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -20,6 +21,8 @@ import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.request.ReactProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -79,5 +82,16 @@ public class MatchProposalController {
 		);
 
 		return new ApiResponse<>(proposals);
+	}
+
+	@Operation(summary = "신청 정보 조회", description = "신청 정보를 조회한다.")
+	@GetMapping("/proposals/{id}")
+	public ApiResponse<Optional<ProposalChatResponse>> getProposalById(
+		@AuthUser JwtAuthentication auth,
+		@Parameter(description = "매칭 신청 ID") @PathVariable Long id
+	) {
+		Optional<ProposalChatResponse> proposal = matchProposalService.findById(id, auth.id());
+
+		return new ApiResponse<>(proposal);
 	}
 }

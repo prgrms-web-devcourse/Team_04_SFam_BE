@@ -21,6 +21,7 @@ import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
@@ -221,6 +222,16 @@ public class MatchProposalService {
 				proposal.getId(),
 				proposal.getStatus(),
 				proposal.getContent()
+			));
+	}
+
+	public Optional<ProposalChatResponse> findById(Long id, Long userId) {
+		return proposalRepository.findProposalWithMatchByIdAndUserId(id, userId)
+			.map(proposal -> new ProposalChatResponse(
+				proposal.getId(),
+				proposal.getStatus(),
+				proposal.getContent(),
+				proposal.getUser().getId() != userId
 			));
 	}
 }

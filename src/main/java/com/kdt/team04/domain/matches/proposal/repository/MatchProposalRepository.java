@@ -22,6 +22,9 @@ public interface MatchProposalRepository extends JpaRepository<MatchProposal, Lo
 	@Query("SELECT mp FROM MatchProposal mp JOIN FETCH mp.user LEFT JOIN FETCH mp.team WHERE mp.id = :id")
 	Optional<MatchProposal> findProposalById(@Param("id") Long id);
 
+	@Query("SELECT mp FROM MatchProposal mp INNER JOIN Match m ON mp.match.id = m.id WHERE mp.id = :id AND (m.user.id = :userId OR mp.user.id = :userId)")
+	Optional<MatchProposal> findProposalWithMatchByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
+
 	@Query("SELECT mp FROM MatchProposal mp WHERE mp.match.id = :matchId AND mp.user.id = :userId")
 	Optional<MatchProposal> findByMatchIdAndUserId(@Param("matchId") Long matchId, @Param("userId") Long userId);
 }
