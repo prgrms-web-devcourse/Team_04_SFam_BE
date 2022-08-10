@@ -59,7 +59,7 @@ public class MatchProposalGiverService {
 		}
 
 		BigInteger targetUserId = BigInteger.valueOf(Objects.equals(match.author().id(), userId) ?
-			userId :
+			matchProposal.getUser().getId() :
 			match.author().id());
 
 		String targetNickname = Objects.equals(match.author().id(), userId) ?
