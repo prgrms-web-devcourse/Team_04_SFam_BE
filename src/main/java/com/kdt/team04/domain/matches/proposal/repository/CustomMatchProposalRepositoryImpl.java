@@ -3,7 +3,6 @@ package com.kdt.team04.domain.matches.proposal.repository;
 import static com.kdt.team04.domain.matches.match.model.entity.QMatch.match;
 import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.FIXED;
 import static com.kdt.team04.domain.matches.proposal.entity.QMatchProposal.matchProposal;
-import static com.kdt.team04.domain.matches.review.model.entity.QMatchReview.matchReview;
 
 import java.util.List;
 import java.util.Optional;
@@ -79,6 +78,7 @@ public class CustomMatchProposalRepositoryImpl implements CustomMatchProposalRep
 		String sql = "SELECT"
 			+ "  mp.id,"
 			+ "  mp.content,"
+			+ "  (CASE WHEN m.user_id = :userId THEN proposer.id ELSE author.id END) as target_id,"
 			+ "  (CASE WHEN m.user_id = :userId THEN proposer.nickname ELSE author.nickname END) as target_nickname,"
 			+ "  mc.content as last_chat"
 			+ " FROM match_proposal mp"

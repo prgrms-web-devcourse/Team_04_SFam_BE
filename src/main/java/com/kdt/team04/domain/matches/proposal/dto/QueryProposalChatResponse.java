@@ -26,12 +26,13 @@ public class QueryProposalChatResponse {
 	public QueryProposalChatResponse(
 		BigInteger id,
 		String content,
+		BigInteger targetId,
 		String targetNickname,
 		String lastChat
 	) {
 		this.id = id.longValue();
 		this.content = content;
-		this.target = new ChatTargetProfileResponse(targetNickname);
+		this.target = new ChatTargetProfileResponse(targetId, targetNickname);
 		this.lastChat = new LastChatResponse(lastChat);
 	}
 
