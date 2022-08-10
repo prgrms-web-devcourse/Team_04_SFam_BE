@@ -2,6 +2,7 @@ package com.kdt.team04.domain.matches.match.controller;
 
 import javax.validation.Valid;
 
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -46,7 +47,7 @@ public class MatchController {
 	@Operation(summary = "매치 공고 리스트 조회", description = "매칭 상태별, 종목별 공고 리스트를 최신글 순으로 커서방식 페이징한다.")
 	@GetMapping
 	public ApiResponse<PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor>> getWithCursorPaging(
-		@AuthUser JwtAuthentication auth, @Valid PageDto.MatchCursorPageRequest pageRequest) {
+		@AuthUser JwtAuthentication auth, @ParameterObject @Valid PageDto.MatchCursorPageRequest pageRequest) {
 		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> matches = matchService.findMatches(
 			auth.id(), pageRequest);
 

@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
 import java.text.MessageFormat;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +18,7 @@ import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
+import com.kdt.team04.domain.matches.proposal.dto.QueryMatchChatPartitionByProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
@@ -182,10 +184,12 @@ public class MatchProposalService {
 			.map(MatchProposal::getId)
 			.toList();
 
-		Map<Long, LastChatResponse> lastChats = matchChatService.findAllLastChats(matchProposalIds);
+		Map<Long, QueryMatchChatPartitionByProposalIdResponse> lastChats
+			= matchChatService.findAllLastChats(matchProposalIds);
+
 		List<ChatRoomResponse> proposalChats = matchProposals.stream()
 			.map(proposal -> {
-				LastChatResponse chatLastResponse = lastChats.get(proposal.getId());
+				QueryMatchChatPartitionByProposalIdResponse chatLastResponse = lastChats.get(proposal.getId());
 				ChatTargetProfileResponse chatTargetProfile
 					= new ChatTargetProfileResponse(proposal.getUser().getNickname());
 
@@ -193,9 +197,11 @@ public class MatchProposalService {
 					proposal.getId(),
 					proposal.getContent(),
 					chatTargetProfile,
-					chatLastResponse
+					chatLastResponse == null ? null : new LastChatResponse(chatLastResponse.getLastChat()),
+					chatLastResponse == null ? proposal.getCreatedAt() : chatLastResponse.getLastChatDate()
 				);
 			})
+			.sorted(Comparator.comparing(ChatRoomResponse::sortDate).reversed())
 			.toList();
 
 		return proposalChats;

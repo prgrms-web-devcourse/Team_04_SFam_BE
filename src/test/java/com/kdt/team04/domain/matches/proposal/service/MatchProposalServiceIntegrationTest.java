@@ -1,5 +1,6 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
+import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.APPROVED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -29,6 +30,7 @@ import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
@@ -37,6 +39,8 @@ import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
 import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
+import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
+import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import com.kdt.team04.domain.user.entity.User;
 
 @Transactional
@@ -379,92 +383,62 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("매칭 ID로 매칭 신청 목록을 조회한다.")
-	void test_findAllLastChats() {
+	@DisplayName("매칭 ID로 매칭 신청 목록을 일자 기준(신청일자 or 마지막 채팅 기록 일자) 내림차순 정렬 조회한다.")
+	void findAllLastChats_OrderByProposalDateOrLastChatDate() {
 		//given
-		String lastChat = "마지막 채팅";
-
-		User author = new User("author", "authorNik", "aA1234!");
-		User target = new User("target", "targetNik", "aA1234!");
-		Team authorTeam = Team.builder()
-			.name("authorTeam")
-			.description("first team")
-			.sportsCategory(SportsCategory.SOCCER)
-			.leader(author)
-			.build();
-		Team targetTeam = Team.builder()
-			.name("targetTeam")
-			.description("first team")
-			.sportsCategory(SportsCategory.SOCCER)
-			.leader(target)
-			.build();
+		User author = getUser("author");
+		Team authorTeam = getSoccerTeam("author", author);
 		entityManager.persist(author);
-		entityManager.persist(target);
 		entityManager.persist(authorTeam);
-		entityManager.persist(targetTeam);
 
-		Match match = Match.builder()
-			.title("덤벼라!")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.TEAM_MATCH)
-			.participants(3)
-			.user(author)
-			.team(authorTeam)
-			.sportsCategory(SportsCategory.SOCCER)
-			.content("축구 하실?")
-			.build();
+		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.WAITING, author, authorTeam);
 		entityManager.persist(match);
 
-		List<MatchProposal> proposals = new ArrayList<>();
-		IntStream.range(1, 3)
-			.forEach(id -> {
-				MatchProposal matchProposal = MatchProposal.builder()
-					.match(match)
-					.content("덤벼라! 나는 " + id)
-					.user(target)
-					.team(targetTeam)
-					.status(MatchProposalStatus.APPROVED)
-					.build();
+		User target1 = getUser("target1");
+		Team targetTeam1 = getSoccerTeam("target1", target1);
+		MatchProposal proposal1 = getProposal(match, "덤벼라!", target1, targetTeam1, APPROVED);
+		entityManager.persist(target1);
+		entityManager.persist(targetTeam1);
+		entityManager.persist(proposal1);
 
-				proposals.add(matchProposal);
-				entityManager.persist(matchProposal);
-			});
+		User target2 = getUser("target2");
+		Team targetTeam2 = getSoccerTeam("target2", target2);
+		MatchProposal proposal2 = getProposal(match, "마!", target2, targetTeam2, APPROVED);
+		entityManager.persist(target2);
+		entityManager.persist(targetTeam2);
+		entityManager.persist(proposal2);
 
-		List<MatchChat> chats = new ArrayList<>();
-		proposals.forEach(proposal -> {
-			IntStream.range(1, 5)
-				.forEach(id -> {
-					MatchChat chat = MatchChat.builder()
-						.proposal(proposal)
-						.user(author)
-						.target(target)
-						.content(id == 4 ? lastChat + proposal.getId() : "칫챗")
-						.chattedAt(LocalDateTime.now())
-						.build();
-					chats.add(chat);
-					entityManager.persist(chat);
-				});
-		});
+		User target3 = getUser("target3");
+		Team targetTeam3 = getSoccerTeam("target3", target3);
+		MatchProposal proposal3 = getProposal(match, "하모!", target3, targetTeam3, APPROVED);
+		entityManager.persist(target3);
+		entityManager.persist(targetTeam3);
+		entityManager.persist(proposal3);
 
-		Map<Long, String> expectedChats = new HashMap<>();
-		proposals.forEach(proposal -> {
-			expectedChats.put(proposal.getId(), lastChat + proposal.getId());
-		});
+		MatchChat chat = getChat(proposal2, target2, author, "안녕");
+		entityManager.persist(chat);
+
+		List<ChatRoomResponse> expected = new ArrayList<>();
+		expected.add(new ChatRoomResponse(proposal2.getId(), proposal2.getContent(), new ChatTargetProfileResponse(target2.getNickname()), new LastChatResponse(chat.getContent()), proposal2.getCreatedAt()));
+		expected.add(new ChatRoomResponse(proposal3.getId(), proposal3.getContent(), new ChatTargetProfileResponse(target3.getNickname()), null, proposal3.getCreatedAt()));
+		expected.add(new ChatRoomResponse(proposal1.getId(), proposal1.getContent(), new ChatTargetProfileResponse(target1.getNickname()), null, proposal1.getCreatedAt()));
 
 		//when
-		List<ChatRoomResponse> foundProposlas = matchProposalService.findAllProposalChats(match.getId(),
-			author.getId());
+		matchProposalService.findAllProposalChats(match.getId(), author.getId());
+		List<ChatRoomResponse> response = matchProposalService.findAllProposalChats(match.getId(), author.getId());
 
 		//then
-		assertThat(foundProposlas).hasSize(2);
-		foundProposlas.forEach(proposal -> {
-			assertThat(proposal.id()).isNotNull();
-			assertThat(proposal.target()).isNotNull();
-			assertThat(proposal.lastChat()).isNotNull();
-			assertThat(proposal.target().nickname()).isEqualTo(target.getNickname());
-			assertThat(proposal.lastChat().content()).isEqualTo(expectedChats.get(proposal.id()));
-		});
+		assertThat(response).hasSize(expected.size());
+		for (int i = 0; i < response.size(); i++) {
+			ChatRoomResponse proposal = response.get(i);
+			ChatRoomResponse expectedProposal = expected.get(i);
+			assertThat(proposal.id()).isEqualTo(expectedProposal.id());
+			assertThat(proposal.content()).isEqualTo(expectedProposal.content());
+			assertThat(proposal.target().nickname()).isEqualTo(expectedProposal.target().nickname());
+			if (proposal.lastChat() != null) {
+				assertThat(proposal.lastChat().content()).isEqualTo(expectedProposal.lastChat().content());
+			}
+		}
 	}
 
 	@Test
@@ -699,5 +673,56 @@ class MatchProposalServiceIntegrationTest {
 		//then
 		Optional<MatchProposal> deletedProposal = matchProposalRepository.findById(proposal.getId());
 		assertThat(deletedProposal).isEmpty();
+	}
+
+	private static User getUser(String name) {
+		return User.builder()
+			.password("1234")
+			.username(name)
+			.nickname(name + "Nik")
+			.build();
+	}
+
+	private static Team getSoccerTeam(String name, User user) {
+		return Team.builder()
+			.name(name + "-t")
+			.description("we are team " + name)
+			.sportsCategory(SportsCategory.SOCCER)
+			.leader(user)
+			.build();
+	}
+
+	private static Match getSoccerTeamMatch(String title, int participants, MatchStatus status, User user, Team team) {
+		return Match.builder()
+			.title(title)
+			.sportsCategory(SportsCategory.SOCCER)
+			.matchType(MatchType.TEAM_MATCH)
+			.matchDate(LocalDate.now())
+			.participants(participants)
+			.status(status)
+			.user(user)
+			.team(team)
+			.build();
+	}
+
+	private static MatchProposal getProposal(Match match, String content, User proposer, Team proposerTeam,
+		MatchProposalStatus status) {
+		return MatchProposal.builder()
+			.match(match)
+			.content("덤벼라!")
+			.user(proposer)
+			.team(proposerTeam)
+			.status(APPROVED)
+			.build();
+	}
+
+	private static MatchChat getChat(MatchProposal proposal, User user, User target, String content) {
+		return MatchChat.builder()
+			.proposal(proposal)
+			.user(user)
+			.target(target)
+			.content(content)
+			.chattedAt(LocalDateTime.now())
+			.build();
 	}
 }

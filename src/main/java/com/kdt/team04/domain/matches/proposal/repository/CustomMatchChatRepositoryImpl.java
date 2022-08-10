@@ -22,7 +22,7 @@ public class CustomMatchChatRepositoryImpl implements CustomMatchChatRepository 
 	@Override
 	public List<QueryMatchChatPartitionByProposalIdResponse> findAllPartitionByProposalIdOrderByChattedAtDesc(List<Long> matchProposalIds) {
 		String sql =
-			"SELECT ROW_NUMBER() OVER (PARTITION BY match_proposal_id ORDER BY id DESC), match_proposal_id, content" +
+			"SELECT ROW_NUMBER() OVER (PARTITION BY match_proposal_id ORDER BY id DESC), match_proposal_id, content, chatted_at" +
 			" FROM match_chat mc" +
 			" WHERE mc.match_proposal_id IN (:matchProposalIds)"
 			;
