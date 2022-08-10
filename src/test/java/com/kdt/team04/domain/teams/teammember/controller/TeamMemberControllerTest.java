@@ -35,6 +35,7 @@ public class TeamMemberControllerTest {
 	private final static String BASE_END_POINT = "/api/teams";
 	private final static Long DEFAULT_INVITATION_MEMBER_ID = 1L;
 	private final static Long DEFAULT_TEAM_ID = 2L;
+	private final static Long DEFAULT_INVITATION_ID = 3L;
 
 	@Autowired
 	MockMvc mockMvc;
@@ -65,7 +66,7 @@ public class TeamMemberControllerTest {
 		).andDo(print());
 
 		// then
-		verify(teamMemberService, times(0)).registerTeamMember(DEFAULT_TEAM_ID, request);
+		verify(teamMemberService, times(0)).registerTeamMember(null, DEFAULT_TEAM_ID, request);
 		resultActions.andExpect(status().isBadRequest());
 	}
 
@@ -73,7 +74,8 @@ public class TeamMemberControllerTest {
 	@DisplayName("초대 받은 사용자라면 팀원에 등록 후 200 상태코드를 반환한다.")
 	void successTeamMemberRegister() throws Exception {
 		// given
-		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(DEFAULT_INVITATION_MEMBER_ID);
+		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(DEFAULT_INVITATION_MEMBER_ID,
+			DEFAULT_INVITATION_ID);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
@@ -83,7 +85,7 @@ public class TeamMemberControllerTest {
 		).andDo(print());
 
 		// then
-		verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_TEAM_ID, request);
+		verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_INVITATION_MEMBER_ID, DEFAULT_TEAM_ID, request);
 		resultActions.andExpect(status().isOk());
 	}
 
@@ -93,11 +95,12 @@ public class TeamMemberControllerTest {
 		// given
 		ErrorCode errorCode = ErrorCode.ALREADY_TEAM_MEMBER;
 
-		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(DEFAULT_INVITATION_MEMBER_ID);
+		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(DEFAULT_INVITATION_MEMBER_ID,
+			DEFAULT_INVITATION_ID);
 		ErrorResponse<ErrorCode> response = new ErrorResponse<>(errorCode);
 
 		doThrow(new BusinessException(errorCode)).when(teamMemberService)
-			.registerTeamMember(DEFAULT_TEAM_ID, request);
+			.registerTeamMember(DEFAULT_INVITATION_MEMBER_ID, DEFAULT_TEAM_ID, request);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
@@ -107,7 +110,7 @@ public class TeamMemberControllerTest {
 		).andDo(print());
 
 		// then
-		verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_TEAM_ID, request);
+		verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_INVITATION_MEMBER_ID, DEFAULT_TEAM_ID, request);
 
 		resultActions.andExpect(status().isBadRequest())
 			.andExpect(content().string(objectMapper.writeValueAsString(response)));
@@ -119,10 +122,12 @@ public class TeamMemberControllerTest {
 		// given
 		ErrorCode errorCode = ErrorCode.INVALID_TEAM_INVITATION;
 
-		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(DEFAULT_INVITATION_MEMBER_ID);
+		RegisterTeamMemberRequest request = new RegisterTeamMemberRequest(DEFAULT_INVITATION_MEMBER_ID,
+			DEFAULT_INVITATION_ID);
 		ErrorResponse<ErrorCode> response = new ErrorResponse<>(errorCode);
 
-		doThrow(new BusinessException(errorCode)).when(teamMemberService).registerTeamMember(DEFAULT_TEAM_ID, request);
+		doThrow(new BusinessException(errorCode)).when(teamMemberService)
+			.registerTeamMember(DEFAULT_INVITATION_MEMBER_ID, DEFAULT_TEAM_ID, request);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
@@ -132,7 +137,7 @@ public class TeamMemberControllerTest {
 		).andDo(print());
 
 		// then
-		verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_TEAM_ID, request);
+		verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_INVITATION_MEMBER_ID, DEFAULT_TEAM_ID, request);
 
 		resultActions.andExpect(status().isBadRequest())
 			.andExpect(content().string(objectMapper.writeValueAsString(response)));
