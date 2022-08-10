@@ -24,7 +24,8 @@ import com.kdt.team04.domain.user.entity.User;
 @DataJpaTest
 public class TeamValidationTest {
 
-	@Autowired TestEntityManager entityManager;
+	@Autowired
+	TestEntityManager entityManager;
 
 	@Autowired
 	TeamRepository teamRepository;

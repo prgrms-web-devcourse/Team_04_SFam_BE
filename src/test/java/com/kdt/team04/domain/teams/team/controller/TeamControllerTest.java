@@ -129,7 +129,7 @@ class TeamControllerTest {
 	class CreateTeamRequestValidationTest {
 
 		@Test
-		@DisplayName("팀 이름이 2자 미만 이거나 혹은 11자 일떄 실패한다.")
+		@DisplayName("팀 이름이 2자 미만 이거나 혹은 11자 일떄와 공백으로만 이루어진 문자열들에 입력에 대해서는 실패한다.")
 		void failToInvalidTeamName() throws Exception {
 			//given
 			List<String> invalids = List.of("우", "우영우 우영우 우영우", "", "    ");
@@ -149,13 +149,13 @@ class TeamControllerTest {
 		}
 
 		@Test
-		@DisplayName("팀 설명이 101자 이상일 때 실패한다.")
-		void faileToInvalidDescription() {
+		@DisplayName("팀 설명이 101자 이상일 때와 공백으로만 이루어진 문자열들에 입력에 대해서는 실패한다.")
+		void failToInvalidDescription() {
 			//given
-			String graterThan100Letter = Stream.generate(() -> "우")
+			String longerThan100Letter = Stream.generate(() -> "우")
 				.limit(101).collect(Collectors.joining());
 
-			List<String> invalids = List.of("", "    ", graterThan100Letter);
+			List<String> invalids = List.of("", "    ", longerThan100Letter);
 			List<CreateTeamRequest> invalidedRequests = invalids.stream()
 				.map(invalid -> new CreateTeamRequest(invalid, "동 to the 뀨 to the 롸미", SportsCategory.BADMINTON))
 				.toList();
@@ -176,9 +176,6 @@ class TeamControllerTest {
 		@DisplayName("팀 종목이 선택되지 않으면 실패한다.")
 		void failToNullSportCategory() throws Exception {
 			//given
-			String graterThan100Letter = Stream.generate(() -> "우")
-				.limit(101).collect(Collectors.joining());
-
 			CreateTeamRequest request = new CreateTeamRequest("우영우김밥", "동 to the 뀨 to the 롸미", null);
 
 			//when
