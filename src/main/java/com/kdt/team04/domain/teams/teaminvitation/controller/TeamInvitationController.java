@@ -15,6 +15,7 @@ import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.teams.teaminvitation.dto.TeamInvitationCursor;
+import com.kdt.team04.domain.teams.teaminvitation.dto.request.TeamInvitationRefuseRequest;
 import com.kdt.team04.domain.teams.teaminvitation.dto.request.TeamInvitationRequest;
 import com.kdt.team04.domain.teams.teaminvitation.dto.response.TeamInvitationResponse;
 import com.kdt.team04.domain.teams.teaminvitation.dto.response.TeamInviteResponse;
@@ -59,10 +60,12 @@ public class TeamInvitationController {
 	@Operation(summary = "초대 거절", description = "팀 ID와 초대 ID를 받아 초대를 거절한다.")
 	@PatchMapping("/{teamId}/invitation/{invitationId}")
 	public void refuse(
+		@AuthUser JwtAuthentication auth,
 		@Parameter(description = "팀 ID") @PathVariable Long teamId,
-		@Parameter(description = "팀 초대 ID") @PathVariable Long invitationId
+		@Parameter(description = "팀 초대 ID") @PathVariable Long invitationId,
+		@RequestBody @Valid TeamInvitationRefuseRequest request
 	) {
-		teamInvitationService.refuse(teamId, invitationId);
+		teamInvitationService.refuse(auth.id(), teamId, invitationId, request);
 	}
 
 }

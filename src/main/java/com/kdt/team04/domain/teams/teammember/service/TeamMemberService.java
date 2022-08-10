@@ -1,5 +1,8 @@
 package com.kdt.team04.domain.teams.teammember.service;
 
+import java.text.MessageFormat;
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,18 +50,24 @@ public class TeamMemberService {
 	}
 
 	@Transactional
-	public void registerTeamMember(Long teamId, RegisterTeamMemberRequest teamMemberRegisterRequest) {
-		if (existsTeamMember(teamId, teamMemberRegisterRequest.userId())) {
-			throw new BusinessException(ErrorCode.ALREADY_TEAM_MEMBER);
+	public void registerTeamMember(Long myId, Long teamId, RegisterTeamMemberRequest request) {
+		if (!Objects.equals(request.userId(), myId)) {
+			throw new BusinessException(ErrorCode.NOT_AUTHENTICATED,
+				MessageFormat.format("초대를 수락할 권한이 없습니다. myId = {0}, targetId {1}",
+					myId, request.userId()));
 		}
 
-		if (!teamInvitationGiverService.existsTeamInvitation(
-			teamId, teamMemberRegisterRequest.userId(), InvitationStatus.WAITING)
-		) {
-			throw new BusinessException(ErrorCode.INVALID_TEAM_INVITATION);
+		if (existsTeamMember(teamId, request.userId())) {
+			throw new BusinessException(ErrorCode.ALREADY_TEAM_MEMBER,
+				MessageFormat.format("이미 팀원인 사용자입니다. targetId = {0}", request.userId()));
 		}
 
-		UserResponse userResponse = userService.findById(teamMemberRegisterRequest.userId());
+		if (!teamInvitationGiverService.existsTeamInvitation(request.invitationId(), InvitationStatus.WAITING)) {
+			throw new BusinessException(ErrorCode.INVALID_TEAM_INVITATION,
+				MessageFormat.format("초대장이 대기상태가 아닙니다. invitationId = {0}", request.invitationId()));
+		}
+
+		UserResponse userResponse = userService.findById(request.userId());
 		TeamResponse teamResponse = teamGiverService.findById(teamId);
 		User user = converter.toUser(userResponse.id());
 		Team team = converter.toTeam(teamResponse.id());
@@ -66,7 +75,7 @@ public class TeamMemberService {
 		TeamMember teamMember = new TeamMember(team, user, TeamMemberRole.MEMBER);
 		teamMemberRepository.save(teamMember);
 
-		teamInvitationGiverService.accept(teamId, teamMemberRegisterRequest.userId());
+		teamInvitationGiverService.accept(request.invitationId());
 	}
 
 }

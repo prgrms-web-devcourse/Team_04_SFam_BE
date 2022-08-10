@@ -16,6 +16,7 @@ import com.kdt.team04.domain.teams.team.dto.response.TeamResponse;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.team.service.TeamService;
 import com.kdt.team04.domain.teams.teaminvitation.dto.TeamInvitationCursor;
+import com.kdt.team04.domain.teams.teaminvitation.dto.request.TeamInvitationRefuseRequest;
 import com.kdt.team04.domain.teams.teaminvitation.dto.response.TeamInviteResponse;
 import com.kdt.team04.domain.teams.teaminvitation.dto.response.TeamInvitationResponse;
 import com.kdt.team04.domain.teams.teaminvitation.model.InvitationStatus;
@@ -85,7 +86,12 @@ public class TeamInvitationService {
 	}
 
 	@Transactional
-	public void refuse(Long teamId, Long invitationId) {
+	public void refuse(Long myId, Long teamId, Long invitationId, TeamInvitationRefuseRequest request) {
+		if (!Objects.equals(request.userId(), myId)) {
+			throw new BusinessException(ErrorCode.NOT_AUTHENTICATED,
+				MessageFormat.format("초대를 거절할 권한이 없습니다 myId = {0}, targetId = {1}", myId, request.userId()));
+		}
+
 		teamInvitationRepository.findByIdAndTeamId(invitationId, teamId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_INVITATION_NOT_FOUND,
 				MessageFormat.format("{0} is not team invitation id {1}", teamId, invitationId)))
