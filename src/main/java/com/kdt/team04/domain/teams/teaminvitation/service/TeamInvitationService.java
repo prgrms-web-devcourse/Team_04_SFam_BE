@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.teams.teaminvitation.service;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -55,6 +56,13 @@ public class TeamInvitationService {
 
 	@Transactional
 	public TeamInviteResponse invite(Long myId, Long teamId, Long targetUserId) {
+		if (teamInvitationRepository.existsByTeamIdAndTargetIdAndStatusIn(
+			teamId, targetUserId, List.of(InvitationStatus.WAITING, InvitationStatus.ACCEPTED))
+		) {
+			throw new BusinessException(ErrorCode.ALREADY_INVITED_USER,
+				MessageFormat.format("teamId = {0}, targetId = {1}", teamId, targetUserId));
+		}
+
 		if (teamMemberGiverService.existsTeamMember(teamId, targetUserId)) {
 			throw new BusinessException(ErrorCode.ALREADY_TEAM_MEMBER,
 				MessageFormat.format("teamId = {0}, userId = {1}", teamId, targetUserId));

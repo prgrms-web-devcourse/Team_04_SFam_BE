@@ -25,8 +25,8 @@ public class TeamMemberController {
 		this.teamMemberService = teamMemberService;
 	}
 
+	@Operation(summary = "초대 수락 및 팀원 등록", description = "초대 수락 후 팀에 해당 회원을 팀원으로 등록한다.")
 	@PostMapping
-	@Operation(summary = "팀원 등록", description = "팀에 해당 회원을 팀원으로 등록한다.")
 	public void registerMember(@PathVariable Long teamId,
 		@RequestBody @Valid RegisterTeamMemberRequest teamMemberRegisterRequest) {
 		teamMemberService.registerTeamMember(teamId, teamMemberRegisterRequest);

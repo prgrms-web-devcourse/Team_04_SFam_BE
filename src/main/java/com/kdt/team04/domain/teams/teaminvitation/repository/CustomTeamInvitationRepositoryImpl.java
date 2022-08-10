@@ -70,6 +70,20 @@ public class CustomTeamInvitationRepositoryImpl implements CustomTeamInvitationR
 			new TeamInvitationCursor(nextCreateAtCursor, nextCursorId));
 	}
 
+	@Override
+	public boolean existsByTeamIdAndTargetIdAndStatusIn(Long teamId, Long targetId, List<InvitationStatus> statuses) {
+		Integer exists = jpaQueryFactory.selectOne()
+			.from(teamInvitation)
+			.where(
+				teamInvitation.team.id.eq(teamId),
+				teamInvitation.target.id.eq(targetId),
+				teamInvitation.status.in(statuses)
+			)
+			.fetchFirst();
+
+		return exists != null;
+	}
+
 	private Boolean hasNext(LocalDateTime createdAt, Long lastId, Long targetId) {
 		if (createdAt == null || lastId == null) {
 			return false;
