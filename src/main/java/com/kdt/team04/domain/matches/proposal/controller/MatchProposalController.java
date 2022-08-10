@@ -86,11 +86,11 @@ public class MatchProposalController {
 
 	@Operation(summary = "신청 정보 조회", description = "신청 정보를 조회한다.")
 	@GetMapping("/proposals/{id}")
-	public ApiResponse<Optional<ProposalChatResponse>> getProposalById(
+	public ApiResponse<ProposalChatResponse> getProposalById(
 		@AuthUser JwtAuthentication auth,
 		@Parameter(description = "매칭 신청 ID") @PathVariable Long id
 	) {
-		Optional<ProposalChatResponse> proposal = matchProposalService.findById(id, auth.id());
+		ProposalChatResponse proposal = matchProposalService.findById(id, auth.id());
 
 		return new ApiResponse<>(proposal);
 	}

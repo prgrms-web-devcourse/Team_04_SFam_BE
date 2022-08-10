@@ -225,13 +225,23 @@ public class MatchProposalService {
 			));
 	}
 
-	public Optional<ProposalChatResponse> findById(Long id, Long userId) {
-		return proposalRepository.findProposalWithMatchByIdAndUserId(id, userId)
-			.map(proposal -> new ProposalChatResponse(
-				proposal.getId(),
-				proposal.getStatus(),
-				proposal.getContent(),
-				proposal.getUser().getId() != userId
-			));
+	public ProposalChatResponse findById(Long id, Long userId) {
+		MatchProposal proposal = proposalRepository.findProposalWithMatchById(id)
+			.orElseThrow(() -> new BusinessException(ErrorCode.PROPOSAL_NOT_FOUND,
+				MessageFormat.format("proposalId = {0}", id)));
+
+		if (proposal.getUser().getId() != userId
+			&& proposal.getMatch().getUser().getId() != userId
+		) {
+			throw new BusinessException(ErrorCode.PROPOSAL_ACCESS_DENIED,
+				MessageFormat.format("proposalId = {0}, userId = {1}", id, userId));
+		}
+
+		return ProposalChatResponse.builder()
+			.id(proposal.getId())
+			.status(proposal.getStatus())
+			.content(proposal.getContent())
+			.isMatchAuthor(proposal.getUser().getId() != userId)
+			.build();
 	}
 }

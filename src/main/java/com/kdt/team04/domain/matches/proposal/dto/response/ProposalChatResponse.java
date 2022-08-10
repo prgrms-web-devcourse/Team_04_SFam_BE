@@ -3,7 +3,9 @@ package com.kdt.team04.domain.matches.proposal.dto.response;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
+@Builder
 public record ProposalChatResponse(
 	@Schema(description = "신청 Id(고유 PK)")
 	Long id,
