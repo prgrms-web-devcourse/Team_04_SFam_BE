@@ -8,8 +8,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,15 +27,14 @@ import com.kdt.team04.domain.matches.review.dto.response.MatchRecordTotalRespons
 import com.kdt.team04.domain.matches.review.dto.response.MatchReviewTotalResponse;
 import com.kdt.team04.domain.matches.review.service.MatchRecordGiverService;
 import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
-import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.dto.TeamConverter;
 import com.kdt.team04.domain.teams.team.dto.request.CreateTeamRequest;
 import com.kdt.team04.domain.teams.team.dto.response.TeamResponse;
+import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.team.repository.TeamRepository;
+import com.kdt.team04.domain.teams.teammember.dto.response.TeamMemberResponse;
 import com.kdt.team04.domain.teams.teammember.service.TeamMemberGiverService;
-import com.kdt.team04.domain.teams.team.service.TeamService;
-import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
@@ -42,42 +44,28 @@ import com.kdt.team04.domain.user.service.UserService;
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTest {
 	@InjectMocks
-	private TeamService teamService;
+	TeamService teamService;
 
 	@Mock
-	private UserService userService;
+	UserService userService;
 
 	@Mock
-	private TeamConverter teamConverter;
+	TeamConverter teamConverter;
 
 	@Mock
-	private UserConverter userConverter;
+	UserConverter userConverter;
 
 	@Mock
-	private TeamRepository teamRepository;
+	TeamRepository teamRepository;
 
 	@Mock
-	private TeamMemberGiverService teamMemberGiver;
+	TeamMemberGiverService teamMemberGiver;
 
 	@Mock
-	private MatchRecordGiverService matchRecordGiver;
+	MatchRecordGiverService matchRecordGiver;
 
 	@Mock
-	private MatchReviewGiverService matchReviewGiver;
-
-	private final User USER = new User(1L, "password", "username", "nickname", null, "username@gmail.com", null,
-		Role.USER);
-	private final UserResponse USER_RESPONSE = new UserResponse(USER.getId(), USER.getUsername(), USER.getPassword(),
-		USER.getNickname(), null, USER.getEmail(), USER.getProfileImageUrl(), USER.getRole());
-	private final CreateTeamRequest CREATE_REQUEST = new CreateTeamRequest("team1", "first team",
-		SportsCategory.BADMINTON);
-	private final Team TEAM = new Team(10L, CREATE_REQUEST.name(), CREATE_REQUEST.description(),
-		CREATE_REQUEST.sportsCategory(), USER, null);
-	private final MatchRecordTotalResponse RECORD = new MatchRecordTotalResponse(1, 1, 1);
-	private final MatchReviewTotalResponse REVIEW = new MatchReviewTotalResponse(1, 1, 1);
-	private final TeamResponse RESPONSE = new TeamResponse(TEAM.getId(), TEAM.getName(), TEAM.getDescription(),
-		TEAM.getSportsCategory(),
-		Collections.emptyList(), RECORD, REVIEW, USER_RESPONSE, null);
+	MatchReviewGiverService matchReviewGiver;
 
 	@Test
 	@DisplayName("팀 생성에 성공합니다.")
@@ -85,12 +73,7 @@ class TeamServiceTest {
 		//given
 		User user = getDemoUser();
 		UserResponse userResponse = toUserResponse(user);
-		Team newTeam = Team.builder()
-			.id(1L)
-			.name("team1")
-			.description("first team")
-			.sportsCategory(SportsCategory.BADMINTON)
-			.build();
+		Team newTeam = getDemoTeam(null);
 		CreateTeamRequest teamCreateRequest = new CreateTeamRequest("team1", "first team",
 			SportsCategory.BADMINTON);
 
@@ -111,31 +94,46 @@ class TeamServiceTest {
 	@Test
 	@DisplayName("팀 ID로 해당 팀의 프로필 조회가 가능합니다.")
 	void findByIdSuccess() {
+
+		User leader = getDemoUser();
+		List<TeamMemberResponse> teamMemberResponses = Collections.emptyList();
+		Team team = getDemoTeam(leader);
+
+		MatchRecordTotalResponse record = new MatchRecordTotalResponse(1, 1, 1);
+		MatchReviewTotalResponse review = new MatchReviewTotalResponse(1, 1, 1);
+		UserResponse userResponse = toUserResponse(leader);
+		TeamResponse response = new TeamResponse(team.getId(), team.getName(), team.getDescription(),
+			team.getSportsCategory(), teamMemberResponses, record, review, userResponse, null);
+
 		//given
-		given(teamRepository.findById(TEAM.getId())).willReturn(Optional.of(TEAM));
-		given(teamConverter.toTeamResponse(TEAM, USER_RESPONSE, Collections.emptyList(), RECORD, REVIEW)).willReturn(
-			RESPONSE);
-		given(teamMemberGiver.findAllByTeamId(TEAM.getId())).willReturn(Collections.emptyList());
-		given(matchRecordGiver.findByTeamTotalRecord(TEAM.getId())).willReturn(RECORD);
-		given(matchReviewGiver.findByTeamTotalReview(TEAM.getId())).willReturn(REVIEW);
-		given(userConverter.toUserResponse(USER)).willReturn(USER_RESPONSE);
+		given(teamRepository.findById(team.getId())).willReturn(Optional.of(team));
+		given(teamMemberGiver.findAllByTeamId(team.getId())).willReturn(teamMemberResponses);
+		given(matchRecordGiver.findByTeamTotalRecord(team.getId())).willReturn(record);
+		given(matchReviewGiver.findByTeamTotalReview(team.getId())).willReturn(review);
+		given(userConverter.toUserResponse(team.getLeader())).willReturn(userResponse);
+		given(teamConverter.toTeamResponse(team, userResponse, teamMemberResponses, record, review))
+			.willReturn(response);
 
 		//when
-		TeamResponse foundTeam = teamService.findById(TEAM.getId());
+		TeamResponse foundTeam = teamService.findById(team.getId());
 
 		//then
-		verify(teamRepository, times(1)).findById(TEAM.getId());
-		verify(teamConverter, times(1)).toTeamResponse(TEAM, USER_RESPONSE, Collections.emptyList(), RECORD, REVIEW);
+		verify(teamRepository, times(1)).findById(team.getId());
+		verify(teamConverter, times(1)).toTeamResponse(team, userResponse, teamMemberResponses, record, review);
 
-		assertThat(foundTeam.id()).isEqualTo(TEAM.getId());
+		MatcherAssert.assertThat(foundTeam, Matchers.samePropertyValuesAs(response));
 	}
 
 	@Test
-	@DisplayName("존재하지 않은 ID로 조회 시 EntityNotFoundException 예외 발생")
-	void findByIdFail() {
+	@DisplayName("존재하지 않은 ID로 프로필 조회 시 EntityNotFoundException 예외 발생")
+	void findProfileByIdFail() {
+		/// given
 		Long invalidId = 1000L;
+
 		given(teamRepository.findById(invalidId)).willReturn(Optional.empty());
 
+		// when
+		// then
 		assertThatThrownBy(() -> teamService.findById(invalidId)).isInstanceOf(EntityNotFoundException.class);
 	}
 
@@ -149,6 +147,16 @@ class TeamServiceTest {
 		ReflectionTestUtils.setField(demoUser, "id", 10L);
 
 		return demoUser;
+	}
+
+	private Team getDemoTeam(User user) {
+		return Team.builder()
+			.id(1L)
+			.name("team1")
+			.description("first team")
+			.sportsCategory(SportsCategory.BADMINTON)
+			.leader(user)
+			.build();
 	}
 
 	public UserResponse toUserResponse(User user) {

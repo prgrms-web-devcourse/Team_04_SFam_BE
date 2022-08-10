@@ -29,9 +29,7 @@ public class TeamMemberGiverService {
 	}
 
 	public List<TeamMemberResponse> findAllByTeamId(Long teamId) {
-		List<TeamMember> teams = teamMemberRepository.findAllByTeamId(teamId);
-
-		return teams.stream()
+		return teamMemberRepository.findAllByTeamId(teamId).stream()
 			.map(teamMemberConverter::toTeamMemberResponse)
 			.toList();
 	}

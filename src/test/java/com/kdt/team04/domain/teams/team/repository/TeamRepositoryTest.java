@@ -22,10 +22,10 @@ import com.kdt.team04.domain.user.entity.User;
 class TeamRepositoryTest {
 
 	@Autowired
-	private TestEntityManager entityManager;
+	TestEntityManager entityManager;
 
 	@Autowired
-	private TeamRepository teamRepository;
+	TeamRepository teamRepository;
 
 	@Test
 	@DisplayName("팀을 생성한다")
