@@ -14,7 +14,9 @@ import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
+import com.kdt.team04.domain.teams.teaminvitation.dto.TeamInvitationCursor;
 import com.kdt.team04.domain.teams.teaminvitation.dto.request.TeamInvitationRequest;
+import com.kdt.team04.domain.teams.teaminvitation.dto.response.TeamInvitationResponse;
 import com.kdt.team04.domain.teams.teaminvitation.dto.response.TeamInviteResponse;
 import com.kdt.team04.domain.teams.teaminvitation.service.TeamInvitationService;
 
@@ -34,17 +36,18 @@ public class TeamInvitationController {
 
 	@Operation(summary = "초대 목록 조회", description = "자신이 초대받은 초대 목록을 조회한다.")
 	@GetMapping("/invitations")
-	public ApiResponse<PageDto.CursorResponse> getInvitations(
+	public ApiResponse<PageDto.CursorResponse<TeamInvitationResponse, TeamInvitationCursor>> getInvitations(
 		@AuthUser JwtAuthentication auth,
 		@Valid PageDto.TeamInvitationCursorPageRequest request
 	) {
-		PageDto.CursorResponse result = teamInvitationService.getInvitations(auth.id(), request);
+		PageDto.CursorResponse<TeamInvitationResponse, TeamInvitationCursor> result =
+			teamInvitationService.getInvitations(auth.id(), request);
 
 		return new ApiResponse<>(result);
 	}
 
-	@PostMapping("/{teamId}/invitations") // 14, 12
 	@Operation(summary = "팀원 초대", description = "팀 ID와 초대 대상 회원 ID를 받아 팀으로 초대한다.")
+	@PostMapping("/{teamId}/invitations") // 14, 12
 	public ApiResponse<TeamInviteResponse> invite(
 		@AuthUser JwtAuthentication auth,
 		@Parameter(description = "팀 ID", required = true) @PathVariable Long teamId,
@@ -53,8 +56,8 @@ public class TeamInvitationController {
 		return new ApiResponse<>(teamInvitationService.invite(auth.id(), teamId, request.targetUserId()));
 	}
 
-	@PatchMapping("/{teamId}/invitation/{invitationId}")
 	@Operation(summary = "초대 거절", description = "팀 ID와 초대 ID를 받아 초대를 거절한다.")
+	@PatchMapping("/{teamId}/invitation/{invitationId}")
 	public void refuse(
 		@Parameter(description = "팀 ID") @PathVariable Long teamId,
 		@Parameter(description = "팀 초대 ID") @PathVariable Long invitationId
