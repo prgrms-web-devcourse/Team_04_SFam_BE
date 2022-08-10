@@ -34,13 +34,5 @@ public record UserResponse(
 	@Schema(description = "회원 권한")
 	Role role
 ) {
-
-	@Override
-	public UserSettings userSettings() {
-		return userSettings == null
-			? new UserSettings(null, null, null)
-			: userSettings;
-	}
-
 }
 

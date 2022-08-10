@@ -1,5 +1,7 @@
 package com.kdt.team04.domain.user.entity;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -63,7 +65,8 @@ public class User extends BaseEntity {
 	}
 
 	@Builder
-	public User(Long id, String password, String username, String nickname, UserSettings userSettings, String email, String profileImageUrl, Role role) {
+	public User(Long id, String password, String username, String nickname, UserSettings userSettings, String email,
+		String profileImageUrl, Role role) {
 		this.id = id;
 		this.password = password;
 		this.username = username;
@@ -106,11 +109,14 @@ public class User extends BaseEntity {
 		return userSettings;
 	}
 
-	public void updateSettings(UserSettings userSettings) {
-		this.userSettings = userSettings;
+	public void updateSettings(Double latitude, Double longitude, Integer searchDistance) {
+		checkArgument(latitude != null, "latitude must be provided");
+		checkArgument(longitude != null, "longitude must be provided");
+		checkArgument(searchDistance != null, "search distance must be provided");
+		this.userSettings = new UserSettings(latitude, longitude, searchDistance);
 	}
 
-	public User update(String nickname, String email , String profileImageUrl) {
+	public User update(String nickname, String email, String profileImageUrl) {
 		this.nickname = nickname != null ? nickname : this.nickname;
 		this.email = email != null ? email : this.email;
 		this.profileImageUrl = profileImageUrl != null ? profileImageUrl : this.profileImageUrl;

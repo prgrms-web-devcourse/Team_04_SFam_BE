@@ -66,8 +66,9 @@ public class AuthService {
 			jwt.getAuthorities(jwt.verify(accessToken)));
 		tokenService.save(refreshToken, foundUser.id());
 
-		UserSettings foundUserSettings = foundUser.userSettings();
-
+		UserSettings foundUserSettings = foundUser.userSettings() == null
+			? new UserSettings(null, null, null)
+			: foundUser.userSettings();
 		return new SignInResponse(
 			foundUser.id(),
 			username,

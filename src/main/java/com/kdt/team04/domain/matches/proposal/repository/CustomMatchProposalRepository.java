@@ -11,4 +11,5 @@ public interface CustomMatchProposalRepository {
 	Optional<QueryMatchProposalSimpleResponse> findSimpleProposalById(Long id);
 	Optional<QueryMatchProposalResponse> findFixedProposalByMatchId(Long matchId);
 	List<QueryProposalChatResponse> findAllProposalByUserId(Long userId);
+	boolean existsByMatchIdAndUserId(Long matchId, Long userId);
 }

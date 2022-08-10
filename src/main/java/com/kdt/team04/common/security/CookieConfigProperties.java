@@ -6,5 +6,5 @@ import org.springframework.boot.web.server.Cookie;
 
 @ConstructorBinding
 @ConfigurationProperties(prefix = "cookie")
-public record CookieConfigProperties(Boolean secure, Cookie.SameSite sameSite) {
+public record CookieConfigProperties(Boolean secure, Cookie.SameSite sameSite, String domain) {
 }

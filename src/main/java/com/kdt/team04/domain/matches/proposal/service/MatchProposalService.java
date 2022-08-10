@@ -89,6 +89,13 @@ public class MatchProposalService {
 				proposerId, matchResponse.author().id()));
 		}
 
+		boolean existsProposal = proposalRepository.existsByMatchIdAndUserId(matchId, proposerId);
+
+		if (existsProposal) {
+			throw new BusinessException(ErrorCode.PROPOSAL_ALREADY_REQUESTED,
+				MessageFormat.format("Already proposal requested, matchId = {0}, proposerId = {1}", matchId, proposerId));
+		}
+
 		UserResponse authorResponse = userService.findById(matchResponse.author().id());
 		User author = userConverter.toUser(authorResponse);
 
