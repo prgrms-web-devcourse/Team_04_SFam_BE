@@ -23,6 +23,7 @@ import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalIdResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
@@ -228,5 +229,25 @@ public class MatchProposalService {
 				proposal.getStatus(),
 				proposal.getContent()
 			));
+	}
+
+	public ProposalChatResponse findById(Long id, Long userId) {
+		MatchProposal proposal = proposalRepository.findProposalWithMatchById(id)
+			.orElseThrow(() -> new BusinessException(ErrorCode.PROPOSAL_NOT_FOUND,
+				MessageFormat.format("proposalId = {0}", id)));
+
+		if (proposal.getUser().getId() != userId
+			&& proposal.getMatch().getUser().getId() != userId
+		) {
+			throw new BusinessException(ErrorCode.PROPOSAL_ACCESS_DENIED,
+				MessageFormat.format("proposalId = {0}, userId = {1}", id, userId));
+		}
+
+		return ProposalChatResponse.builder()
+			.id(proposal.getId())
+			.status(proposal.getStatus())
+			.content(proposal.getContent())
+			.isMatchAuthor(proposal.getUser().getId() != userId)
+			.build();
 	}
 }
