@@ -447,7 +447,7 @@ class MatchChatServiceIntegrationTest {
 			assertThat(response.get(proposal.getId()).getRowNumber(), is(1L));
 			assertThat(response.get(proposal.getId()).getLastChat(), is(expected.get(proposal.getId()).getLastChat()));
 			// TODO : PR 테스트 에서만 오류가 발생하는지 모르겠음... 🫠
-			// assertThat(response.get(proposal.getId()).getLastChatDate(), is(expected.get(proposal.getId()).getLastChatDate()));
+			assertThat(response.get(proposal.getId()).getLastChatDate(), is(expected.get(proposal.getId()).getLastChatDate()));
 		});
 	}
 
