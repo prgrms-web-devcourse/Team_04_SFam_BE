@@ -84,7 +84,6 @@ public class TeamMemberControllerTest {
 
 		// then
 		verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_TEAM_ID, request);
-		//verify(teamMemberService, times(1)).registerTeamMember(DEFAULT_TEAM_ID, request);
 		resultActions.andExpect(status().isOk());
 	}
 

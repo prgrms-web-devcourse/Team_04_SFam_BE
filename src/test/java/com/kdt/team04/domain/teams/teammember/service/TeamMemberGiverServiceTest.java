@@ -40,6 +40,7 @@ class TeamMemberGiverServiceTest {
 	@Test
 	@DisplayName("팀 ID로 멤버 전체 조회")
 	void findAllByTeamId() {
+		// given
 		User leaderUser = createLeader();
 		entityManager.persist(leaderUser);
 
@@ -63,7 +64,10 @@ class TeamMemberGiverServiceTest {
 		entityManager.flush();
 		entityManager.clear();
 
+		// when
 		List<TeamMemberResponse> teamMemberResponses = teamMemberGiverService.findAllByTeamId(team.getId());
+
+		// then
 		assertThat(teamMemberResponses).hasSize(teamMemberSize);
 	}
 

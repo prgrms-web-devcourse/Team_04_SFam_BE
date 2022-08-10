@@ -47,7 +47,7 @@ public class TeamInvitationController {
 	}
 
 	@Operation(summary = "팀원 초대", description = "팀 ID와 초대 대상 회원 ID를 받아 팀으로 초대한다.")
-	@PostMapping("/{teamId}/invitations") // 14, 12
+	@PostMapping("/{teamId}/invitations")
 	public ApiResponse<TeamInviteResponse> invite(
 		@AuthUser JwtAuthentication auth,
 		@Parameter(description = "팀 ID", required = true) @PathVariable Long teamId,
