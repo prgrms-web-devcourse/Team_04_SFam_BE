@@ -59,7 +59,7 @@ public class TeamInvitationService {
 		if (teamInvitationRepository.existsByTeamIdAndTargetIdAndStatusIn(
 			teamId, targetUserId, List.of(InvitationStatus.WAITING, InvitationStatus.ACCEPTED))
 		) {
-			throw new BusinessException(ErrorCode.ALREADY_TEAM_INVITATION,
+			throw new BusinessException(ErrorCode.ALREADY_INVITED_USER,
 				MessageFormat.format("teamId = {0}, targetId = {1}", teamId, targetUserId));
 		}
 

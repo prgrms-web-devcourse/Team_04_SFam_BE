@@ -34,7 +34,7 @@ public enum ErrorCode {
 	//TEAM_INVITATION
 	TEAM_INVITATION_NOT_FOUND("I0001", "Not found invitation", HttpStatus.NOT_FOUND),
 	INVALID_TEAM_INVITATION("I0002", "Invalid invitation", HttpStatus.BAD_REQUEST),
-	ALREADY_TEAM_INVITATION("I0003", "already waiting for an invitation.", HttpStatus.BAD_REQUEST),
+	ALREADY_INVITED_USER("I0003", "Invitation is already approval or wait.", HttpStatus.BAD_REQUEST),
 
 	//TEAM_MEMBER
 	ALREADY_TEAM_MEMBER("TM0001", "Already member of team", HttpStatus.BAD_REQUEST),
