@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.matches.match.repository;
 
 import static com.kdt.team04.domain.matches.match.model.entity.QMatch.match;
+import static com.kdt.team04.domain.user.entity.QUser.user;
 import static com.querydsl.core.types.dsl.Expressions.asDateTime;
 import static com.querydsl.core.types.dsl.Expressions.asNumber;
 import static com.querydsl.core.types.dsl.MathExpressions.acos;
@@ -40,6 +41,7 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 		Long id = pageRequest.getId();
 		LocalDateTime createdAt = pageRequest.getCreatedAt();
 		MatchStatus status = pageRequest.getStatus();
+		Long userId = pageRequest.getUserId();
 
 		NumberExpression<Double> distanceExpression = asNumber(6371.0)
 			.multiply(acos(cos(radians(asNumber(latitude))).multiply(cos(radians(match.location.latitude)))
@@ -54,7 +56,11 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 
 		BooleanExpression distanceCondition = Optional.ofNullable(distance)
 			.map(distanceExpression::lt)
-			.orElse(distanceExpression.lt(30.0));
+			.orElse(distanceExpression.lt(40.0));
+
+		BooleanExpression distanceOrUserIdCondition = Optional.ofNullable(userId)
+			.map(match.user.id::eq)
+			.orElse(distanceCondition);
 
 		BooleanExpression statusCondition = Optional.ofNullable(status)
 			.map(match.status::eq)
@@ -62,7 +68,7 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 
 		BooleanExpression cursorCondition = null;
 		if (createdAt != null && id != null) {
-			cursorCondition = distanceCondition.and(match.createdAt.lt(asDateTime(createdAt)))
+			cursorCondition = match.createdAt.lt(asDateTime(createdAt))
 				.or(asDateTime(createdAt).eq(match.createdAt).and(asNumber(match.id).lt(id)));
 		}
 
@@ -73,12 +79,17 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 					match.sportsCategory,
 					match.matchType,
 					match.content,
+					match.user.id,
+					match.user.nickname,
 					distanceExpression.as("distance"),
+					match.matchDate,
 					match.createdAt
 				)
 			)
 			.from(match)
-			.where(where.and(categoryCondition)
+			.leftJoin(match.user, user)
+			.where(where.and(distanceOrUserIdCondition)
+				.and(categoryCondition)
 				.and(statusCondition)
 				.and(cursorCondition))
 			.orderBy(match.createdAt.desc(), match.id.desc())

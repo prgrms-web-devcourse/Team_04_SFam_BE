@@ -101,6 +101,9 @@ public class PageDto {
 		@Parameter(description = "매칭 상태")
 		private MatchStatus status;
 
+		@Parameter(description = "회원 ID(고유 PK) userID 입력 시 distance는 무시 된다.")
+		private Long userId;
+
 		@Min(5)
 		@Max(40)
 		@Parameter(description = "검색 거리, 5 ~ 40까지 가능")
@@ -159,6 +162,14 @@ public class PageDto {
 
 		public void setCategory(SportsCategory category) {
 			this.category = category;
+		}
+
+		public Long getUserId() {
+			return this.userId;
+		}
+
+		public void setUserId(Long userId) {
+			this.userId = userId;
 		}
 
 		public Double getDistance() {
