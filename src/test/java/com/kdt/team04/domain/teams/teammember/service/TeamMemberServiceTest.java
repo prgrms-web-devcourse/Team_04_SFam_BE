@@ -40,7 +40,7 @@ class TeamMemberServiceTest {
 
 	@Test
 	@DisplayName("팀원 등록에 성공한다.")
-	void testRegisterMember() {
+	void registerMember() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
@@ -73,7 +73,7 @@ class TeamMemberServiceTest {
 
 	@Test
 	@DisplayName("다른 사용자의 초대를 수락할 시 권한 예외가 발생한다.")
-	void testNotAuthentication() {
+	void notAuthentication() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
@@ -106,7 +106,7 @@ class TeamMemberServiceTest {
 
 	@Test
 	@DisplayName("이미 등록된 팀원은 등록에 실패한다.")
-	void testAlreadyMember() {
+	void alreadyMember() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
@@ -139,7 +139,7 @@ class TeamMemberServiceTest {
 
 	@Test
 	@DisplayName("초대 상태가 WAITING 상태가 아니라면 등록에 실패한다.")
-	void testInvalidInvitation() {
+	void invalidInvitation() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");

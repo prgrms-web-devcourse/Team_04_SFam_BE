@@ -53,7 +53,7 @@ class TeamInvitationServiceTest {
 
 	@Test
 	@DisplayName("팀 초대 성공")
-	void testInviteSuccess() {
+	void inviteSuccess() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
@@ -84,7 +84,7 @@ class TeamInvitationServiceTest {
 
 	@Test
 	@DisplayName("이미 팀원인 유저는 초대할 수 없다.")
-	void testInviteAlreadyTeamMember() {
+	void inviteAlreadyTeamMember() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
@@ -115,7 +115,7 @@ class TeamInvitationServiceTest {
 
 	@Test
 	@DisplayName("이미 초대 대기상태나 수락 상태인 유저에게 초대를 보낼 수 없다.")
-	void testInviteAlreadySendInviteFail() {
+	void inviteAlreadySendInviteFail() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
@@ -148,7 +148,7 @@ class TeamInvitationServiceTest {
 
 	@Test
 	@DisplayName("팀 리더가 아닌사람은 초대할 수 없다.")
-	void testNotTeamLeaderCantInvite() {
+	void notTeamLeaderCantInvite() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
@@ -176,7 +176,7 @@ class TeamInvitationServiceTest {
 
 	@Test
 	@DisplayName("초대를 거절할 수 있다.")
-	void testInvitationRefused() {
+	void invitationRefused() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
@@ -212,7 +212,7 @@ class TeamInvitationServiceTest {
 
 	@Test
 	@DisplayName("다른 사용자의 초대를 거절할 시 권한 예외가 발생한다.")
-	void testNotAuthentication() {
+	void notAuthentication() {
 		//given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
@@ -247,7 +247,7 @@ class TeamInvitationServiceTest {
 
 	@Test
 	@DisplayName("팀 초대 목록을 20개중 10개씩 조회한다.")
-	void testFindInvitationsLimit10() {
+	void findInvitationsLimit10() {
 		// given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
@@ -290,7 +290,7 @@ class TeamInvitationServiceTest {
 
 	@Test
 	@DisplayName("팀 초대 목록을 20개중 20개씩 조회한다.")
-	void testFindInvitationsLimit20() {
+	void findInvitationsLimit20() {
 		// given
 		User userA = new User("test1234", "nickname", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
 		User userB = new User("test4567", "nickname2", "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.");
