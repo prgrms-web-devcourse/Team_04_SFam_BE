@@ -41,11 +41,11 @@ public class TeamController {
 
 	@Operation(summary = "팀 생성", description = "새로운 팀을 생성한다.")
 	@PostMapping
-	public void create(
+	public ApiResponse<Long> create(
 		@AuthUser JwtAuthentication auth,
 		@RequestBody @Valid CreateTeamRequest requestDto
 	) {
-		teamService.create(auth.id(), requestDto);
+		return new ApiResponse<>(teamService.create(auth.id(), requestDto));
 	}
 
 	@Operation(summary = "팀 프로필 조회", description = "해당 ID의 팀 프로필을 조회한다.")

@@ -1,5 +1,6 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
+import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
@@ -94,7 +95,8 @@ public class MatchProposalService {
 
 		if (existsProposal) {
 			throw new BusinessException(ErrorCode.PROPOSAL_ALREADY_REQUESTED,
-				MessageFormat.format("Already proposal requested, matchId = {0}, proposerId = {1}", matchId, proposerId));
+				MessageFormat.format("Already proposal requested, matchId = {0}, proposerId = {1}", matchId,
+					proposerId));
 		}
 
 		UserResponse authorResponse = userService.findById(matchResponse.author().id());
@@ -192,7 +194,9 @@ public class MatchProposalService {
 			.map(proposal -> {
 				QueryMatchChatPartitionByProposalIdResponse chatLastResponse = lastChats.get(proposal.getId());
 				ChatTargetProfileResponse chatTargetProfile
-					= new ChatTargetProfileResponse(proposal.getUser().getNickname());
+					= new ChatTargetProfileResponse(
+					BigInteger.valueOf(proposal.getUser().getId()),
+					proposal.getUser().getNickname());
 
 				return new ChatRoomResponse(
 					proposal.getId(),

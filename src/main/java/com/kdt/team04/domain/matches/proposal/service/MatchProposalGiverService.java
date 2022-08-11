@@ -1,5 +1,6 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
+import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.Objects;
 
@@ -13,8 +14,8 @@ import com.kdt.team04.domain.matches.match.dto.response.MatchAuthorResponse;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
 import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalSimpleResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatViewMatchResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.FixedProposalResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.MatchChatViewMatchResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
 import com.kdt.team04.domain.matches.proposal.repository.MatchProposalRepository;
@@ -57,6 +58,10 @@ public class MatchProposalGiverService {
 				MessageFormat.format("matchId = {0}, proposalId = {1}, userId = {1}", match.id(), id, userId));
 		}
 
+		BigInteger targetUserId = BigInteger.valueOf(Objects.equals(match.author().id(), userId) ?
+			matchProposal.getUser().getId() :
+			match.author().id());
+
 		String targetNickname = Objects.equals(match.author().id(), userId) ?
 			matchProposal.getUser().getNickname() :
 			match.author().nickname();
@@ -64,7 +69,7 @@ public class MatchProposalGiverService {
 		return new MatchChatViewMatchResponse(
 			match.title(),
 			match.status(),
-			new ChatTargetProfileResponse(targetNickname)
+			new ChatTargetProfileResponse(targetUserId, targetNickname)
 		);
 	}
 

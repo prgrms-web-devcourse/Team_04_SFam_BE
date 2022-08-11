@@ -4,6 +4,7 @@ import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -419,9 +420,10 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.persist(chat);
 
 		List<ChatRoomResponse> expected = new ArrayList<>();
-		expected.add(new ChatRoomResponse(proposal2.getId(), proposal2.getContent(), new ChatTargetProfileResponse(target2.getNickname()), new LastChatResponse(chat.getContent()), proposal2.getCreatedAt()));
-		expected.add(new ChatRoomResponse(proposal3.getId(), proposal3.getContent(), new ChatTargetProfileResponse(target3.getNickname()), null, proposal3.getCreatedAt()));
-		expected.add(new ChatRoomResponse(proposal1.getId(), proposal1.getContent(), new ChatTargetProfileResponse(target1.getNickname()), null, proposal1.getCreatedAt()));
+		expected.add(new ChatRoomResponse(proposal2.getId(), proposal2.getContent(), new ChatTargetProfileResponse(
+			BigInteger.valueOf(target2.getId()), target2.getNickname()), new LastChatResponse(chat.getContent()), proposal2.getCreatedAt()));
+		expected.add(new ChatRoomResponse(proposal3.getId(), proposal3.getContent(), new ChatTargetProfileResponse(BigInteger.valueOf(target3.getId()), target3.getNickname()), null, proposal3.getCreatedAt()));
+		expected.add(new ChatRoomResponse(proposal1.getId(), proposal1.getContent(), new ChatTargetProfileResponse(BigInteger.valueOf(target1.getId()), target1.getNickname()), null, proposal1.getCreatedAt()));
 
 		//when
 		matchProposalService.findAllProposalChats(match.getId(), author.getId());
