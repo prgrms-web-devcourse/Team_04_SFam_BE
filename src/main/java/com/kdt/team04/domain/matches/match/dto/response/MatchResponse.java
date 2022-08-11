@@ -3,12 +3,14 @@ package com.kdt.team04.domain.matches.match.dto.response;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kdt.team04.domain.matches.match.model.MatchStatus;
 import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.user.dto.response.AuthorResponse;
+import com.kdt.team04.domain.user.entity.Location;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -46,6 +48,10 @@ public record MatchResponse(
 	String content,
 
 	@Schema(description = "매칭 신청 정보(로그인한 사용자가 신청했다면 정보 포함 | 아니라면 null 반환)")
-	Optional<ProposalSimpleResponse> proposer
+	Optional<ProposalSimpleResponse> proposer,
+
+	@Schema(description = "매치 작성 위치 정보")
+	@JsonIgnore
+	Location location
 ) {
 }

@@ -126,4 +126,16 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 			.fetchFirst() != null;
 	}
 
+	@Override
+	public Double getDistance(Double latitude, Double longitude, Long matchId) {
+		NumberExpression<Double> distanceExpression = asNumber(6371.0)
+			.multiply(acos(cos(radians(asNumber(latitude))).multiply(cos(radians(match.location.latitude)))
+				.multiply(cos(radians(match.location.longitude).subtract(radians(asNumber(longitude)))))
+				.add(sin(radians(asNumber(latitude))).multiply(sin(radians(match.location.latitude))))));
+
+		return jpaQueryFactory.select(distanceExpression)
+			.from(match)
+			.where(match.id.eq(matchId))
+			.fetchOne();
+	}
 }

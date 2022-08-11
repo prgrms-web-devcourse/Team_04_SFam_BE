@@ -12,8 +12,8 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.match.dto.MatchConverter;
 import com.kdt.team04.domain.matches.match.dto.response.MatchAuthorResponse;
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
-import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.model.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
@@ -105,5 +105,9 @@ public class MatchGiverService {
 			team.getSportsCategory(), team.getLogoImageUrl());
 
 		return matchConverter.toMatchResponse(match, author, teamResponse);
+	}
+
+	public Double getDistance(Double latitude, Double longitude, Long matchId) {
+		return matchRepository.getDistance(latitude, longitude, matchId);
 	}
 }
