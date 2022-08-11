@@ -91,10 +91,16 @@ public class AuthController {
 		ResponseCookie accessTokenCookie = ResponseCookie.from(signOutResponse.accessTokenHeader(), "")
 			.path("/")
 			.maxAge(0)
+			.httpOnly(true)
+			.secure(cookieConfigProperties.secure())
+			.domain(cookieConfigProperties.domain())
 			.build();
 		ResponseCookie refreshTokenCookie = ResponseCookie.from(signOutResponse.refreshTokenHeader(), "")
 			.path("/")
 			.maxAge(0)
+			.httpOnly(true)
+			.secure(cookieConfigProperties.secure())
+			.domain(cookieConfigProperties.domain())
 			.build();
 		response.setHeader(SET_COOKIE, accessTokenCookie.toString());
 		response.addHeader(SET_COOKIE, refreshTokenCookie.toString());
