@@ -67,8 +67,8 @@ class MatchProposalServiceIntegrationTest {
 	AmazonS3 amazonS3;
 
 	@Test
-	@DisplayName("개인전 매칭을 신청하고 해당 신청 생성 후 Id 값을 return 한다.")
-	void testIndividualCreateSuccess() {
+	@DisplayName("[성공] 개인전 매칭을 신청하고 해당 신청 생성 후 Id 값을 return 한다.")
+	void create_individualProposal_success() {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		User proposer = new User("proposer", "proposer", "aA1234!");
@@ -96,8 +96,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("팀전 매칭을 신청하고 해당 신청 생성 후 Id 값을 return 한다.")
-	void testTeamProposerCreateSuccess() {
+	@DisplayName("[성공] 팀전 매칭을 신청하고 해당 신청 생성 후 Id 값을 return 한다.")
+	void create_teamProposer_success() {
 		//given
 		User author = new User("author", "author", "aA1234!");
 
@@ -159,8 +159,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("이미 신청한 사용자가 개인전 매칭에 중복 신청 시, 오류가 발생한다.")
-	void create_DuplicateIndividualProposal_Fail() {
+	@DisplayName("[실패] 이미 신청한 사용자가 개인전 매칭에 중복 신청 시, 오류가 발생한다.")
+	void create_duplicateIndividualProposal_fail() {
 		//given
 		User author = new User("author", "author", "aA1234!");
 
@@ -201,8 +201,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("이미 신청한 사용자가 팀전 매칭에 중복 신청 시, 오류가 발생한다.")
-	void create_DuplicateTeamProposal__Fail() {
+	@DisplayName("[실패] 이미 신청한 사용자가 팀전 매칭에 중복 신청 시, 오류가 발생한다.")
+	void create_duplicateTeamProposal_fail() {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		Team authorTeam = Team.builder()
@@ -262,8 +262,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("팀전 매칭 신청시 신청자 팀원수보다 매칭 인원이 많으면 예외가 발생한다.")
-	void testTeamProposerCreateFailByTeamMember() {
+	@DisplayName("[실패] 팀전 매칭 신청시 신청자 팀원수보다 매칭 인원이 많으면 예외가 발생한다.")
+	void create_teamProposal_notMatchParticipants_fail() {
 		//given
 		User author = new User("author", "author", "aA1234!");
 
@@ -316,8 +316,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("팀전 매칭을 신청시 request의 teamId가 null일 경우 예외가 발생한다.")
-	void testTeamProposerCreateFail() {
+	@DisplayName("[실패] 팀전 매칭을 신청시 request의 teamId가 null일 경우 예외가 발생한다.")
+	void create_teamProposal_proposerTeamIdNull_fail() {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		User proposer = new User("proposer", "proposer", "aA1234!");
@@ -361,8 +361,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("공고 작성자와 신청자의 Id가 같으면 예외가 발생한다.")
-	void TeamProposerCreateFail() {
+	@DisplayName("[실패] 공고 작성자와 신청자의 Id가 같으면 예외가 발생한다.")
+	void create_teamProposal_proposerIdEqualsAuthorId_fail() {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		entityManager.persist(author);
@@ -387,8 +387,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("매칭 ID로 매칭 신청 목록을 일자 기준(신청일자 or 마지막 채팅 기록 일자) 내림차순 정렬 조회한다.")
-	void findAllLastChats_OrderByProposalDateOrLastChatDate() {
+	@DisplayName("[성공] 매칭 ID로 매칭 신청 목록을 일자 기준(신청일자 or 마지막 채팅 기록 일자) 내림차순 정렬 조회한다.")
+	void findAllLastChats_orderByProposalDateOrLastChatDate_success() {
 		//given
 		User author = getUser("author");
 		Team authorTeam = getSoccerTeam("author", author);
@@ -447,8 +447,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("매칭에 대한 신청이 없다면 매칭 신청 목록 조회 시, 오류가 발생한다.")
-	void testFail_EmptyProposalBy_findAllLastChats() {
+	@DisplayName("[실패] 매칭에 대한 신청이 없다면 매칭 신청 목록 조회 시, 오류가 발생한다.")
+	void findAllLastChats_notExistsProposal_fail() {
 		User author = new User("author", "authorNik", "aA1234!");
 		User target = new User("target", "targetNik", "aA1234!");
 		Team authorTeam = Team.builder()
@@ -488,8 +488,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("매칭 작성자가 아니라면 매칭 신청 목록 조회 시, 오류가 발생한다.")
-	void testFail_EmptyProposalBy_findAllLastChatsWith_WrongAuthorId() {
+	@DisplayName("[실패] 매칭 작성자가 아니라면 매칭 신청 목록 조회 시, 오류가 발생한다.")
+	void findAllProposalChats_notMatchAuthor_fail() {
 		//given
 		String lastChat = "마지막 채팅";
 
@@ -570,8 +570,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("매칭 작성자가 매칭 신청을 거절하면 신청 상태가 REFUSE로 변경된다.")
-	void testRefuseReactSuccess() {
+	@DisplayName("[성공] 매칭 작성자가 매칭 신청을 거절하면 신청 상태가 REFUSE로 변경된다.")
+	void react_toRefuse_success() {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		User proposer = new User("proposer", "proposer", "aA1234!");
@@ -609,8 +609,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("매칭이 이루어진 후 다른 신청을 수락하면 예외가 발생한다.")
-	void testAlreadyMatchedApproveReactFail() {
+	@DisplayName("[실패] 매칭이 이루어진 후 다른 신청을 수락하면 예외가 발생한다.")
+	void react_alreadyMatched_fail() {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		User proposer = new User("proposer", "proposer", "aA1234!");
@@ -644,8 +644,8 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("매칭 공고의 모든 매칭 신청이 삭제된다.")
-	void testDeleteByMatchesSuccess() {
+	@DisplayName("[성공] 매칭 공고의 모든 매칭 신청이 삭제된다.")
+	void deleteByMatches_success() {
 		//given
 		User author = new User("author", "author", "aA1234!");
 		User proposer = new User("proposer", "proposer", "aA1234!");
@@ -682,7 +682,7 @@ class MatchProposalServiceIntegrationTest {
 
 	@Test
 	@DisplayName("[성공] 매칭 공고글 작성자가 매칭 신청 정보를 조회한다.(By 신청 ID, 사용자 ID)")
-	void findById_AndAuthorId_Success() {
+	void findById_andAuthorId_success() {
 		//given
 		User author = getUser("author");
 		User proposer = getUser("proposer");
@@ -711,7 +711,7 @@ class MatchProposalServiceIntegrationTest {
 
 	@Test
 	@DisplayName("[성공] 신청자가 매칭 신청 정보를 조회한다.(By 신청 ID, 사용자 ID)")
-	void findById_AndProposerId_Success() {
+	void findById_andProposerId_success() {
 		//given
 		User author = getUser("author");
 		User proposer = getUser("proposer");
@@ -740,7 +740,7 @@ class MatchProposalServiceIntegrationTest {
 
 	@Test
 	@DisplayName("[실패] 존재하지 않는 신청 ID로 매칭 신청 정보를 조회 시, 오류가 발생한다.")
-	void findById_NotFound_Fail() {
+	void findById_notFound_fail() {
 		//given
 		User author = getUser("author");
 		User proposer = getUser("proposer");
@@ -763,7 +763,7 @@ class MatchProposalServiceIntegrationTest {
 
 	@Test
 	@DisplayName("[실패] 작성자도 신청자도 아닌 사용자가 매칭 신청 정보를 조회 시, 오류가 발생한다.")
-	void findById_NotPermission_Fail() {
+	void findById_notPermission_fail() {
 		//given
 		User author = getUser("author");
 		User proposer = getUser("proposer");
