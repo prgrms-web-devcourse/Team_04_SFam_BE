@@ -107,8 +107,6 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.persist(member1);
 		entityManager.persist(member2);
 
-		proposer.updateSettings(1.1, 1.2, 10);
-
 		Team proposerTeam = MatchFactory.getTeamSoccer("proposer", proposer);
 		List<TeamMember> teamMembers = MatchFactory.getTeamMembers(proposerTeam, proposer, member1, member2);
 
@@ -196,8 +194,6 @@ class MatchProposalServiceIntegrationTest {
 		Team proposerTeam = MatchFactory.getTeamSoccer("proposer", proposer);
 		entityManager.persist(proposer);
 		entityManager.persist(proposerTeam);
-
-		proposer.updateSettings(1.1, 1.2, 10);
 
 		Match match = MatchFactory.getTeamMatchSoccer(3, MatchStatus.WAITING, author, authorTeam);
 		entityManager.persist(match);
