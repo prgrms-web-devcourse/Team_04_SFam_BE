@@ -31,5 +31,4 @@ public class TeamMemberController {
 		@RequestBody @Valid RegisterTeamMemberRequest teamMemberRegisterRequest) {
 		teamMemberService.registerTeamMember(teamId, teamMemberRegisterRequest);
 	}
-
 }
