@@ -40,7 +40,6 @@ import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
 import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
-import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import com.kdt.team04.domain.user.entity.User;
 
@@ -68,7 +67,10 @@ class MatchProposalServiceIntegrationTest {
 	void testIndividualCreateSuccess() {
 		//given
 		User author = new User("author", "author", "aA1234!");
+		author.updateSettings(127.1554531, 37.6139816, 40);
 		User proposer = new User("proposer", "proposer", "aA1234!");
+		proposer.updateSettings(127.1554531, 37.6139816, 40);
+
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 
@@ -81,6 +83,7 @@ class MatchProposalServiceIntegrationTest {
 			.user(author)
 			.sportsCategory(SportsCategory.BADMINTON)
 			.content("content")
+			.location(author.getUserSettings().getLocation())
 			.build();
 		entityManager.persist(match);
 		CreateProposalRequest request = new CreateProposalRequest(null, "개인전 신청합니다.");
@@ -97,6 +100,7 @@ class MatchProposalServiceIntegrationTest {
 	void testTeamProposerCreateSuccess() {
 		//given
 		User author = new User("author", "author", "aA1234!");
+		author.updateSettings(127.1554531, 37.6139816, 40);
 
 		entityManager.persist(author);
 
@@ -110,14 +114,13 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.persist(authorTeam);
 
 		User proposer = new User("proposer", "proposer", "aA1234!");
+		proposer.updateSettings(127.1554531, 37.6139816, 40);
 		User user1 = new User("member1", "member1", "password");
 		User user2 = new User("member2", "member2", "password");
 
 		entityManager.persist(proposer);
 		entityManager.persist(user1);
 		entityManager.persist(user2);
-
-		proposer.updateSettings(1.1, 1.2, 10);
 
 		Team proposerTeam = Team.builder()
 			.name("proposer")
@@ -141,6 +144,7 @@ class MatchProposalServiceIntegrationTest {
 			.team(authorTeam)
 			.sportsCategory(SportsCategory.BADMINTON)
 			.content("content")
+			.location(author.getUserSettings().getLocation())
 			.build();
 
 		entityManager.persist(match);
@@ -263,6 +267,7 @@ class MatchProposalServiceIntegrationTest {
 	void testTeamProposerCreateFailByTeamMember() {
 		//given
 		User author = new User("author", "author", "aA1234!");
+		author.updateSettings(127.1554531, 37.6139816, 40);
 
 		entityManager.persist(author);
 
@@ -300,6 +305,7 @@ class MatchProposalServiceIntegrationTest {
 			.team(authorTeam)
 			.sportsCategory(SportsCategory.BADMINTON)
 			.content("content")
+			.location(author.getUserSettings().getLocation())
 			.build();
 
 		entityManager.persist(match);
@@ -317,7 +323,9 @@ class MatchProposalServiceIntegrationTest {
 	void testTeamProposerCreateFail() {
 		//given
 		User author = new User("author", "author", "aA1234!");
+		author.updateSettings(127.1554531, 37.6139816, 40);
 		User proposer = new User("proposer", "proposer", "aA1234!");
+		proposer.updateSettings(127.1554531, 37.6139816, 40);
 
 		entityManager.persist(author);
 		entityManager.persist(proposer);
@@ -348,6 +356,7 @@ class MatchProposalServiceIntegrationTest {
 			.team(authorTeam)
 			.sportsCategory(SportsCategory.BADMINTON)
 			.content("content")
+			.location(author.getUserSettings().getLocation())
 			.build();
 		entityManager.persist(match);
 		CreateProposalRequest request = new CreateProposalRequest(null, "팀전 신청합니다.");
@@ -421,9 +430,14 @@ class MatchProposalServiceIntegrationTest {
 
 		List<ChatRoomResponse> expected = new ArrayList<>();
 		expected.add(new ChatRoomResponse(proposal2.getId(), proposal2.getContent(), new ChatTargetProfileResponse(
-			BigInteger.valueOf(target2.getId()), target2.getNickname()), new LastChatResponse(chat.getContent()), proposal2.getCreatedAt()));
-		expected.add(new ChatRoomResponse(proposal3.getId(), proposal3.getContent(), new ChatTargetProfileResponse(BigInteger.valueOf(target3.getId()), target3.getNickname()), null, proposal3.getCreatedAt()));
-		expected.add(new ChatRoomResponse(proposal1.getId(), proposal1.getContent(), new ChatTargetProfileResponse(BigInteger.valueOf(target1.getId()), target1.getNickname()), null, proposal1.getCreatedAt()));
+			BigInteger.valueOf(target2.getId()), target2.getNickname()), new LastChatResponse(chat.getContent()),
+			proposal2.getCreatedAt()));
+		expected.add(new ChatRoomResponse(proposal3.getId(), proposal3.getContent(),
+			new ChatTargetProfileResponse(BigInteger.valueOf(target3.getId()), target3.getNickname()), null,
+			proposal3.getCreatedAt()));
+		expected.add(new ChatRoomResponse(proposal1.getId(), proposal1.getContent(),
+			new ChatTargetProfileResponse(BigInteger.valueOf(target1.getId()), target1.getNickname()), null,
+			proposal1.getCreatedAt()));
 
 		//when
 		matchProposalService.findAllProposalChats(match.getId(), author.getId());
