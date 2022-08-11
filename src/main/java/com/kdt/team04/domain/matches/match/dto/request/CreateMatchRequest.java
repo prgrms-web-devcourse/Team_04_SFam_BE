@@ -16,9 +16,9 @@ import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateMatchRequest(
-	@Schema(description = "매칭 제목, 2자 이상 10자 이하", required = true)
+	@Schema(description = "매칭 제목, 2자 이상 50자 이하", required = true)
 	@NotBlank
-	@Size(min = 2, max = 10)
+	@Size(min = 2, max = 50)
 	String title,
 
 	@Schema(description = "매칭 날짜, 오늘 이후의 날짜만 가능", required = true, pattern = "yyyy-MM-dd")
