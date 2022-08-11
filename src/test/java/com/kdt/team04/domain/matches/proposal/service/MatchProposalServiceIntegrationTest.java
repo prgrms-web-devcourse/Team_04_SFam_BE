@@ -3,6 +3,7 @@ package com.kdt.team04.domain.matches.proposal.service;
 import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.APPROVED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.util.stream.IntStream;
 
 import javax.persistence.EntityManager;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.LastChatResponse;
+import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
@@ -677,6 +680,110 @@ class MatchProposalServiceIntegrationTest {
 		assertThat(deletedProposal).isEmpty();
 	}
 
+	@Test
+	@DisplayName("[성공] 매칭 공고글 작성자가 매칭 신청 정보를 조회한다.(By 신청 ID, 사용자 ID)")
+	void findById_AndAuthorId_Success() {
+		//given
+		User author = getUser("author");
+		User proposer = getUser("proposer");
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+
+		Match match = getSoccerIndividualMatch(MatchStatus.WAITING, author);
+		entityManager.persist(match);
+
+		MatchProposal proposal = getIndividualProposal(match, proposer, MatchProposalStatus.WAITING);
+		entityManager.persist(proposal);
+
+		ProposalChatResponse expected = new ProposalChatResponse(
+			proposal.getId(),
+			proposal.getStatus(),
+			proposal.getContent(),
+			true
+		);
+
+		//when
+		ProposalChatResponse response = matchProposalService.findById(proposal.getId(), author.getId());
+
+		//then
+		MatcherAssert.assertThat(response, samePropertyValuesAs(expected));
+	}
+
+	@Test
+	@DisplayName("[성공] 신청자가 매칭 신청 정보를 조회한다.(By 신청 ID, 사용자 ID)")
+	void findById_AndProposerId_Success() {
+		//given
+		User author = getUser("author");
+		User proposer = getUser("proposer");
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+
+		Match match = getSoccerIndividualMatch(MatchStatus.WAITING, author);
+		entityManager.persist(match);
+
+		MatchProposal proposal = getIndividualProposal(match, proposer, MatchProposalStatus.WAITING);
+		entityManager.persist(proposal);
+
+		ProposalChatResponse expected = new ProposalChatResponse(
+			proposal.getId(),
+			proposal.getStatus(),
+			proposal.getContent(),
+			false
+		);
+
+		//when
+		ProposalChatResponse response = matchProposalService.findById(proposal.getId(), proposer.getId());
+
+		//then
+		MatcherAssert.assertThat(response, samePropertyValuesAs(expected));
+	}
+
+	@Test
+	@DisplayName("[실패] 존재하지 않는 신청 ID로 매칭 신청 정보를 조회 시, 오류가 발생한다.")
+	void findById_NotFound_Fail() {
+		//given
+		User author = getUser("author");
+		User proposer = getUser("proposer");
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+
+		Match match = getSoccerIndividualMatch(MatchStatus.WAITING, author);
+		entityManager.persist(match);
+
+		MatchProposal proposal = getIndividualProposal(match, proposer, MatchProposalStatus.WAITING);
+		entityManager.persist(proposal);
+
+		Long invalidProposalId = 999L;
+
+		//when, then
+		assertThatThrownBy(() -> {
+			matchProposalService.findById(invalidProposalId, author.getId());
+		}).isInstanceOf(BusinessException.class);
+	}
+
+	@Test
+	@DisplayName("[실패] 작성자도 신청자도 아닌 사용자가 매칭 신청 정보를 조회 시, 오류가 발생한다.")
+	void findById_NotPermission_Fail() {
+		//given
+		User author = getUser("author");
+		User proposer = getUser("proposer");
+		User anonymous = getUser("anonymous");
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+		entityManager.persist(anonymous);
+
+		Match match = getSoccerIndividualMatch(MatchStatus.WAITING, author);
+		entityManager.persist(match);
+
+		MatchProposal proposal = getIndividualProposal(match, proposer, MatchProposalStatus.WAITING);
+		entityManager.persist(proposal);
+
+		//when, then
+		assertThatThrownBy(() -> {
+			matchProposalService.findById(proposal.getId(), anonymous.getId());
+		}).isInstanceOf(BusinessException.class);
+	}
+
 	private static User getUser(String name) {
 		return User.builder()
 			.password("1234")
@@ -707,6 +814,18 @@ class MatchProposalServiceIntegrationTest {
 			.build();
 	}
 
+	private static Match getSoccerIndividualMatch(MatchStatus status, User user) {
+		return Match.builder()
+			.title("덤벼라!")
+			.sportsCategory(SportsCategory.SOCCER)
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.matchDate(LocalDate.now())
+			.participants(1)
+			.status(status)
+			.user(user)
+			.build();
+	}
+
 	private static MatchProposal getProposal(Match match, String content, User proposer, Team proposerTeam,
 		MatchProposalStatus status) {
 		return MatchProposal.builder()
@@ -715,6 +834,19 @@ class MatchProposalServiceIntegrationTest {
 			.user(proposer)
 			.team(proposerTeam)
 			.status(APPROVED)
+			.build();
+	}
+
+	private static MatchProposal getIndividualProposal(
+		Match match,
+		User proposer,
+		MatchProposalStatus status
+	) {
+		return MatchProposal.builder()
+			.match(match)
+			.content("겜 하실?")
+			.user(proposer)
+			.status(status)
 			.build();
 	}
 
