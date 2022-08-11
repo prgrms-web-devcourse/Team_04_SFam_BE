@@ -53,7 +53,7 @@ public class MatchProposalController {
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
 		@Parameter(description = "매칭 신청 ID") @PathVariable Long id,
 		@RequestBody @Valid ReactProposalRequest request) {
-		matchProposalService.react(auth.id(), matchId, id, request.status());
+		matchProposalService.approveOrRefuse(auth.id(), matchId, id, request.status());
 	}
 
 	@Operation(summary = "신청 목록 조회", description = "해당 대결의 신청 목록이 조회된다.")

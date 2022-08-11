@@ -40,7 +40,6 @@ import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
 import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
-import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import com.kdt.team04.domain.user.entity.User;
 
@@ -596,7 +595,7 @@ class MatchProposalServiceIntegrationTest {
 		MatchProposal savedProposal = matchProposalRepository.save(proposal);
 
 		//when
-		MatchProposalStatus react = matchProposalService.react(author.getId(), match.getId(), savedProposal.getId(),
+		MatchProposalStatus react = matchProposalService.approveOrRefuse(author.getId(), match.getId(), savedProposal.getId(),
 			MatchProposalStatus.REFUSE);
 
 		//then
@@ -606,7 +605,7 @@ class MatchProposalServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("매칭이 이루어진 후 다른 신청을 수락하면 예외가 발생한다.")
+	@DisplayName("매칭 종료된 후 다른 신청을 수락하면 예외가 발생한다.")
 	void testAlreadyMatchedApproveReactFail() {
 		//given
 		User author = new User("author", "author", "aA1234!");
@@ -616,7 +615,7 @@ class MatchProposalServiceIntegrationTest {
 
 		Match match = Match.builder()
 			.title("match")
-			.status(MatchStatus.IN_GAME)
+			.status(MatchStatus.END)
 			.matchDate(LocalDate.now())
 			.matchType(MatchType.INDIVIDUAL_MATCH)
 			.participants(1)
@@ -635,10 +634,13 @@ class MatchProposalServiceIntegrationTest {
 		MatchProposal savedProposal = matchProposalRepository.save(proposal);
 
 		//when
-		assertThatThrownBy(() -> matchProposalService.react(author.getId(), match.getId(), savedProposal.getId(),
+		assertThatThrownBy(() -> matchProposalService.approveOrRefuse(author.getId(), match.getId(), savedProposal.getId(),
 			MatchProposalStatus.APPROVED)).isInstanceOf(BusinessException.class);
-
 	}
+
+	// TODO react() - to change Fixed
+	// TODO react() - to change Waiting
+	// TODO react() - already approved or refuse
 
 	@Test
 	@DisplayName("다른 사용자가 공고 신청상태 변경 시 예외가 발생한다.")
@@ -673,7 +675,7 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.clear();
 
 		//when
-		assertThatThrownBy(() -> matchProposalService.react(-999L, match.getId(), savedProposal.getId(),
+		assertThatThrownBy(() -> matchProposalService.approveOrRefuse(-999L, match.getId(), savedProposal.getId(),
 			MatchProposalStatus.APPROVED)).isInstanceOf(BusinessException.class);
 	}
 

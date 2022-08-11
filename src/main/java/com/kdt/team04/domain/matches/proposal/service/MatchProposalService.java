@@ -152,7 +152,7 @@ public class MatchProposalService {
 	}
 
 	@Transactional
-	public MatchProposalStatus react(Long authorId, Long matchId, Long id, MatchProposalStatus status) {
+	public MatchProposalStatus approveOrRefuse(Long authorId, Long matchId, Long id, MatchProposalStatus status) {
 		MatchResponse match = matchGiver.findById(matchId);
 
 		if (!Objects.equals(match.author().id(), authorId)) {
@@ -164,7 +164,11 @@ public class MatchProposalService {
 			.orElseThrow(() -> new BusinessException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("proposalId = {0}", id)));
 
-		if (match.status().isMatched() || proposal.getStatus().isApproved()) {
+		if (match.status().isEnded() // 경기 종료 일때 변경 안됨
+			|| !proposal.getStatus().isWaiting() // 신청 상태가 대기상태가 아니면 변경 안됨!
+			|| (proposal.getStatus().isWaiting() && status.isFixed()) // 대기 → Fixed로도 변경 안되도록 추가
+			// 결과적으로, 경기 종료만 안됬으면 Waiting 일때 → Approved, Refuse 변경만 허용
+		) {
 			throw new BusinessException(ErrorCode.PROPOSAL_INVALID_REACT,
 				MessageFormat.format("matchId = {0}, proposalId = {1}, proposalStatus = {2}, matchStatus = {3}",
 					match.id(), id, status, match.status()));
