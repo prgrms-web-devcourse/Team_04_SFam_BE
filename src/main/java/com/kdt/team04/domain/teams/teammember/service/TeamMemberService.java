@@ -53,7 +53,7 @@ public class TeamMemberService {
 	public void registerTeamMember(Long myId, Long teamId, RegisterTeamMemberRequest request) {
 		if (!Objects.equals(request.userId(), myId)) {
 			throw new BusinessException(ErrorCode.NOT_AUTHENTICATED,
-				MessageFormat.format("초대를 수락할 권한이 없습니다. myId = {0}, targetId {1}",
+				MessageFormat.format("do not have permission for the invitation. myId = {0}, targetId = {1}",
 					myId, request.userId()));
 		}
 

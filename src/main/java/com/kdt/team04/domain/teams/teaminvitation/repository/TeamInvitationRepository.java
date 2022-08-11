@@ -8,7 +8,7 @@ import com.kdt.team04.domain.teams.teaminvitation.model.InvitationStatus;
 import com.kdt.team04.domain.teams.teaminvitation.model.entity.TeamInvitation;
 
 public interface TeamInvitationRepository extends JpaRepository<TeamInvitation, Long>, CustomTeamInvitationRepository {
-	boolean existsByIdAndStatus(Long teamid, InvitationStatus status);
+	boolean existsByIdAndStatus(Long teamId, InvitationStatus status);
 
 	Optional<TeamInvitation> findByIdAndTeamId(Long id, Long teamId);
 }

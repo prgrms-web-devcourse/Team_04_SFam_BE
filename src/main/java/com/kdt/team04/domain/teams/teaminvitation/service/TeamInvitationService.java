@@ -88,8 +88,8 @@ public class TeamInvitationService {
 	@Transactional
 	public void refuse(Long myId, Long teamId, Long invitationId, TeamInvitationRefuseRequest request) {
 		if (!Objects.equals(request.userId(), myId)) {
-			throw new BusinessException(ErrorCode.NOT_AUTHENTICATED,
-				MessageFormat.format("초대를 거절할 권한이 없습니다 myId = {0}, targetId = {1}", myId, request.userId()));
+			throw new BusinessException(ErrorCode.TEAM_INVITATION_ACCESS_DENIED,
+				MessageFormat.format("do not have permission for the invitation. myId = {0}, targetId = {1}", myId, request.userId()));
 		}
 
 		teamInvitationRepository.findByIdAndTeamId(invitationId, teamId)
