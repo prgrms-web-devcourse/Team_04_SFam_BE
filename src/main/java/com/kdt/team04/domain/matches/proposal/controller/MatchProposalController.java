@@ -49,10 +49,11 @@ public class MatchProposalController {
 	@Operation(summary = "신청 수락 및 거절", description = "대결 공고자는 대결 신청을 수락 또는 거절 할 수 있다.")
 	@PatchMapping("/{matchId}/proposals/{id}")
 	public void proposeReact(
+		@AuthUser JwtAuthentication auth,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
 		@Parameter(description = "매칭 신청 ID") @PathVariable Long id,
 		@RequestBody @Valid ReactProposalRequest request) {
-		matchProposalService.react(matchId, id, request.status());
+		matchProposalService.react(auth.id(), matchId, id, request.status());
 	}
 
 	@Operation(summary = "신청 목록 조회", description = "해당 대결의 신청 목록이 조회된다.")

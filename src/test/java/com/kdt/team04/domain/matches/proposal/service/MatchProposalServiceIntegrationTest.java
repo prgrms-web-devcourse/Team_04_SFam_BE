@@ -596,7 +596,7 @@ class MatchProposalServiceIntegrationTest {
 		MatchProposal savedProposal = matchProposalRepository.save(proposal);
 
 		//when
-		MatchProposalStatus react = matchProposalService.react(match.getId(), savedProposal.getId(),
+		MatchProposalStatus react = matchProposalService.react(author.getId(), match.getId(), savedProposal.getId(),
 			MatchProposalStatus.REFUSE);
 
 		//then
@@ -635,9 +635,46 @@ class MatchProposalServiceIntegrationTest {
 		MatchProposal savedProposal = matchProposalRepository.save(proposal);
 
 		//when
-		assertThatThrownBy(() -> matchProposalService.react(match.getId(), savedProposal.getId(),
+		assertThatThrownBy(() -> matchProposalService.react(author.getId(), match.getId(), savedProposal.getId(),
 			MatchProposalStatus.APPROVED)).isInstanceOf(BusinessException.class);
 
+	}
+
+	@Test
+	@DisplayName("다른 사용자가 공고 신청상태 변경 시 예외가 발생한다.")
+	void notAuthentication() {
+		//given
+		User author = new User("author", "author", "aA1234!");
+		User proposer = new User("proposer", "proposer", "aA1234!");
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+
+		Match match = Match.builder()
+			.title("match")
+			.status(MatchStatus.WAITING)
+			.matchDate(LocalDate.now())
+			.matchType(MatchType.INDIVIDUAL_MATCH)
+			.participants(1)
+			.user(author)
+			.sportsCategory(SportsCategory.BADMINTON)
+			.content("content")
+			.build();
+		entityManager.persist(match);
+		MatchProposal proposal = MatchProposal.builder()
+			.user(proposer)
+			.team(null)
+			.match(match)
+			.content("content")
+			.status(MatchProposalStatus.WAITING)
+			.build();
+		MatchProposal savedProposal = matchProposalRepository.save(proposal);
+
+		entityManager.flush();
+		entityManager.clear();
+
+		//when
+		assertThatThrownBy(() -> matchProposalService.react(-999L, match.getId(), savedProposal.getId(),
+			MatchProposalStatus.APPROVED)).isInstanceOf(BusinessException.class);
 	}
 
 	@Test
