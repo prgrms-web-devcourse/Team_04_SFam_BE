@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.matches.proposal.service;
 
 import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.APPROVED;
+import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.WAITING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.common.exception.BusinessException;
+import com.kdt.team04.domain.matches.MatchFactory;
 import com.kdt.team04.domain.matches.match.model.MatchStatus;
 import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.matches.match.model.entity.Match;
@@ -43,7 +45,7 @@ import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
 import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
-import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
+import com.kdt.team04.domain.teams.teammember.repository.TeamMemberRepository;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import com.kdt.team04.domain.user.entity.User;
 
@@ -52,13 +54,13 @@ import com.kdt.team04.domain.user.entity.User;
 class MatchProposalServiceIntegrationTest {
 
 	@Autowired
-	private EntityManager entityManager;
+	EntityManager entityManager;
 
 	@Autowired
-	private MatchProposalService matchProposalService;
+	MatchProposalService matchProposalService;
 
 	@Autowired
-	private MatchProposalRepository matchProposalRepository;
+	MatchProposalRepository matchProposalRepository;
 
 	@MockBean
 	S3Uploader s3Uploader;
@@ -70,22 +72,14 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[성공] 개인전 매칭을 신청하고 해당 신청 생성 후 Id 값을 return 한다.")
 	void create_individualProposal_success() {
 		//given
-		User author = new User("author", "author", "aA1234!");
-		User proposer = new User("proposer", "proposer", "aA1234!");
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.INDIVIDUAL_MATCH)
-			.participants(1)
-			.user(author)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
 		entityManager.persist(match);
+
 		CreateProposalRequest request = new CreateProposalRequest(null, "개인전 신청합니다.");
 
 		//when
@@ -99,57 +93,32 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[성공] 팀전 매칭을 신청하고 해당 신청 생성 후 Id 값을 return 한다.")
 	void create_teamProposer_success() {
 		//given
-		User author = new User("author", "author", "aA1234!");
-
+		User author = MatchFactory.getUser("author");
 		entityManager.persist(author);
 
-		Team authorTeam = Team.builder()
-			.name("author")
-			.description("first team")
-			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(author)
-			.build();
-
+		Team authorTeam = MatchFactory.getTeamSoccer("author", author);
 		entityManager.persist(authorTeam);
 
-		User proposer = new User("proposer", "proposer", "aA1234!");
-		User user1 = new User("member1", "member1", "password");
-		User user2 = new User("member2", "member2", "password");
+		User proposer = MatchFactory.getUser("proposer");
+		User member1 = MatchFactory.getUser("member1");
+		User member2 = MatchFactory.getUser("member2");
 
 		entityManager.persist(proposer);
-		entityManager.persist(user1);
-		entityManager.persist(user2);
+		entityManager.persist(member1);
+		entityManager.persist(member2);
 
 		proposer.updateSettings(1.1, 1.2, 10);
 
-		Team proposerTeam = Team.builder()
-			.name("proposer")
-			.description("proposer team")
-			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(proposer)
-			.build();
+		Team proposerTeam = MatchFactory.getTeamSoccer("proposer", proposer);
+		List<TeamMember> teamMembers = MatchFactory.getTeamMembers(proposerTeam, proposer, member1, member2);
 
 		entityManager.persist(proposerTeam);
-		entityManager.persist(new TeamMember(proposerTeam, user1, TeamMemberRole.LEADER));
-		entityManager.persist(new TeamMember(proposerTeam, user1, TeamMemberRole.MEMBER));
-		entityManager.persist(new TeamMember(proposerTeam, user2, TeamMemberRole.MEMBER));
+		teamMembers.forEach(teamMember -> entityManager.persist(teamMember));
 
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.TEAM_MATCH)
-			.participants(3)
-			.user(author)
-			.team(authorTeam)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
-
+		Match match = MatchFactory.getTeamMatchSoccer(3, MatchStatus.WAITING, author, authorTeam);
 		entityManager.persist(match);
 
-		CreateProposalRequest request = new CreateProposalRequest(proposerTeam.getId(),
-			"팀전 신청합니다.");
+		CreateProposalRequest request = new CreateProposalRequest(proposerTeam.getId(), "팀전 신청합니다.");
 
 		//when
 		Long createdProposer = matchProposalService.create(proposer.getId(), match.getId(), request);
@@ -162,197 +131,108 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[실패] 이미 신청한 사용자가 개인전 매칭에 중복 신청 시, 오류가 발생한다.")
 	void create_duplicateIndividualProposal_fail() {
 		//given
-		User author = new User("author", "author", "aA1234!");
-
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
 		entityManager.persist(author);
-
-		User proposer = new User("proposer", "proposer", "aA1234!");
 		entityManager.persist(proposer);
 
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.INDIVIDUAL_MATCH)
-			.participants(1)
-			.user(author)
-			.team(null)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
-
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
 		entityManager.persist(match);
 
-		MatchProposal proposal = MatchProposal.builder()
-			.match(match)
-			.content("덤벼라!")
-			.user(proposer)
-			.team(null)
-			.status(MatchProposalStatus.WAITING)
-			.build();
-
+		MatchProposal proposal = MatchFactory.getIndividualProposal(match, proposer, WAITING);
 		entityManager.persist(proposal);
 
 		CreateProposalRequest request = new CreateProposalRequest(null, "팀전 신청합니다.");
 
 		//when, then
-		assertThatThrownBy(() -> matchProposalService.create(proposer.getId(), match.getId(), request))
-			.isInstanceOf(BusinessException.class);
+		assertThatThrownBy(() ->
+			matchProposalService.create(proposer.getId(), match.getId(), request)
+		).isInstanceOf(BusinessException.class);
 	}
 
 	@Test
 	@DisplayName("[실패] 이미 신청한 사용자가 팀전 매칭에 중복 신청 시, 오류가 발생한다.")
 	void create_duplicateTeamProposal_fail() {
 		//given
-		User author = new User("author", "author", "aA1234!");
-		Team authorTeam = Team.builder()
-			.name("author")
-			.description("author team")
-			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(author)
-			.build();
-
+		User author = MatchFactory.getUser("author");
+		Team authorTeam = MatchFactory.getTeamSoccer("author", author);
 		entityManager.persist(author);
 		entityManager.persist(authorTeam);
 
-		User proposer = new User("proposer", "proposer", "aA1234!");
-		User proposerPair = new User("proposer_pair", "proposer_pair", "aA1234!");
-		Team proposerTeam = Team.builder()
-			.name("proposer")
-			.description("proposer team")
-			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(proposer)
-			.build();
-
+		User proposer = MatchFactory.getUser("proposer");
+		Team proposerTeam = MatchFactory.getTeamSoccer("proposer", proposer);
+		User member = MatchFactory.getUser("member");
 		entityManager.persist(proposer);
-		entityManager.persist(proposerPair);
 		entityManager.persist(proposerTeam);
-		entityManager.persist(new TeamMember(proposerTeam, proposer, TeamMemberRole.LEADER));
-		entityManager.persist(new TeamMember(proposerTeam, proposerPair, TeamMemberRole.MEMBER));
+		entityManager.persist(member);
 
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.TEAM_MATCH)
-			.participants(2)
-			.user(author)
-			.team(authorTeam)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
+		List<TeamMember> teamMembers = MatchFactory.getTeamMembers(proposerTeam, proposer, member);
+		teamMembers.forEach(teamMember -> entityManager.persist(teamMember));
 
+		Match match = MatchFactory.getTeamMatchSoccer(2, MatchStatus.WAITING, author, authorTeam);
 		entityManager.persist(match);
 
-		MatchProposal proposal = MatchProposal.builder()
-			.match(match)
-			.content("덤벼라!")
-			.user(proposer)
-			.team(proposerTeam)
-			.status(MatchProposalStatus.WAITING)
-			.build();
-
+		MatchProposal proposal = MatchFactory.getTeamProposal(match, proposer, proposerTeam, WAITING);
 		entityManager.persist(proposal);
 
 		CreateProposalRequest request = new CreateProposalRequest(proposerTeam.getId(), "팀전 신청합니다.");
 
 		//when, then
-		assertThatThrownBy(() -> matchProposalService.create(proposer.getId(), match.getId(), request))
-			.isInstanceOf(BusinessException.class);
+		assertThatThrownBy(() ->
+			matchProposalService.create(proposer.getId(), match.getId(), request)
+		).isInstanceOf(BusinessException.class);
 	}
 
 	@Test
 	@DisplayName("[실패] 팀전 매칭 신청시 신청자 팀원수보다 매칭 인원이 많으면 예외가 발생한다.")
 	void create_teamProposal_notMatchParticipants_fail() {
 		//given
-		User author = new User("author", "author", "aA1234!");
-
+		User author = MatchFactory.getUser("author");
+		Team authorTeam = MatchFactory.getTeamSoccer("author", author);
 		entityManager.persist(author);
-
-		Team authorTeam = Team.builder()
-			.name("author")
-			.description("first team")
-			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(author)
-			.build();
-
 		entityManager.persist(authorTeam);
-		entityManager.persist(author);
 
-		User proposer = new User("proposer", "proposer", "aA1234!");
-
+		User proposer = MatchFactory.getUser("proposer");
+		Team proposerTeam = MatchFactory.getTeamSoccer("proposer", proposer);
 		entityManager.persist(proposer);
-
-		proposer.updateSettings(1.1, 1.2, 10);
-		Team proposerTeam = Team.builder()
-			.name("proposer")
-			.description("first team")
-			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(proposer)
-			.build();
-
 		entityManager.persist(proposerTeam);
 
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.TEAM_MATCH)
-			.participants(3)
-			.user(author)
-			.team(authorTeam)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
+		proposer.updateSettings(1.1, 1.2, 10);
 
+		Match match = MatchFactory.getTeamMatchSoccer(3, MatchStatus.WAITING, author, authorTeam);
 		entityManager.persist(match);
 
 		CreateProposalRequest request = new CreateProposalRequest(proposerTeam.getId(),
 			"팀전 신청합니다.");
 
 		//when, then
-		assertThatThrownBy(() -> matchProposalService.create(proposer.getId(), match.getId(), request)).isInstanceOf(
-			BusinessException.class);
+		assertThatThrownBy(() ->
+			matchProposalService.create(proposer.getId(), match.getId(), request)
+		).isInstanceOf(BusinessException.class);
 	}
 
 	@Test
 	@DisplayName("[실패] 팀전 매칭을 신청시 request의 teamId가 null일 경우 예외가 발생한다.")
 	void create_teamProposal_proposerTeamIdNull_fail() {
 		//given
-		User author = new User("author", "author", "aA1234!");
-		User proposer = new User("proposer", "proposer", "aA1234!");
-
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
+		User member = MatchFactory.getUser("member");
 		entityManager.persist(author);
 		entityManager.persist(proposer);
+		entityManager.persist(member);
 
-		Team authorTeam = Team.builder()
-			.name("author")
-			.description("first team")
-			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(proposer)
-			.build();
-		Team proposerTeam = Team.builder()
-			.name("proposer")
-			.description("first team")
-			.sportsCategory(SportsCategory.BADMINTON)
-			.leader(proposer)
-			.build();
-
+		Team authorTeam = MatchFactory.getTeamSoccer("author", author);
+		Team proposerTeam = MatchFactory.getTeamSoccer("proposer", proposer);
 		entityManager.persist(authorTeam);
 		entityManager.persist(proposerTeam);
 
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.TEAM_MATCH)
-			.participants(3)
-			.user(author)
-			.team(authorTeam)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
+		List<TeamMember> teamMembers = MatchFactory.getTeamMembers(proposerTeam, proposer, member);
+		teamMembers.forEach(teamMember -> entityManager.persist(teamMember));
+
+		Match match = MatchFactory.getTeamMatchSoccer(2, MatchStatus.WAITING, author, authorTeam);
 		entityManager.persist(match);
+
 		CreateProposalRequest request = new CreateProposalRequest(null, "팀전 신청합니다.");
 
 		//when, then
@@ -364,25 +244,18 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[실패] 공고 작성자와 신청자의 Id가 같으면 예외가 발생한다.")
 	void create_teamProposal_proposerIdEqualsAuthorId_fail() {
 		//given
-		User author = new User("author", "author", "aA1234!");
+		User author = MatchFactory.getUser("author");
 		entityManager.persist(author);
 
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.INDIVIDUAL_MATCH)
-			.participants(1)
-			.user(author)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
 		entityManager.persist(match);
+
 		CreateProposalRequest request = new CreateProposalRequest(null, "개인전 신청합니다.");
 
 		//when, then
-		assertThatThrownBy(() -> matchProposalService.create(author.getId(), match.getId(), request)).isInstanceOf(
-			BusinessException.class);
+		assertThatThrownBy(() ->
+			matchProposalService.create(author.getId(), match.getId(), request)
+		).isInstanceOf(BusinessException.class);
 
 	}
 
@@ -390,36 +263,36 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[성공] 매칭 ID로 매칭 신청 목록을 일자 기준(신청일자 or 마지막 채팅 기록 일자) 내림차순 정렬 조회한다.")
 	void findAllLastChats_orderByProposalDateOrLastChatDate_success() {
 		//given
-		User author = getUser("author");
-		Team authorTeam = getSoccerTeam("author", author);
+		User author = MatchFactory.getUser("author");
+		Team authorTeam = MatchFactory.getTeamSoccer("author", author);
 		entityManager.persist(author);
 		entityManager.persist(authorTeam);
 
-		Match match = getSoccerTeamMatch("축구 하실?", 3, MatchStatus.WAITING, author, authorTeam);
+		Match match = MatchFactory.getTeamMatchSoccer(2, MatchStatus.WAITING, author, authorTeam);
 		entityManager.persist(match);
 
-		User target1 = getUser("target1");
-		Team targetTeam1 = getSoccerTeam("target1", target1);
-		MatchProposal proposal1 = getProposal(match, "덤벼라!", target1, targetTeam1, APPROVED);
+		User target1 = MatchFactory.getUser("target1");
+		Team targetTeam1 = MatchFactory.getTeamSoccer("target1", target1);
+		MatchProposal proposal1 = MatchFactory.getTeamProposal(match, target1, targetTeam1, APPROVED);
 		entityManager.persist(target1);
 		entityManager.persist(targetTeam1);
 		entityManager.persist(proposal1);
 
-		User target2 = getUser("target2");
-		Team targetTeam2 = getSoccerTeam("target2", target2);
-		MatchProposal proposal2 = getProposal(match, "마!", target2, targetTeam2, APPROVED);
+		User target2 = MatchFactory.getUser("target2");
+		Team targetTeam2 = MatchFactory.getTeamSoccer("target2", target2);
+		MatchProposal proposal2 = MatchFactory.getTeamProposal(match, target2, targetTeam2, APPROVED);
 		entityManager.persist(target2);
 		entityManager.persist(targetTeam2);
 		entityManager.persist(proposal2);
 
-		User target3 = getUser("target3");
-		Team targetTeam3 = getSoccerTeam("target3", target3);
-		MatchProposal proposal3 = getProposal(match, "하모!", target3, targetTeam3, APPROVED);
+		User target3 = MatchFactory.getUser("target3");
+		Team targetTeam3 = MatchFactory.getTeamSoccer("target3", target3);
+		MatchProposal proposal3 = MatchFactory.getTeamProposal(match, target3, targetTeam3, APPROVED);
 		entityManager.persist(target3);
 		entityManager.persist(targetTeam3);
 		entityManager.persist(proposal3);
 
-		MatchChat chat = getChat(proposal2, target2, author, "안녕");
+		MatchChat chat = MatchFactory.getChat(proposal2, target2, author, "안녕");
 		entityManager.persist(chat);
 
 		List<ChatRoomResponse> expected = new ArrayList<>();
@@ -449,36 +322,17 @@ class MatchProposalServiceIntegrationTest {
 	@Test
 	@DisplayName("[실패] 매칭에 대한 신청이 없다면 매칭 신청 목록 조회 시, 오류가 발생한다.")
 	void findAllLastChats_notExistsProposal_fail() {
-		User author = new User("author", "authorNik", "aA1234!");
-		User target = new User("target", "targetNik", "aA1234!");
-		Team authorTeam = Team.builder()
-			.name("authorTeam")
-			.description("first team")
-			.sportsCategory(SportsCategory.SOCCER)
-			.leader(author)
-			.build();
-		Team targetTeam = Team.builder()
-			.name("targetTeam")
-			.description("first team")
-			.sportsCategory(SportsCategory.SOCCER)
-			.leader(target)
-			.build();
+		User author = MatchFactory.getUser("author");
+		User target = MatchFactory.getUser("target");
 		entityManager.persist(author);
 		entityManager.persist(target);
+
+		Team authorTeam = MatchFactory.getTeamSoccer("author", author);
+		Team targetTeam = MatchFactory.getTeamSoccer("target", target);
 		entityManager.persist(authorTeam);
 		entityManager.persist(targetTeam);
 
-		Match match = Match.builder()
-			.title("덤벼라!")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.TEAM_MATCH)
-			.participants(3)
-			.user(author)
-			.team(authorTeam)
-			.sportsCategory(SportsCategory.SOCCER)
-			.content("축구 하실?")
-			.build();
+		Match match = MatchFactory.getTeamMatchSoccer(2, MatchStatus.WAITING, author, authorTeam);
 		entityManager.persist(match);
 
 		//when, then
@@ -493,65 +347,33 @@ class MatchProposalServiceIntegrationTest {
 		//given
 		String lastChat = "마지막 채팅";
 
-		User author = new User("author", "authorNik", "aA1234!");
-		User target = new User("target", "targetNik", "aA1234!");
-		Team authorTeam = Team.builder()
-			.name("authorTeam")
-			.description("first team")
-			.sportsCategory(SportsCategory.SOCCER)
-			.leader(author)
-			.build();
-		Team targetTeam = Team.builder()
-			.name("targetTeam")
-			.description("first team")
-			.sportsCategory(SportsCategory.SOCCER)
-			.leader(target)
-			.build();
+		User author = MatchFactory.getUser("author");
+		User target = MatchFactory.getUser("target");
 		entityManager.persist(author);
 		entityManager.persist(target);
+
+		Team authorTeam = MatchFactory.getTeamSoccer("author", author);
+		Team targetTeam = MatchFactory.getTeamSoccer("target", target);
 		entityManager.persist(authorTeam);
 		entityManager.persist(targetTeam);
 
-		Match match = Match.builder()
-			.title("덤벼라!")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.TEAM_MATCH)
-			.participants(3)
-			.user(author)
-			.team(authorTeam)
-			.sportsCategory(SportsCategory.SOCCER)
-			.content("축구 하실?")
-			.build();
+		Match match = MatchFactory.getTeamMatchSoccer(2, MatchStatus.WAITING, author, authorTeam);
 		entityManager.persist(match);
 
 		List<MatchProposal> proposals = new ArrayList<>();
 		IntStream.range(1, 3)
 			.forEach(id -> {
-				MatchProposal matchProposal = MatchProposal.builder()
-					.match(match)
-					.content("덤벼라! 나는 " + id)
-					.user(target)
-					.team(targetTeam)
-					.status(MatchProposalStatus.APPROVED)
-					.build();
-
-				proposals.add(matchProposal);
+				MatchProposal matchProposal = MatchFactory.getTeamProposal(match, target, targetTeam, APPROVED);
 				entityManager.persist(matchProposal);
+				proposals.add(matchProposal);
 			});
 
 		List<MatchChat> chats = new ArrayList<>();
 		proposals.forEach(proposal -> {
 			IntStream.range(1, 5)
 				.forEach(id -> {
-					MatchChat chat = MatchChat.builder()
-						.proposal(proposal)
-						.user(author)
-						.target(target)
-						.content(id == 4 ? lastChat + proposal.getId() : "칫챗")
-						.chattedAt(LocalDateTime.now())
-						.build();
-					chats.add(chat);
+					String content = id == 4 ? lastChat + proposal.getId() : "칫챗";
+					MatchChat chat = MatchFactory.getChat(proposal, author, target, content);
 					entityManager.persist(chat);
 				});
 		});
@@ -573,29 +395,15 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[성공] 매칭 작성자가 매칭 신청을 거절하면 신청 상태가 REFUSE로 변경된다.")
 	void react_toRefuse_success() {
 		//given
-		User author = new User("author", "author", "aA1234!");
-		User proposer = new User("proposer", "proposer", "aA1234!");
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.INDIVIDUAL_MATCH)
-			.participants(1)
-			.user(author)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
 		entityManager.persist(match);
-		MatchProposal proposal = MatchProposal.builder()
-			.user(proposer)
-			.team(null)
-			.match(match)
-			.content("content")
-			.status(MatchProposalStatus.WAITING)
-			.build();
+
+		MatchProposal proposal = MatchFactory.getIndividualProposal(match, proposer, WAITING);
 		MatchProposal savedProposal = matchProposalRepository.save(proposal);
 
 		//when
@@ -612,29 +420,15 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[실패] 매칭이 이루어진 후 다른 신청을 수락하면 예외가 발생한다.")
 	void react_alreadyMatched_fail() {
 		//given
-		User author = new User("author", "author", "aA1234!");
-		User proposer = new User("proposer", "proposer", "aA1234!");
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.IN_GAME)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.INDIVIDUAL_MATCH)
-			.participants(1)
-			.user(author)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.IN_GAME, author);
 		entityManager.persist(match);
-		MatchProposal proposal = MatchProposal.builder()
-			.user(proposer)
-			.team(null)
-			.match(match)
-			.content("content")
-			.status(MatchProposalStatus.WAITING)
-			.build();
+
+		MatchProposal proposal = MatchFactory.getIndividualProposal(match, proposer, WAITING);
 		MatchProposal savedProposal = matchProposalRepository.save(proposal);
 
 		//when
@@ -647,29 +441,15 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[성공] 매칭 공고의 모든 매칭 신청이 삭제된다.")
 	void deleteByMatches_success() {
 		//given
-		User author = new User("author", "author", "aA1234!");
-		User proposer = new User("proposer", "proposer", "aA1234!");
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 
-		Match match = Match.builder()
-			.title("match")
-			.status(MatchStatus.WAITING)
-			.matchDate(LocalDate.now())
-			.matchType(MatchType.INDIVIDUAL_MATCH)
-			.participants(1)
-			.user(author)
-			.sportsCategory(SportsCategory.BADMINTON)
-			.content("content")
-			.build();
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
 		entityManager.persist(match);
-		MatchProposal proposal = MatchProposal.builder()
-			.user(proposer)
-			.team(null)
-			.match(match)
-			.content("content")
-			.status(MatchProposalStatus.WAITING)
-			.build();
+
+		MatchProposal proposal = MatchFactory.getIndividualProposal(match, proposer, WAITING);
 		entityManager.persist(proposal);
 
 		//when
@@ -684,15 +464,15 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[성공] 매칭 공고글 작성자가 매칭 신청 정보를 조회한다.(By 신청 ID, 사용자 ID)")
 	void findById_andAuthorId_success() {
 		//given
-		User author = getUser("author");
-		User proposer = getUser("proposer");
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 
-		Match match = getSoccerIndividualMatch(MatchStatus.WAITING, author);
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
 		entityManager.persist(match);
 
-		MatchProposal proposal = getIndividualProposal(match, proposer, MatchProposalStatus.WAITING);
+		MatchProposal proposal = MatchFactory.getIndividualProposal(match, proposer, WAITING);
 		entityManager.persist(proposal);
 
 		ProposalChatResponse expected = new ProposalChatResponse(
@@ -713,15 +493,15 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[성공] 신청자가 매칭 신청 정보를 조회한다.(By 신청 ID, 사용자 ID)")
 	void findById_andProposerId_success() {
 		//given
-		User author = getUser("author");
-		User proposer = getUser("proposer");
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 
-		Match match = getSoccerIndividualMatch(MatchStatus.WAITING, author);
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
 		entityManager.persist(match);
 
-		MatchProposal proposal = getIndividualProposal(match, proposer, MatchProposalStatus.WAITING);
+		MatchProposal proposal = MatchFactory.getIndividualProposal(match, proposer, WAITING);
 		entityManager.persist(proposal);
 
 		ProposalChatResponse expected = new ProposalChatResponse(
@@ -742,15 +522,15 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[실패] 존재하지 않는 신청 ID로 매칭 신청 정보를 조회 시, 오류가 발생한다.")
 	void findById_notFound_fail() {
 		//given
-		User author = getUser("author");
-		User proposer = getUser("proposer");
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 
-		Match match = getSoccerIndividualMatch(MatchStatus.WAITING, author);
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
 		entityManager.persist(match);
 
-		MatchProposal proposal = getIndividualProposal(match, proposer, MatchProposalStatus.WAITING);
+		MatchProposal proposal = MatchFactory.getIndividualProposal(match, proposer, WAITING);
 		entityManager.persist(proposal);
 
 		Long invalidProposalId = 999L;
@@ -765,98 +545,22 @@ class MatchProposalServiceIntegrationTest {
 	@DisplayName("[실패] 작성자도 신청자도 아닌 사용자가 매칭 신청 정보를 조회 시, 오류가 발생한다.")
 	void findById_notPermission_fail() {
 		//given
-		User author = getUser("author");
-		User proposer = getUser("proposer");
-		User anonymous = getUser("anonymous");
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
+		User anonymous = MatchFactory.getUser("anonymous");
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 		entityManager.persist(anonymous);
 
-		Match match = getSoccerIndividualMatch(MatchStatus.WAITING, author);
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
 		entityManager.persist(match);
 
-		MatchProposal proposal = getIndividualProposal(match, proposer, MatchProposalStatus.WAITING);
+		MatchProposal proposal = MatchFactory.getIndividualProposal(match, proposer, WAITING);
 		entityManager.persist(proposal);
 
 		//when, then
 		assertThatThrownBy(() -> {
 			matchProposalService.findById(proposal.getId(), anonymous.getId());
 		}).isInstanceOf(BusinessException.class);
-	}
-
-	private static User getUser(String name) {
-		return User.builder()
-			.password("1234")
-			.username(name)
-			.nickname(name + "Nik")
-			.build();
-	}
-
-	private static Team getSoccerTeam(String name, User user) {
-		return Team.builder()
-			.name(name + "-t")
-			.description("we are team " + name)
-			.sportsCategory(SportsCategory.SOCCER)
-			.leader(user)
-			.build();
-	}
-
-	private static Match getSoccerTeamMatch(String title, int participants, MatchStatus status, User user, Team team) {
-		return Match.builder()
-			.title(title)
-			.sportsCategory(SportsCategory.SOCCER)
-			.matchType(MatchType.TEAM_MATCH)
-			.matchDate(LocalDate.now())
-			.participants(participants)
-			.status(status)
-			.user(user)
-			.team(team)
-			.build();
-	}
-
-	private static Match getSoccerIndividualMatch(MatchStatus status, User user) {
-		return Match.builder()
-			.title("덤벼라!")
-			.sportsCategory(SportsCategory.SOCCER)
-			.matchType(MatchType.INDIVIDUAL_MATCH)
-			.matchDate(LocalDate.now())
-			.participants(1)
-			.status(status)
-			.user(user)
-			.build();
-	}
-
-	private static MatchProposal getProposal(Match match, String content, User proposer, Team proposerTeam,
-		MatchProposalStatus status) {
-		return MatchProposal.builder()
-			.match(match)
-			.content("덤벼라!")
-			.user(proposer)
-			.team(proposerTeam)
-			.status(APPROVED)
-			.build();
-	}
-
-	private static MatchProposal getIndividualProposal(
-		Match match,
-		User proposer,
-		MatchProposalStatus status
-	) {
-		return MatchProposal.builder()
-			.match(match)
-			.content("겜 하실?")
-			.user(proposer)
-			.status(status)
-			.build();
-	}
-
-	private static MatchChat getChat(MatchProposal proposal, User user, User target, String content) {
-		return MatchChat.builder()
-			.proposal(proposal)
-			.user(user)
-			.target(target)
-			.content(content)
-			.chattedAt(LocalDateTime.now())
-			.build();
 	}
 }
