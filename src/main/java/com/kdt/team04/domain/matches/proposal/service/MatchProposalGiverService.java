@@ -67,6 +67,7 @@ public class MatchProposalGiverService {
 			match.author().nickname();
 
 		return new MatchChatViewMatchResponse(
+			match.id(),
 			match.title(),
 			match.status(),
 			new ChatTargetProfileResponse(targetUserId, targetNickname)
