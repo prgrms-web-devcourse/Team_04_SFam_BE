@@ -49,16 +49,10 @@ public class MatchChatService {
 	public void chat(Long proposalId, Long writerId, Long targetId, String content, LocalDateTime chattedAt) {
 		QueryMatchProposalSimpleResponse matchProposalDto = matchProposalGiver.findSimpleProposalById(proposalId);
 
-		if (matchProposalDto.getStatus() != MatchProposalStatus.APPROVED) {
+		if (matchProposalDto.getStatus() != MatchProposalStatus.APPROVED
+			&& matchProposalDto.getStatus() != MatchProposalStatus.FIXED) {
 			throw new BusinessException(
 				ErrorCode.PROPOSAL_NOT_APPROVED,
-				MessageFormat.format("proposalId = {0}", proposalId));
-		}
-
-		if (matchProposalDto.getMatchStatus() != MatchStatus.WAITING
-			&& matchProposalDto.getStatus() != MatchProposalStatus.FIXED
-		) {
-			throw new BusinessException(ErrorCode.ANOTHER_PROPOSAL_ALREADY_FIXED,
 				MessageFormat.format("proposalId = {0}", proposalId));
 		}
 
