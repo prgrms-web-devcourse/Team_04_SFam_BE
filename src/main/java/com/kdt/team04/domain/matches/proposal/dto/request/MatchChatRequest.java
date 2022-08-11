@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,10 +19,9 @@ public record MatchChatRequest(
 	@NotBlank
 	String content,
 
-	@Schema(description = "채팅 시간(yyyy-MM-dd HH:mm:ss)", required = true)
+	@Schema(description = "채팅 시간", required = true, pattern = "yyyy-MM-dd HH:mm:ss")
 	@NotNull
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	LocalDateTime chattedAt
 ) {
 }

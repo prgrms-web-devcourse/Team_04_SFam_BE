@@ -18,13 +18,13 @@ public class TeamInvitationGiverService {
 		this.teamInvitationRepository = teamInvitationRepository;
 	}
 
-	public boolean existsTeamInvitation(Long teamId, Long targetId, InvitationStatus status) {
-		return teamInvitationRepository.existsByTeamIdAndTargetIdAndStatus(teamId, targetId, status);
+	public boolean existsTeamInvitation(Long teamId, InvitationStatus status) {
+		return teamInvitationRepository.existsByIdAndStatus(teamId, status);
 	}
 
 	@Transactional
-	public void accept(Long teamId, Long targetId) {
-		teamInvitationRepository.findByTeamIdAndTargetId(teamId, targetId)
+	public void accept(Long id) {
+		teamInvitationRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.TEAM_INVITATION_NOT_FOUND))
 			.accept();
 	}

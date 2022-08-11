@@ -152,8 +152,14 @@ public class MatchProposalService {
 	}
 
 	@Transactional
-	public MatchProposalStatus react(Long matchId, Long id, MatchProposalStatus status) {
+	public MatchProposalStatus react(Long authorId, Long matchId, Long id, MatchProposalStatus status) {
 		MatchResponse match = matchGiver.findById(matchId);
+
+		if (!Objects.equals(match.author().id(), authorId)) {
+			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
+				MessageFormat.format("userId = {0}, matchId = {1}", authorId, matchId));
+		}
+
 		MatchProposal proposal = proposalRepository.findById(id)
 			.orElseThrow(() -> new BusinessException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("proposalId = {0}", id)));
