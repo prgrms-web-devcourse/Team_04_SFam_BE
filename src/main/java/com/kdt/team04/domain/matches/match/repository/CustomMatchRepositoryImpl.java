@@ -1,6 +1,7 @@
 package com.kdt.team04.domain.matches.match.repository;
 
 import static com.kdt.team04.domain.matches.match.model.entity.QMatch.match;
+import static com.kdt.team04.domain.user.entity.QUser.user;
 import static com.querydsl.core.types.dsl.Expressions.asDateTime;
 import static com.querydsl.core.types.dsl.Expressions.asNumber;
 import static com.querydsl.core.types.dsl.MathExpressions.acos;
@@ -32,14 +33,14 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 	}
 
 	public PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> findByLocationPaging(
-		Double latitude,
-		Double longitude, PageDto.MatchCursorPageRequest pageRequest) {
+		Double latitude, Double longitude, PageDto.MatchCursorPageRequest pageRequest) {
 		Double distance = pageRequest.getDistance();
 		Integer size = pageRequest.getSize();
 		SportsCategory category = pageRequest.getCategory();
 		Long id = pageRequest.getId();
 		LocalDateTime createdAt = pageRequest.getCreatedAt();
 		MatchStatus status = pageRequest.getStatus();
+		Long userId = pageRequest.getUserId();
 
 		NumberExpression<Double> distanceExpression = asNumber(6371.0)
 			.multiply(acos(cos(radians(asNumber(latitude))).multiply(cos(radians(match.location.latitude)))
@@ -54,15 +55,20 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 
 		BooleanExpression distanceCondition = Optional.ofNullable(distance)
 			.map(distanceExpression::lt)
-			.orElse(distanceExpression.lt(30.0));
+			.orElse(distanceExpression.lt(40.0));
+
+		BooleanExpression distanceOrUserIdCondition = Optional.ofNullable(userId)
+			.map(match.user.id::eq)
+			.orElse(distanceCondition);
 
 		BooleanExpression statusCondition = Optional.ofNullable(status)
 			.map(match.status::eq)
 			.orElse(null);
 
 		BooleanExpression cursorCondition = null;
+
 		if (createdAt != null && id != null) {
-			cursorCondition = distanceCondition.and(match.createdAt.lt(asDateTime(createdAt)))
+			cursorCondition = match.createdAt.lt(asDateTime(createdAt))
 				.or(asDateTime(createdAt).eq(match.createdAt).and(asNumber(match.id).lt(id)));
 		}
 
@@ -73,12 +79,17 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 					match.sportsCategory,
 					match.matchType,
 					match.content,
+					match.user.id,
+					match.user.nickname,
 					distanceExpression.as("distance"),
+					match.matchDate,
 					match.createdAt
 				)
 			)
 			.from(match)
-			.where(where.and(categoryCondition)
+			.leftJoin(match.user, user)
+			.where(where.and(distanceOrUserIdCondition)
+				.and(categoryCondition)
 				.and(statusCondition)
 				.and(cursorCondition))
 			.orderBy(match.createdAt.desc(), match.id.desc())
@@ -115,4 +126,16 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 			.fetchFirst() != null;
 	}
 
+	@Override
+	public Double getDistance(Double latitude, Double longitude, Long matchId) {
+		NumberExpression<Double> distanceExpression = asNumber(6371.0)
+			.multiply(acos(cos(radians(asNumber(latitude))).multiply(cos(radians(match.location.latitude)))
+				.multiply(cos(radians(match.location.longitude).subtract(radians(asNumber(longitude)))))
+				.add(sin(radians(asNumber(latitude))).multiply(sin(radians(match.location.latitude))))));
+
+		return jpaQueryFactory.select(distanceExpression)
+			.from(match)
+			.where(match.id.eq(matchId))
+			.fetchOne();
+	}
 }

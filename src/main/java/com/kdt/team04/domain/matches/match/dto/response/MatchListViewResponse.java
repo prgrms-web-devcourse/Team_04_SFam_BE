@@ -1,5 +1,6 @@
 package com.kdt.team04.domain.matches.match.dto.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -24,8 +25,17 @@ public record MatchListViewResponse(
 	@Schema(description = "매칭 글 내용")
 	String content,
 
+	@Schema(description = "작성자 ID(고유 PK)")
+	Long authorId,
+
+	@Schema(description = "작성자 닉네임")
+	String authorNickname,
+
 	@Schema(description = "나와의 거리")
 	Double distance,
+
+	@Schema(description = "원하는 경기 일자")
+	LocalDate matchDate,
 
 	@Schema(description = "작성 일자")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")

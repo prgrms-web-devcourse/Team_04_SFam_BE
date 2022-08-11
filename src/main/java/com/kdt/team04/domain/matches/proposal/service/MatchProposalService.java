@@ -38,6 +38,7 @@ import com.kdt.team04.domain.teams.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
+import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -102,8 +103,14 @@ public class MatchProposalService {
 		UserResponse authorResponse = userService.findById(matchResponse.author().id());
 		User author = userConverter.toUser(authorResponse);
 
-		UserResponse userResponse = userService.findById(proposerId);
-		User proposer = userConverter.toUser(userResponse);
+		UserResponse proposerResponse = userService.findById(proposerId);
+		User proposer = userConverter.toUser(proposerResponse);
+
+		Double distance = matchGiver.getDistance(
+			proposerResponse.userSettings().getLocation().getLatitude(),
+			proposerResponse.userSettings().getLocation().getLongitude(),
+			matchResponse.id());
+		verifyDistance(proposerResponse, matchResponse, distance);
 
 		MatchProposal matchProposal = matchResponse.matchType() == MatchType.TEAM_MATCH ?
 			teamProposalCreate(author, proposer, matchResponse, request) :
@@ -149,6 +156,19 @@ public class MatchProposalService {
 			.content(request.content())
 			.status(MatchProposalStatus.WAITING)
 			.build();
+	}
+
+	private void verifyDistance(UserResponse proposer, MatchResponse match, Double distance) {
+		Location proposerLocation = proposer.userSettings().getLocation();
+		if (distance > 40) {
+			throw new BusinessException(ErrorCode.PROPOSAL_TOO_FAR_TO_REQUEST,
+				MessageFormat.format(
+					"User is too far from Match, User ID, Location = ({0}, {1}), match ID, Location = ({2}, {3})",
+					proposer.id(),
+					proposerLocation,
+					match.id(),
+					match.location()));
+		}
 	}
 
 	@Transactional
