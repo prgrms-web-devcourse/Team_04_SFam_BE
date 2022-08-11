@@ -106,7 +106,11 @@ public class MatchProposalService {
 		UserResponse proposerResponse = userService.findById(proposerId);
 		User proposer = userConverter.toUser(proposerResponse);
 
-		verifyDistance(proposerResponse, matchResponse);
+		Double distance = matchGiver.getDistance(
+			proposerResponse.userSettings().getLocation().getLatitude(),
+			proposerResponse.userSettings().getLocation().getLongitude(),
+			matchResponse.id());
+		verifyDistance(proposerResponse, matchResponse, distance);
 
 		MatchProposal matchProposal = matchResponse.matchType() == MatchType.TEAM_MATCH ?
 			teamProposalCreate(author, proposer, matchResponse, request) :
@@ -154,10 +158,10 @@ public class MatchProposalService {
 			.build();
 	}
 
-	private void verifyDistance(UserResponse proposer, MatchResponse match) {
+	private void verifyDistance(UserResponse proposer, MatchResponse match, Double distance) {
 		Location proposerLocation = proposer.userSettings().getLocation();
-		if (matchGiver.getDistance(proposerLocation.getLatitude(), proposerLocation.getLongitude(), match.id()) > 40) {
-			throw new BusinessException(ErrorCode.TOO_FAR_TO_REQUEST,
+		if (distance > 40) {
+			throw new BusinessException(ErrorCode.PROPOSAL_TOO_FAR_TO_REQUEST,
 				MessageFormat.format(
 					"User is too far from Match, User ID, Location = ({0}, {1}), match ID, Location = ({2}, {3})",
 					proposer.id(),

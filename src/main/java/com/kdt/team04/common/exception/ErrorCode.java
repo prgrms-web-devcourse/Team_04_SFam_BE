@@ -59,7 +59,7 @@ public enum ErrorCode {
 	PROPOSAL_INVALID_REACT("MP0005", "Invalid react", HttpStatus.BAD_REQUEST),
 	PROPOSAL_ACCESS_DENIED("MP0006", "Don't have permission to access match proposal", HttpStatus.FORBIDDEN),
 	PROPOSAL_ALREADY_REQUESTED("MP0007", "Already requested", HttpStatus.BAD_REQUEST),
-	TOO_FAR_TO_REQUEST("MP00008", "This Match is too far from you" , HttpStatus.BAD_REQUEST),
+	PROPOSAL_TOO_FAR_TO_REQUEST("MP0008", "This Match is too far from you" , HttpStatus.BAD_REQUEST),
 
 	//MATCH_CHAT
 	MATCH_CHAT_NOT_CORRECT_CHAT_PARTNER("MC0002", "The chat partner is incorrect.", HttpStatus.BAD_REQUEST),

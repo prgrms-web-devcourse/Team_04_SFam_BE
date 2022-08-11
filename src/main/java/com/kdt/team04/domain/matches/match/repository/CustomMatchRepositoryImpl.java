@@ -33,8 +33,7 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 	}
 
 	public PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> findByLocationPaging(
-		Double latitude,
-		Double longitude, PageDto.MatchCursorPageRequest pageRequest) {
+		Double latitude, Double longitude, PageDto.MatchCursorPageRequest pageRequest) {
 		Double distance = pageRequest.getDistance();
 		Integer size = pageRequest.getSize();
 		SportsCategory category = pageRequest.getCategory();
@@ -67,6 +66,7 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 			.orElse(null);
 
 		BooleanExpression cursorCondition = null;
+
 		if (createdAt != null && id != null) {
 			cursorCondition = match.createdAt.lt(asDateTime(createdAt))
 				.or(asDateTime(createdAt).eq(match.createdAt).and(asNumber(match.id).lt(id)));
