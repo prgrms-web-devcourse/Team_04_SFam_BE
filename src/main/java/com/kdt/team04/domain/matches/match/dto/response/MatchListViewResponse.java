@@ -2,6 +2,7 @@ package com.kdt.team04.domain.matches.match.dto.response;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.teams.team.model.SportsCategory;
 
@@ -27,6 +28,7 @@ public record MatchListViewResponse(
 	Double distance,
 
 	@Schema(description = "작성 일자")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	LocalDateTime createdAt
 ) {
 

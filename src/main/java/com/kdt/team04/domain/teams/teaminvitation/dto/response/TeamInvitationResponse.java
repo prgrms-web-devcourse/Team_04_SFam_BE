@@ -18,9 +18,8 @@ public record TeamInvitationResponse(
 	@Schema(description = "팀 이름")
 	String name,
 
-	@Schema(description = "초대 날짜")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Schema(description = "초대 날짜", pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	LocalDateTime createdAt
 ) {
 }

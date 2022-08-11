@@ -8,27 +8,17 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public class TeamInvitationCursor {
+import io.swagger.v3.oas.annotations.media.Schema;
 
+public record TeamInvitationCursor(
+	@Schema(description = "다음 생성일 커서", pattern = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@NotNull
-	private LocalDateTime createdAt;
+	LocalDateTime createdAt,
 
+	@Schema(description = "다음 ID 커서")
 	@NotNull
-	private Long id;
-
-	public TeamInvitationCursor(LocalDateTime createdAt, Long id) {
-		this.createdAt = createdAt;
-		this.id = id;
-	}
-
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
-	public Long getId() {
-		return id;
-	}
+	Long id) {
 
 }

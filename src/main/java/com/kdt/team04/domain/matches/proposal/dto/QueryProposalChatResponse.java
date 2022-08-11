@@ -10,7 +10,7 @@ import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public class QueryProposalChatResponse {
+public class 	QueryProposalChatResponse {
 	@Schema(description = "매칭 신청 ID(고유 PK)")
 	private final Long id;
 
