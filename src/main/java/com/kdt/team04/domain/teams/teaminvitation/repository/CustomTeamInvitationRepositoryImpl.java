@@ -49,6 +49,7 @@ public class CustomTeamInvitationRepositoryImpl implements CustomTeamInvitationR
 					teamInvitation.id,
 					teamInvitation.team.id,
 					teamInvitation.team.name,
+					teamInvitation.team.logoImageUrl,
 					teamInvitation.createdAt)
 			)
 			.from(teamInvitation)

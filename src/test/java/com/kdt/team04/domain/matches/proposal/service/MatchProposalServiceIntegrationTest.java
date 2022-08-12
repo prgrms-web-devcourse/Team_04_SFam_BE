@@ -430,13 +430,13 @@ class MatchProposalServiceIntegrationTest {
 
 		List<ChatRoomResponse> expected = new ArrayList<>();
 		expected.add(new ChatRoomResponse(proposal2.getId(), proposal2.getContent(), new ChatTargetProfileResponse(
-			BigInteger.valueOf(target2.getId()), target2.getNickname()), new LastChatResponse(chat.getContent()),
+			BigInteger.valueOf(target2.getId()), target2.getNickname(), ""), new LastChatResponse(chat.getContent()),
 			proposal2.getCreatedAt()));
 		expected.add(new ChatRoomResponse(proposal3.getId(), proposal3.getContent(),
-			new ChatTargetProfileResponse(BigInteger.valueOf(target3.getId()), target3.getNickname()), null,
+			new ChatTargetProfileResponse(BigInteger.valueOf(target3.getId()), target3.getNickname(), ""), null,
 			proposal3.getCreatedAt()));
 		expected.add(new ChatRoomResponse(proposal1.getId(), proposal1.getContent(),
-			new ChatTargetProfileResponse(BigInteger.valueOf(target1.getId()), target1.getNickname()), null,
+			new ChatTargetProfileResponse(BigInteger.valueOf(target1.getId()), target1.getNickname(), ""), null,
 			proposal1.getCreatedAt()));
 
 		//when

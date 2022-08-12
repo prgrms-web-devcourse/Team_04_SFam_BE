@@ -23,7 +23,11 @@ public class TeamMemberConverter {
 	}
 
 	public TeamMemberResponse toTeamMemberResponse(TeamMember teamMember) {
-		return new TeamMemberResponse(teamMember.getUser().getId(), teamMember.getUser().getNickname(),
-			teamMember.getRole());
+		return new TeamMemberResponse(
+			teamMember.getUser().getId(),
+			teamMember.getUser().getNickname(),
+			teamMember.getUser().getProfileImageUrl(),
+			teamMember.getRole()
+		);
 	}
 }

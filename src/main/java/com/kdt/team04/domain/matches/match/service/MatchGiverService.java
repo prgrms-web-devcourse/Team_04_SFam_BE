@@ -44,7 +44,7 @@ public class MatchGiverService {
 				MessageFormat.format("matchId = {0}", id)));
 
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
-		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname());
+		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname(), author.profileImageUrl());
 
 		if (foundMatch.getMatchType().isTeam()) {
 			return toTeamMatch(foundMatch, authorResponse);
@@ -59,7 +59,7 @@ public class MatchGiverService {
 				MessageFormat.format("matchId = {0}", id)));
 
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
-		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname());
+		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname(), author.profileImageUrl());
 
 		return new MatchAuthorResponse(
 			foundMatch.getId(),
@@ -83,7 +83,7 @@ public class MatchGiverService {
 		verifyAuthor(foundMatch, userId);
 
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
-		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname());
+		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname(), author.profileImageUrl());
 
 		foundMatch.updateStatus(MatchStatus.END);
 		MatchResponse matchResponse = foundMatch.getMatchType().isTeam() ? toTeamMatch(foundMatch, authorResponse) :
