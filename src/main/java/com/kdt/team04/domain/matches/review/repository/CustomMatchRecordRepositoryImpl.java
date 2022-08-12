@@ -38,13 +38,13 @@ public class CustomMatchRecordRepositoryImpl implements CustomMatchRecordReposit
 
 	@Override
 	public MatchRecordTotalResponse getTotalCount(QueryMatchRecordRequest request) {
-		BooleanExpression userIdEq = Optional.ofNullable(request.userId())
+		BooleanExpression userIdEq = Optional.ofNullable(request.getUserId())
 			.map(matchRecord.user.id::eq)
 			.orElse(null);
-		BooleanExpression teamIdEq = Optional.ofNullable(request.teamId())
+		BooleanExpression teamIdEq = Optional.ofNullable(request.getTeamId())
 			.map(matchRecord.team.id::eq)
 			.orElse(userIdEq);
-		BooleanExpression sportsCategoryEq = Optional.ofNullable(request.sportsCategory())
+		BooleanExpression sportsCategoryEq = Optional.ofNullable(request.getSportsCategory())
 			.map(matchRecord.match.sportsCategory::eq)
 			.orElse(null);
 
