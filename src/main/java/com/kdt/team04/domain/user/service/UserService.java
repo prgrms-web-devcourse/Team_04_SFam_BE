@@ -125,7 +125,7 @@ public class UserService {
 		return userRepository.existsByNickname(nickname);
 	}
 
-	public void update(Long targetId, UpdateUserRequest request) {
+	public void update(Long targetId, UpdateUserByOAuthRequest request) {
 		User foundUser = this.userRepository.findById(targetId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", targetId)));
