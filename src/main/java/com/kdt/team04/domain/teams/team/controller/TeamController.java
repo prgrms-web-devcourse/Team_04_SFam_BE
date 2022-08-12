@@ -19,9 +19,9 @@ import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
+import com.kdt.team04.domain.teams.team.dto.QueryTeamLeaderResponse;
 import com.kdt.team04.domain.teams.team.dto.request.CreateTeamRequest;
 import com.kdt.team04.domain.teams.team.dto.response.TeamResponse;
-import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.teams.team.service.TeamService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,10 +60,10 @@ public class TeamController {
 
 	@Operation(summary = "해당 회원이 리더인 팀 조회", description = "해당 ID의 회원이 리더인 팀을 조회한다.")
 	@GetMapping("/me/leader")
-	public ApiResponse<List<TeamSimpleResponse>> getByLeaderId(
+	public ApiResponse<List<QueryTeamLeaderResponse>> getByLeaderId(
 		@AuthUser JwtAuthentication auth
 	) {
-		List<TeamSimpleResponse> teams = teamService.findByLeaderId(auth.id());
+		List<QueryTeamLeaderResponse> teams = teamService.findByLeaderId(auth.id());
 
 		return new ApiResponse<>(teams);
 	}
