@@ -98,19 +98,23 @@ public class TeamService {
 	}
 
 	@Transactional
-	public void uploadLogo(Long teamId, Long leaderId, MultipartFile file) {
+	public String uploadLogo(Long teamId, Long leaderId, MultipartFile file) {
 		Team team = teamRepository.findByIdAndLeaderId(teamId, leaderId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_TEAM_LEADER,
 				MessageFormat.format("TeamId = {0}", teamId)));
 
-		Optional.ofNullable(team.getLogoImageUrl())
-			.ifPresentOrElse(
-				key -> s3Uploader.uploadByKey(file.getResource(), key),
-				() -> {
-					String key = s3Uploader.uploadByPath(file.getResource(), ImagePath.TEAMS_LOGO);
-					team.updateLogoUrl(key);
+		return Optional.ofNullable(team.getLogoImageUrl())
+			.map(
+				key -> {
+					s3Uploader.uploadByKey(file.getResource(), key);
+					return key;
 				}
-			);
+			)
+			.orElseGet(() -> {
+				String url = s3Uploader.uploadByPath(file.getResource(), ImagePath.TEAMS_LOGO);
+				team.updateLogoUrl(url);
+				return url;
+			});
 	}
 
 }

@@ -70,7 +70,7 @@ public class TeamController {
 
 	@Operation(summary = "팀 로고 이미지 업데이트", description = "로고 이미지 파일을 받아 팀 로고 이미지를 업데이트 한다.")
 	@PatchMapping("/{id}/logo")
-	public void uploadLogo(
+	public String uploadLogo(
 		@Parameter(description = "팀 ID") @PathVariable Long id,
 		@AuthUser JwtAuthentication auth,
 		MultipartFile file
@@ -80,7 +80,7 @@ public class TeamController {
 				"파일이 첨부되지 않았거나 지원하지 않는 타입입니다.");
 		}
 
-		teamService.uploadLogo(id, auth.id(), file);
+		return teamService.uploadLogo(id, auth.id(), file);
 	}
 
 }
