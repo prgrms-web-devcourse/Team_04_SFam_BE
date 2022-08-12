@@ -17,8 +17,9 @@ import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.teams.team.service.TeamGiverService;
 import com.kdt.team04.domain.user.UserConverter;
+import com.kdt.team04.domain.user.dto.UpdateUserRequest;
 import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
-import com.kdt.team04.domain.user.dto.request.UpdateUserRequest;
+import com.kdt.team04.domain.user.dto.request.UpdateUserByOAuthRequest;
 import com.kdt.team04.domain.user.dto.request.UpdateUserSettingsRequest;
 import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UpdateUserSettingsResponse;
@@ -130,6 +131,13 @@ public class UserService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", targetId)));
 		foundUser.update(request.nickname(), request.email(), request.profileImageUrl());
+	}
+
+	public void update(Long targetId, UpdateUserRequest request) {
+		User foundUser = this.userRepository.findById(targetId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
+				MessageFormat.format("UserId = {0}", targetId)));
+		foundUser.update(request.nickname(), null, null);
 	}
 
 	@Transactional

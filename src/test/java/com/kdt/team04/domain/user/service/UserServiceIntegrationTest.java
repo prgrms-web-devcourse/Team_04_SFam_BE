@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.domain.user.Role;
+import com.kdt.team04.domain.user.dto.UpdateUserRequest;
 import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
 import com.kdt.team04.domain.user.dto.request.UpdateUserSettingsRequest;
 import com.kdt.team04.domain.user.dto.response.UpdateUserSettingsResponse;
@@ -75,8 +76,10 @@ class UserServiceIntegrationTest {
 
 		//then
 		Assertions.assertThat(foundUser.getUserSettings()).isNotNull();
-		Assertions.assertThat(foundUser.getUserSettings().getLocation().getLongitude()).isEqualTo(location.getLongitude());
-		Assertions.assertThat(foundUser.getUserSettings().getLocation().getLatitude()).isEqualTo(location.getLatitude());
+		Assertions.assertThat(foundUser.getUserSettings().getLocation().getLongitude())
+			.isEqualTo(location.getLongitude());
+		Assertions.assertThat(foundUser.getUserSettings().getLocation().getLatitude())
+			.isEqualTo(location.getLatitude());
 		Assertions.assertThat(foundUser.getUserSettings().getSearchDistance()).isEqualTo(searchDistance);
 		Assertions.assertThat(response.latitude()).isEqualTo(location.getLatitude());
 		Assertions.assertThat(response.longitude()).isEqualTo(location.getLongitude());
@@ -165,5 +168,28 @@ class UserServiceIntegrationTest {
 
 		//then
 		assertThat(isDuplicated).isFalse();
+	}
+
+	@Test
+	@DisplayName("닉네임 수정 성공")
+	void updateNickname() {
+		//given
+		String password = "@test1234!";
+		String encodedPassword = passwordEncoder.encode(password);
+
+		User userA = User.builder()
+			.username("test1234")
+			.nickname("nickname1235")
+			.password(encodedPassword)
+			.build();
+		entityManager.persist(userA);
+
+		UpdateUserRequest request = new UpdateUserRequest("modifiednickname");
+
+		//when
+		userService.update(userA.getId(), request);
+
+		//then
+		assertThat(userA.getNickname()).isEqualTo(request.nickname());
 	}
 }

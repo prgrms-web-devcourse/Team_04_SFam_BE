@@ -23,6 +23,7 @@ import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
+import com.kdt.team04.domain.user.dto.UpdateUserRequest;
 import com.kdt.team04.domain.user.dto.request.UpdateUserSettingsRequest;
 import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UpdateUserSettingsResponse;
@@ -96,6 +97,12 @@ public class UserController {
 		}
 
 		userService.uploadProfile(auth.id(), file);
+	}
+
+	@Operation(summary = "회원 정보 수정", description = "회원 정보를 수정한다.")
+	@PatchMapping
+	public void update(@AuthUser JwtAuthentication auth, UpdateUserRequest request) {
+		userService.update(auth.id(), request);
 	}
 
 }
