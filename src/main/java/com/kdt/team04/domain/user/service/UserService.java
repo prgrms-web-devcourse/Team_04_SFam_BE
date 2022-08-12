@@ -150,19 +150,22 @@ public class UserService {
 	}
 
 	@Transactional
-	public void uploadProfile(Long id, MultipartFile file) {
+	public String uploadProfile(Long id, MultipartFile file) {
 		User foundUser = this.userRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", id)));
 
-		Optional.ofNullable(foundUser.getProfileImageUrl())
-			.ifPresentOrElse(
-				key -> s3Uploader.uploadByKey(file.getResource(), key),
-				() -> {
-					String key = s3Uploader.uploadByPath(file.getResource(), ImagePath.USERS_PROFILES);
-					foundUser.updateImageUrl(key);
+		return Optional.ofNullable(foundUser.getProfileImageUrl())
+			.map(
+				key -> {
+					s3Uploader.uploadByKey(file.getResource(), key);
+					return key;
 				}
-			);
+			).orElseGet(() -> {
+				String url = s3Uploader.uploadByPath(file.getResource(), ImagePath.USERS_PROFILES);
+				foundUser.updateImageUrl(url);
+				return url;
+			});
 	}
 
 }
