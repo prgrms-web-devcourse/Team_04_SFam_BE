@@ -72,10 +72,10 @@ public class MatchProposalController {
 
 	@Operation(summary = "사용자 전체 신청 목록 조회", description = "로그인된 사용자의 전체 신청 목록이 조회된다.")
 	@GetMapping("/proposals")
-	public ApiResponse<List<QueryProposalChatResponse>> findAllChats(
+	public ApiResponse<List<ChatRoomResponse>> findAllChats(
 		@AuthUser JwtAuthentication auth
 	) {
-		List<QueryProposalChatResponse> proposals = matchProposalService.findAllProposals(
+		List<ChatRoomResponse> proposals = matchProposalService.findAllProposals(
 			auth.id()
 		);
 

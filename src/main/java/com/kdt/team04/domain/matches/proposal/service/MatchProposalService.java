@@ -244,8 +244,25 @@ public class MatchProposalService {
 		return proposalChats;
 	}
 
-	public List<QueryProposalChatResponse> findAllProposals(Long userId) {
-		return proposalRepository.findAllProposalByUserId(userId);
+	public List<ChatRoomResponse> findAllProposals(Long userId) {
+		List<QueryProposalChatResponse> proposals = proposalRepository.findAllProposalByUserId(userId);
+
+		List<Long> matchIds = proposals.stream()
+			.map(QueryProposalChatResponse::getMatchId)
+			.toList();
+
+		Map<Long, MatchResponse> matches = matchGiver.findByIds(matchIds);
+
+		return proposals.stream()
+			.map(proposal -> new ChatRoomResponse(
+				proposal.getId(),
+				proposal.getContent(),
+				proposal.getTarget(),
+				proposal.getLastChat(),
+				matches.get(proposal.getMatchId()),
+				null
+			))
+			.toList();
 	}
 
 	@Transactional
