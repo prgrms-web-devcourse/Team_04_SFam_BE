@@ -9,6 +9,9 @@ public record ChatTargetProfileResponse(
 	BigInteger id,
 
 	@Schema(description = "채팅 상대 닉네임")
-	String nickname
+	String nickname,
+
+	@Schema(description = "채팅 상대 프로필 이미지 URL")
+	String profileImageUrl
 ) {
 }

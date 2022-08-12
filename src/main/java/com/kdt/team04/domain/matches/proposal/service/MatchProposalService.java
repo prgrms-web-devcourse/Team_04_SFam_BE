@@ -226,7 +226,8 @@ public class MatchProposalService {
 				ChatTargetProfileResponse chatTargetProfile
 					= new ChatTargetProfileResponse(
 					BigInteger.valueOf(proposal.getUser().getId()),
-					proposal.getUser().getNickname());
+					proposal.getUser().getNickname(),
+					proposal.getUser().getProfileImageUrl());
 
 				return new ChatRoomResponse(
 					proposal.getId(),

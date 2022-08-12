@@ -140,7 +140,7 @@ public class MatchService {
 				MessageFormat.format("matchId = {0}", id)));
 
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
-		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname());
+		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname(), author.profileImageUrl());
 
 		Optional<ProposalSimpleResponse> proposalResponse = matchProposalService.findByMatchIdAndUserId(id, userId);
 

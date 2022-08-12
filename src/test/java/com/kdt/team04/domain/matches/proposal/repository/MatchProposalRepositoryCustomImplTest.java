@@ -87,11 +87,11 @@ class MatchProposalRepositoryCustomImplTest {
 
 		List<QueryProposalChatResponse> expected = new ArrayList<>();
 		expected.add(new QueryProposalChatResponse(BigInteger.valueOf(proposal2.getId()), proposal2.getContent(),
-			BigInteger.valueOf(target2.getId()), target2.getNickname(), chat.getContent()));
+			BigInteger.valueOf(target2.getId()), target2.getNickname(), "", chat.getContent()));
 		expected.add(new QueryProposalChatResponse(BigInteger.valueOf(proposal3.getId()), proposal3.getContent(),
-			BigInteger.valueOf(target3.getId()), target3.getNickname(), null));
+			BigInteger.valueOf(target3.getId()), target3.getNickname(), "", null));
 		expected.add(new QueryProposalChatResponse(BigInteger.valueOf(proposal1.getId()), proposal1.getContent(),
-			BigInteger.valueOf(target1.getId()), target1.getNickname(), null));
+			BigInteger.valueOf(target1.getId()), target1.getNickname(), "", null));
 
 		//when
 		List<QueryProposalChatResponse> response

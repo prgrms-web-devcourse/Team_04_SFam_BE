@@ -6,5 +6,8 @@ public record AuthorResponse(
 	@Schema(description = "회원 ID(고유 PK)")
 	Long id,
 	@Schema(description = "회원 닉네임")
-	String nickname) {
+	String nickname,
+	@Schema(description = "회원 프로필 이미지 URL")
+	String profileImageUrl
+) {
 }
