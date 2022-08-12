@@ -42,6 +42,7 @@ public class User extends BaseEntity {
 	private String username;
 
 	@NotBlank
+	@Pattern(regexp = "^[가-힣|a-z|A-Z|0-9|_.#]+$")
 	@Size(min = 2, max = 40)
 	@Column(unique = true)
 	private String nickname;

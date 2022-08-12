@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.domain.user.Role;
-import com.kdt.team04.domain.user.dto.UpdateUserRequest;
 import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
 import com.kdt.team04.domain.user.dto.request.UpdateUserSettingsRequest;
 import com.kdt.team04.domain.user.dto.response.UpdateUserSettingsResponse;
@@ -90,14 +89,7 @@ class UserServiceIntegrationTest {
 	@DisplayName("nickname이 중복되면 true를 반환한다.")
 	void testNicknameDuplicationCheckTrue() {
 		//given
-		String password = "@test1234!";
-		String encodedPassword = passwordEncoder.encode(password);
-
-		User userA = User.builder()
-			.username("test1234")
-			.nickname("nickname1234")
-			.password(encodedPassword)
-			.build();
+		User userA = getDummyUser();
 		entityManager.persist(userA);
 
 		//when
@@ -111,14 +103,7 @@ class UserServiceIntegrationTest {
 	@DisplayName("nickname이 중복되지 않으면 false를 반환한다.")
 	void testNicknameDuplicationCheckFalse() {
 		//given
-		String password = "@test1234!";
-		String encodedPassword = passwordEncoder.encode(password);
-
-		User userA = User.builder()
-			.username("test1234")
-			.nickname("nickname1235")
-			.password(encodedPassword)
-			.build();
+		User userA = getDummyUser();
 		entityManager.persist(userA);
 
 		//when
@@ -132,14 +117,7 @@ class UserServiceIntegrationTest {
 	@DisplayName("username이 중복되면 true를 반환한다.")
 	void testUsernameDuplicationCheckTrue() {
 		//given
-		String password = "@test1234!";
-		String encodedPassword = passwordEncoder.encode(password);
-
-		User userA = User.builder()
-			.username("test1234")
-			.nickname("nickname1234")
-			.password(encodedPassword)
-			.build();
+		User userA = getDummyUser();
 		entityManager.persist(userA);
 
 		//when
@@ -153,14 +131,7 @@ class UserServiceIntegrationTest {
 	@DisplayName("username이 중복되지 않으면 false를 반환한다.")
 	void testUsernameDuplicationCheckFalse() {
 		//given
-		String password = "@test1234!";
-		String encodedPassword = passwordEncoder.encode(password);
-
-		User userA = User.builder()
-			.username("test1234")
-			.nickname("nickname1235")
-			.password(encodedPassword)
-			.build();
+		User userA = getDummyUser();
 		entityManager.persist(userA);
 
 		//when
@@ -170,26 +141,12 @@ class UserServiceIntegrationTest {
 		assertThat(isDuplicated).isFalse();
 	}
 
-	@Test
-	@DisplayName("닉네임 수정 성공")
-	void updateNickname() {
-		//given
-		String password = "@test1234!";
-		String encodedPassword = passwordEncoder.encode(password);
-
-		User userA = User.builder()
+	private User getDummyUser() {
+		String encodedPassword = passwordEncoder.encode("@test1234!");
+		return User.builder()
 			.username("test1234")
 			.nickname("nickname1235")
 			.password(encodedPassword)
 			.build();
-		entityManager.persist(userA);
-
-		UpdateUserRequest request = new UpdateUserRequest("modifiednickname");
-
-		//when
-		userService.update(userA.getId(), request);
-
-		//then
-		assertThat(userA.getNickname()).isEqualTo(request.nickname());
 	}
 }
