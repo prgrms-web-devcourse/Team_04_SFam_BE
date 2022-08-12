@@ -8,9 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record SignInRequest(
 	@Schema(description = "회원 아이디", required = true)
-	@Pattern(regexp = "^[a-z0-9_]*$")
 	@NotBlank
-	@Size(min = 6, max = 24)
 	String username,
 
 	@Schema(description = "회원 비밀번호", required = true)
