@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.matches.review.dto.request.CreateMatchRecordRequest;
@@ -18,7 +19,6 @@ import com.kdt.team04.domain.matches.review.service.MatchRecordService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Getter;
 
 @Tag(name = "경기 결과 API")
 @RestController
@@ -43,9 +43,9 @@ public class MatchRecordController {
 
 	@Operation(summary = "경기 전적 조회", description = "사용자 또는 팀의 전적 조회를 합니다.")
 	@GetMapping("/records")
-	public MatchRecordTotalResponse getRecords(
+	public ApiResponse<MatchRecordTotalResponse> getRecords(
 		@Valid @ParameterObject QueryMatchRecordRequest request
 	) {
-		return matchRecordService.findMatchRecordTotal(request);
+		return new ApiResponse<>(matchRecordService.findMatchRecordTotal(request));
 	}
 }
