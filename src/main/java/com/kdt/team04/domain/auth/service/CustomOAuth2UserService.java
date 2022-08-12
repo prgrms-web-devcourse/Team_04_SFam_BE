@@ -18,7 +18,7 @@ import com.kdt.team04.domain.auth.dto.JwtClaimsAttributes;
 import com.kdt.team04.domain.auth.dto.OAuthAttributes;
 import com.kdt.team04.domain.user.Role;
 import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
-import com.kdt.team04.domain.user.dto.request.UpdateUserRequest;
+import com.kdt.team04.domain.user.dto.request.UpdateUserByOAuthRequest;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -61,7 +61,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		JwtClaimsAttributes jwtClaimsAttributes;
 		try {
 			UserResponse foundUserResponse = userService.findByEmail((String)attributes.get("email"));
-			UpdateUserRequest updateRequest = new UpdateUserRequest(null, null, (String)attributes.get("email"));
+			UpdateUserByOAuthRequest updateRequest = new UpdateUserByOAuthRequest(null, null, (String)attributes.get("email"));
 			userService.update(foundUserResponse.id(), updateRequest);
 			jwtClaimsAttributes = new JwtClaimsAttributes(
 				foundUserResponse.id(),

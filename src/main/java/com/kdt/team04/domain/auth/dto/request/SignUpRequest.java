@@ -21,7 +21,7 @@ public record SignUpRequest(
 
 	@Schema(description = "회원 닉네임", required = true)
 	@NotBlank
-	@Size(min = 2, max = 16)
+	@Size(min = 2, max = 12)
 	String nickname,
 
 	@Schema(description = "회원 email")

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kdt.team04.common.aws.s3.S3Uploader;
+import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.ImagePath;
@@ -17,8 +18,9 @@ import com.kdt.team04.domain.matches.review.service.MatchReviewGiverService;
 import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.teams.team.service.TeamGiverService;
 import com.kdt.team04.domain.user.UserConverter;
+import com.kdt.team04.domain.user.dto.UpdateUserRequest;
 import com.kdt.team04.domain.user.dto.request.CreateUserRequest;
-import com.kdt.team04.domain.user.dto.request.UpdateUserRequest;
+import com.kdt.team04.domain.user.dto.request.UpdateUserByOAuthRequest;
 import com.kdt.team04.domain.user.dto.request.UpdateUserSettingsRequest;
 import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UpdateUserSettingsResponse;
@@ -125,11 +127,26 @@ public class UserService {
 		return userRepository.existsByNickname(nickname);
 	}
 
-	public void update(Long targetId, UpdateUserRequest request) {
+	@Transactional
+	public void update(Long targetId, UpdateUserByOAuthRequest request) {
 		User foundUser = this.userRepository.findById(targetId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", targetId)));
 		foundUser.update(request.nickname(), request.email(), request.profileImageUrl());
+	}
+
+	@Transactional
+	public void update(Long targetId, UpdateUserRequest request) {
+		if(request.nickname() != null && nicknameDuplicationCheck(request.nickname())) {
+			throw new BusinessException(ErrorCode.USER_DUPLICATED_NICKNAME,
+				MessageFormat.format("already exists nickname : {0}", request.nickname()));
+		}
+
+		User foundUser = this.userRepository.findById(targetId)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
+				MessageFormat.format("UserId = {0}", targetId)));
+
+		foundUser.update(request.nickname(), null, null);
 	}
 
 	@Transactional
