@@ -101,7 +101,7 @@ public class UserController {
 
 	@Operation(summary = "회원 정보 수정", description = "회원 정보를 수정한다.")
 	@PatchMapping
-	public void update(@AuthUser JwtAuthentication auth, UpdateUserRequest request) {
+	public void update(@AuthUser JwtAuthentication auth, @RequestBody UpdateUserRequest request) {
 		userService.update(auth.id(), request);
 	}
 

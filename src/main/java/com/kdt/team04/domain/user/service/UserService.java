@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kdt.team04.common.aws.s3.S3Uploader;
+import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.file.ImagePath;
@@ -126,6 +127,7 @@ public class UserService {
 		return userRepository.existsByNickname(nickname);
 	}
 
+	@Transactional
 	public void update(Long targetId, UpdateUserByOAuthRequest request) {
 		User foundUser = this.userRepository.findById(targetId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
@@ -133,10 +135,17 @@ public class UserService {
 		foundUser.update(request.nickname(), request.email(), request.profileImageUrl());
 	}
 
+	@Transactional
 	public void update(Long targetId, UpdateUserRequest request) {
+		if(request.nickname() != null && nicknameDuplicationCheck(request.nickname())) {
+			throw new BusinessException(ErrorCode.USER_DUPLICATED_NICKNAME,
+				MessageFormat.format("already exists nickname : {0}", request.nickname()));
+		}
+
 		User foundUser = this.userRepository.findById(targetId)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", targetId)));
+
 		foundUser.update(request.nickname(), null, null);
 	}
 
