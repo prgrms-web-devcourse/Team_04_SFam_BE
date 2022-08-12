@@ -1,8 +1,12 @@
 package com.kdt.team04.domain.matches.match.service;
 
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +23,7 @@ import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.user.dto.response.AuthorResponse;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
+import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
 @Service
@@ -46,11 +51,39 @@ public class MatchGiverService {
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
 		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname(), author.profileImageUrl());
 
+		// TODO TeamResponse 구문 추가 → 테스트 코드 검토 및 수정 필요 2022.08.12(금) midas
 		if (foundMatch.getMatchType().isTeam()) {
-			return toTeamMatch(foundMatch, authorResponse);
+			Team team = foundMatch.getTeam();
+			TeamSimpleResponse teamResponse = new TeamSimpleResponse(team.getId(), team.getName(),
+				team.getSportsCategory(), team.getLogoImageUrl());
+
+			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);
 		}
 
 		return matchConverter.toMatchResponse(foundMatch, authorResponse);
+	}
+
+	public Map<Long, MatchResponse> findByIds(List<Long> ids) {
+		return matchRepository.findWithTeamAndUserByIds(ids).stream()
+			.map(match -> {
+				User author = match.getUser();
+				AuthorResponse authorResponse = new AuthorResponse(author.getId(), author.getNickname(), author.getProfileImageUrl());
+
+				if (match.getMatchType().isTeam()) {
+					Team team = match.getTeam();
+					TeamSimpleResponse teamResponse = new TeamSimpleResponse(
+						team.getId(),
+						team.getName(),
+						team.getSportsCategory(),
+						team.getLogoImageUrl()
+					);
+
+					return matchConverter.toMatchResponse(match, authorResponse, teamResponse);
+				}
+
+				return matchConverter.toMatchResponse(match, authorResponse);
+			})
+			.collect(Collectors.toMap(MatchResponse::id, matchResponse -> matchResponse));
 	}
 
 	public MatchAuthorResponse findMatchAuthorById(Long id) {

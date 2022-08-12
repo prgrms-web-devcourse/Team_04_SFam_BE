@@ -3,6 +3,7 @@ package com.kdt.team04.domain.matches.proposal.dto.response;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +20,9 @@ public record ChatRoomResponse(
 
 	@Schema(description = "마지막 채팅 정보")
 	LastChatResponse lastChat,
+
+	@Schema(description = "매칭 공고 정보")
+	MatchResponse match,
 
 	//== 신청 목록 정렬용(신청 일자 | 마지막 채팅 일자 기준 내림차순) ==//
 	@JsonIgnore
