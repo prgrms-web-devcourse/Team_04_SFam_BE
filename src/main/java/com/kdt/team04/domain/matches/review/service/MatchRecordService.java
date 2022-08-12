@@ -11,9 +11,11 @@ import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.matches.match.service.MatchGiverService;
 import com.kdt.team04.domain.matches.proposal.dto.response.FixedProposalResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalGiverService;
+import com.kdt.team04.domain.matches.review.controller.QueryMatchRecordRequest;
 import com.kdt.team04.domain.matches.review.dto.MatchRecordConverter;
-import com.kdt.team04.domain.matches.review.model.entity.MatchRecord;
+import com.kdt.team04.domain.matches.review.dto.response.MatchRecordTotalResponse;
 import com.kdt.team04.domain.matches.review.model.MatchRecordValue;
+import com.kdt.team04.domain.matches.review.model.entity.MatchRecord;
 import com.kdt.team04.domain.matches.review.repository.MatchRecordRepository;
 import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.user.dto.response.AuthorResponse;
@@ -64,5 +66,9 @@ public class MatchRecordService {
 		}
 
 		matchRecordRepository.saveAll(records);
+	}
+
+	public MatchRecordTotalResponse findMatchRecordTotal(QueryMatchRecordRequest request) {
+		return matchRecordRepository.getTotalCount(request);
 	}
 }
