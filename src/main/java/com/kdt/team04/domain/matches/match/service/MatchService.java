@@ -16,8 +16,8 @@ import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
 import com.kdt.team04.domain.matches.match.dto.request.CreateMatchRequest;
 import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
-import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.model.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
@@ -33,8 +33,6 @@ import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Transactional(readOnly = true)
 @Service
@@ -130,8 +128,7 @@ public class MatchService {
 
 		Location location = foundUser.userSettings().getLocation();
 
-		return matchRepository.findByLocationPaging(
-			location.getLatitude(), location.getLongitude(), request);
+		return matchRepository.findByLocationPaging(location.getLatitude(), location.getLongitude(), request);
 	}
 
 	public MatchResponse findById(Long id, Long userId) {
