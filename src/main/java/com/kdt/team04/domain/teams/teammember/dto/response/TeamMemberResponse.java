@@ -11,6 +11,9 @@ public record TeamMemberResponse(
 	@Schema(description = "팀원 닉네임")
 	String nickname,
 
+	@Schema(description = "팀원 프로필 이미지 URL")
+	String profileImageUrl,
+
 	@Schema(description = "팀원 권한(값/설명) - LEADER/팀장, MEMBER/팀원")
 	TeamMemberRole role
 ) {
