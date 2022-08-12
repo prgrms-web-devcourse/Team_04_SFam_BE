@@ -1,12 +1,76 @@
 # Team_04_Temp_BE
 ## 🤲🏻 프로젝트 소개
+<center><img src="img/logo.png" width="350" height="250"></center>
+<br>
 
-스포츠 대결 매칭 프로젝트입니다. 
+### Sports Family : SFAM
 
+동네에서 같이 운동할 사람을 모아 팀을 만들고, 근처의 다른 팀들과 스포츠 경기를 진행할 수 있는 커뮤니티 서비스입니다. 
+
+## 🏠 서비스 주소 
+https://www.dongkyurami.link/
+
+## 🛠 기술 스택
+<img src="https://img.shields.io/badge/Java 17-007396.svg?style=flat&logo=Java&logoColor=white"> 
+<img src="https://img.shields.io/badge/Gradle 7.4.2-02303A.svg?style=flat&logo=Gradle&logoColor=white">
+<img src="https://img.shields.io/badge/Spring Boot 2.7.0-6DB33F.svg?style=flat&logo=Spring Boot&logoColor=white">
+<img src="https://img.shields.io/badge/Spring Security-6DB33F.svg?style=flat&logo=Spring Security&logoColor=white">
+<img src="https://img.shields.io/badge/MySQL-4479A1.svg?style=flat&logo=MySQL&logoColor=white">
+<img src="https://img.shields.io/badge/JPA-AAAAAA.svg?style=flat&logo=Hibernate&logoColor=white">
+<img src="https://img.shields.io/badge/JUnit5-25A162.svg?style=flat&logo=JUnit5&logoColor=white">
+<img src="https://img.shields.io/badge/Swagger-85EA2D.svg?style=flat&logo=Swagger&logoColor=white">
+<img src="https://img.shields.io/badge/Flyway-CC0200.svg?style=flat&logo=Flyway&logoColor=white">
+<img src="https://img.shields.io/badge/AWS-FF9E0F.svg?style=flat&logo=Amazon&logoColor=white">
+
+## 📝 프로젝트 구조
+![architecture](img/architecture.png)
+## 🗺 ERD 
+![erd](img/erd.png)
+
+## 🌳 환경 설정 
+### Husky
+
+- git hook을 프로젝트 내에서 공유할 수 있도록 합니다.
+
+**node가 없다면**
+
+```
+brew install node
+```
+
+**설치**
+
+```
+npm install
+```
+
+### Flyway
+- flyway.conf 
+```aidl
+flyway.url=
+flyway.schemas=
+flyway.user=
+flyway.password=
+flyway.locations=
+```
+
+### .env
+```aidl
+MYSQL_USERNAME=
+MYSQL_PASSWORD=
+ENCRYPTOR_KEY=
+```
+
+## ⚙️ API 설계 
+### Swagger
+- API를 테스트 할 수 있는 UI를 제공합니다.
+```
+https://api.dongkyurami.link/swagger-ui/index.html
+```
 
 ## 👬 팀 소개
 
-### [Backend] 
+### [Backend]
 <table>
   <tr>
     <td>
@@ -34,7 +98,7 @@
             <img src="https://avatars.githubusercontent.com/u/62292492?v=4" width="100px" />
         </a>
     </td>
-    
+
   </tr>
   <tr>
     <td><b>Crong (김형욱)</b></td>
@@ -53,7 +117,7 @@
 </table>
 <br/>
 
-### [Frontend] 
+### [Frontend]
 <table>
   <tr>
     <td>
@@ -93,36 +157,3 @@
   </tr>
 </table>
 <br/>
-
-## 🛠 기술 스택
-
-
-<img src="https://img.shields.io/badge/Java 17-007396?style=flat&logo=java&logoColor=white"> <img src="https://img.shields.io/badge/Gradle 7.4.2-02303A.svg?style=flat&logo=Gradle&logoColor=white">
-<img src="https://img.shields.io/badge/Spring Boot 2.7.0-6DB33F.svg?style=flat&logo=Spring Boot&logoColor=white">
-<img src="https://img.shields.io/badge/MySQL-4479A1.svg?style=flat&logo=MySQL&logoColor=white">
-<img src="https://img.shields.io/badge/JPA-FF9E0F.svg?style=flat&logo=JPA&logoColor=white">
-<img src="https://img.shields.io/badge/JUnit5-25A162.svg?style=flat&logo=JUnit5&logoColor=white">
-<img src="https://img.shields.io/badge/Swagger-85EA2D.svg?style=flat&logo=Swagger&logoColor=white">
-<img src="https://img.shields.io/badge/Flyway-CC0200.svg?style=flat&logo=Flyway&logoColor=white">
-
-## Husky
-
-- git hook을 프로젝트 내에서 공유할 수 있도록 합니다.
-
-**node가 없다면**
-
-```
-brew install node
-```
-
-**설치**
-
-```
-npm install
-```
-
-## Swagger
-- API를 테스트 할 수 있는 UI를 제공합니다.
-```
-https://api.dongkyurami.link/swagger-ui/index.html
-```
