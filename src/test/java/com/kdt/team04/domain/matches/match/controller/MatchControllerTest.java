@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -131,6 +132,8 @@ class MatchControllerTest {
 	@DisplayName("팀전 매치 글 작성 시 팀 정보가 없다면 400 상태코드를 반환한다.")
 	void createTeamMatchFail() throws Exception {
 		// given
+		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_NOT_VALID;
+
 		CreateMatchRequest request = new CreateMatchRequest("제목", LocalDate.now(), MatchType.TEAM_MATCH, null,
 			1, SportsCategory.BADMINTON, "배드민턴 재밌게 함 치실분 ~?");
 
@@ -144,35 +147,51 @@ class MatchControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
 
+		String responseBody = getResponseBody(resultActions);
+
 		// then
 		verify(matchService, times(1)).create(DEFAULT_AUTH_ID, request);
-		resultActions.andExpect(status().isBadRequest());
+
+		resultActions.
+			andExpect(status().isBadRequest());
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
 	@DisplayName("매치 신청 시 요청값이 null 이라면 400 상태코드를 반환한다.")
 	void createMatchRequestNull() throws Exception {
 		// given
+		ErrorCode errorCode = ErrorCode.RUNTIME_EXCEPTION;
 		CreateMatchRequest request = null;
 
 		// when
-		ResultActions resultActions = mockMvc.perform(
-			post(BASE_END_POINT)
-				.content(objectMapper.writeValueAsString(request))
-				.contentType(MediaType.APPLICATION_JSON)
-		).andDo(print());
+		ResultActions resultActions = mockMvc
+			.perform(
+				post(BASE_END_POINT)
+					.content(objectMapper.writeValueAsString(request))
+					.contentType(MediaType.APPLICATION_JSON)
+			).andDo(print());
+
+		String responseBody = getResponseBody(resultActions);
 
 		// then
 		verify(matchService, times(0)).create(DEFAULT_AUTH_ID, request);
+
 		resultActions
 			.andExpect(status().isBadRequest());
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
 	@DisplayName("매치 생성 시 요청값 데이터가 요구사항에 맞지 않는다면 400 상태코드를 반환한다.")
 	void createMatchInvalidParameter() throws Exception {
 		// given
-		String titleInValidErrorMessage = "size must be between 2 and 50";
+		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_NOT_VALID;
+
 		CreateMatchRequest request = new CreateMatchRequest("", LocalDate.now(), MatchType.INDIVIDUAL_MATCH,
 			null, 1, SportsCategory.BADMINTON, "배드민턴 재밌게 함 치실분 ~?");
 
@@ -183,18 +202,18 @@ class MatchControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
 
-		Exception resolvedException = resultActions.andReturn()
-			.getResolvedException();
+		String responseBody = getResponseBody(resultActions);
 
 		// then
-		assertThat(resolvedException.getMessage())
-			.contains(titleInValidErrorMessage);
 		resultActions
 			.andExpect(status().isBadRequest());
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
-	@DisplayName("매치 공고 조회를 원하는 갯수만큼 조회할 수 있다. ")
+	@DisplayName("매치 공고 조회를 원하는 갯수만큼 조회할 수 있으며 조회 후 200 상태코드를 반환한다. ")
 	void getMatchesPagingCursor() throws Exception {
 		// given
 		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
@@ -233,9 +252,7 @@ class MatchControllerTest {
 			get(BASE_END_POINT + "?size=" + request.getSize())
 		).andDo(print());
 
-		String mockResponse = resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
+		String mockResponse = getResponseBody(resultActions);
 
 		// then
 		resultActions.andExpect(status().isOk());
@@ -246,23 +263,24 @@ class MatchControllerTest {
 	@DisplayName("매치 공고 조회 시 가져올 갯수를 입력하지 않으면 400 상태코드를 반환한다.")
 	void getMatchesPagingNotSize() throws Exception {
 		// given
-		String sizeInvalidErrorMessage = "must not be null";
+		ErrorCode errorCode = ErrorCode.BIND_ERROR;
 
 		// when
-		ResultActions resultActions = mockMvc.perform(
-			get(BASE_END_POINT)
-		).andDo(print());
+		ResultActions resultActions = mockMvc.perform(get(BASE_END_POINT))
+			.andDo(print());
 
-		String errorMessage = resultActions.andReturn().getResolvedException().getMessage();
+		String responseBody = getResponseBody(resultActions);
 
 		// then
 		resultActions
 			.andExpect(status().isBadRequest());
-		assertThat(errorMessage).contains(sizeInvalidErrorMessage);
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
-	@DisplayName("매치공고가 존재할 때 공고의 상세정보를 리턴한다.")
+	@DisplayName("매치공고가 존재할 때 공고의 상세정보를 조회 후 200 상태코드를 반환한다.")
 	void getMatchById() throws Exception {
 		// given
 		AuthorResponse authorResponse = new AuthorResponse(DEFAULT_AUTH_ID, DEFAULT_AUTH_NICK_NAME, null);
@@ -301,8 +319,10 @@ class MatchControllerTest {
 	@DisplayName("매치공고가 존재하지 않을 때 404 상태코드를 반환한다.")
 	void getMatchByIdNotFound() throws Exception {
 		// given
+		ErrorCode errorCode = ErrorCode.MATCH_NOT_FOUND;
+
 		given(matchService.findById(DEFAULT_INVALID_MATCH_ID, DEFAULT_AUTH_ID))
-			.willThrow(new BusinessException(ErrorCode.MATCH_NOT_FOUND));
+			.willThrow(new BusinessException(errorCode));
 
 		// when
 		ResultActions resultActions = mockMvc
@@ -311,8 +331,14 @@ class MatchControllerTest {
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print());
 
+		String responseBody = getResponseBody(resultActions);
+
 		// then
-		resultActions.andExpect(status().isNotFound());
+		resultActions
+			.andExpect(status().isNotFound());
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
@@ -346,8 +372,14 @@ class MatchControllerTest {
 				delete(BASE_END_POINT + "/" + DEFAULT_INVALID_MATCH_ID))
 			.andDo(print());
 
+		String responseBody = getResponseBody(resultActions);
+
 		// then
-		resultActions.andExpect(status().isForbidden());
+		resultActions
+			.andExpect(status().isForbidden());
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
@@ -365,8 +397,14 @@ class MatchControllerTest {
 				delete(BASE_END_POINT + "/" + DEFAULT_INVALID_MATCH_ID))
 			.andDo(print());
 
+		String responseBody = getResponseBody(resultActions);
+
 		// then
-		resultActions.andExpect(status().isBadRequest());
+		resultActions
+			.andExpect(status().isBadRequest());
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
@@ -413,10 +451,16 @@ class MatchControllerTest {
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print());
 
+		String responseBody = getResponseBody(resultActions);
+
 		// then
 		verify(matchService, times(1))
 			.updateStatusExceptEnd(DEFAULT_INVALID_MATCH_ID, DEFAULT_AUTH_ID, updateRequest.status());
+
 		resultActions.andExpect(status().isForbidden());
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
@@ -439,10 +483,16 @@ class MatchControllerTest {
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print());
 
+		String responseBody = getResponseBody(resultActions);
+
 		// then
 		verify(matchService, times(1))
 			.updateStatusExceptEnd(DEFAULT_MATCH_ID, DEFAULT_AUTH_ID, updateRequest.status());
+
 		resultActions.andExpect(status().isBadRequest());
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
@@ -465,11 +515,19 @@ class MatchControllerTest {
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print());
 
+		String responseBody = getResponseBody(resultActions);
+
 		// then
 		verify(matchService, times(1))
 			.updateStatusExceptEnd(DEFAULT_MATCH_ID, DEFAULT_AUTH_ID, updateRequest.status());
+
 		resultActions.andExpect(status().isBadRequest());
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
+
+
 
 	@Test
 	@DisplayName("이미 경기가 끝난 공고라면 상태를 변경할 수 없으며 400 상태코드를 반환한다.")
@@ -491,10 +549,23 @@ class MatchControllerTest {
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print());
 
+		String responseBody = getResponseBody(resultActions);
+
 		// then
 		verify(matchService, times(1))
 			.updateStatusExceptEnd(DEFAULT_MATCH_ID, DEFAULT_AUTH_ID, updateRequest.status());
-		resultActions.andExpect(status().isBadRequest());
+
+		resultActions
+			.andExpect(status().isBadRequest());
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
+	}
+
+	private String getResponseBody(ResultActions resultActions) throws UnsupportedEncodingException {
+		return resultActions.andReturn()
+			.getResponse()
+			.getContentAsString();
 	}
 
 }
