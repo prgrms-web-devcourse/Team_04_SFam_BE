@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -77,7 +78,6 @@ class TeamInvitationControllerTest {
 		// given
 		PageDto.TeamInvitationCursorPageRequest cursorRequest =
 			new PageDto.TeamInvitationCursorPageRequest(null, null, 5, InvitationStatus.WAITING);
-		String request = objectMapper.writeValueAsString(cursorRequest);
 
 		List<TeamInvitationResponse> teamInvitationResponses = LongStream.range(1, 6)
 			.mapToObj(
@@ -109,10 +109,6 @@ class TeamInvitationControllerTest {
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print());
 
-		String mockResponse = resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
-
 		// then
 		resultActions
 			.andExpect(status().isOk())
@@ -123,8 +119,7 @@ class TeamInvitationControllerTest {
 	@DisplayName("초대목록 조회 시 데이터에 가져올 개수와 상태가 없다면 400 상태코드를 반환한다.")
 	void getInvitesArgumentsNull() throws Exception {
 		// given
-		String responseErrorCode = "C0003";
-		String responseErrorMessage = "Binding Exception";
+		ErrorCode errorCode = ErrorCode.BIND_ERROR;
 
 		// when
 		ResultActions resultActions = mockMvc
@@ -133,9 +128,7 @@ class TeamInvitationControllerTest {
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print());
 
-		String responseBody = resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
+		String responseBody = getResponseBody(resultActions);
 
 		// then
 		verify(teamInvitationService, times(0)).getInvitations(DEFAULT_AUTH_ID, null);
@@ -143,8 +136,8 @@ class TeamInvitationControllerTest {
 		resultActions
 			.andExpect(status().isBadRequest());
 
-		assertThat(responseBody).contains(responseErrorCode);
-		assertThat(responseBody).contains(responseErrorMessage);
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
@@ -180,8 +173,7 @@ class TeamInvitationControllerTest {
 	@DisplayName("팀 초대에 필요한 데이터가 없다면 400 상태코드를 반환한다.")
 	void inviteArgumentNull() throws Exception {
 		// given
-		String responseErrorCode = "C0004";
-		String responseErrorMessage = "Runtime error";
+		ErrorCode errorCode = ErrorCode.RUNTIME_EXCEPTION;
 
 		ResultActions resultActions = mockMvc.perform(
 			post(BASE_END_POINT + "/" + DEFAULT_AUTH_TEAM_ID + "/invitations")
@@ -189,24 +181,20 @@ class TeamInvitationControllerTest {
 		).andDo(print());
 
 		// when
-		String responseBody = resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
+		String responseBody = getResponseBody(resultActions);
 
 		// then
 		resultActions
 			.andExpect(status().isBadRequest());
-		assertThat(responseBody).contains(responseErrorCode);
-		assertThat(responseBody).contains(responseErrorMessage);
+
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
 	@DisplayName("이미 초대 대기상태나 수락 상태라면 400 상태코드를 반환한다.")
 	void alreadyInvited() throws Exception {
 		// given
-		String responseErrorCode = "I0003";
-		String responseErrorMessage = "Invitation is already approval or wait.";
-
 		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(DEFAULT_TARGET_USER_ID);
 		String request = objectMapper.writeValueAsString(teamInvitationRequest);
 
@@ -225,9 +213,7 @@ class TeamInvitationControllerTest {
 					.content(request))
 			.andDo(print());
 
-		String responseBody = resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
+		String responseBody = getResponseBody(resultActions);
 
 		// then
 		verify(teamInvitationService, times(1))
@@ -236,17 +222,14 @@ class TeamInvitationControllerTest {
 		resultActions
 			.andExpect(status().isBadRequest());
 
-		assertThat(responseBody).contains(responseErrorCode);
-		assertThat(responseBody).contains(responseErrorMessage);
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
 	@DisplayName("이미 팀의 멤버라면 초대가 불가능하며 400 상태코드를 반환한다.")
 	void alreadyTeamMember() throws Exception {
 		// given
-		String responseErrorCode = "TM0001";
-		String responseErrorMessage = "Already member of team";
-
 		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(DEFAULT_TARGET_USER_ID);
 		String request = objectMapper.writeValueAsString(teamInvitationRequest);
 
@@ -265,9 +248,7 @@ class TeamInvitationControllerTest {
 					.content(request))
 			.andDo(print());
 
-		String responseBody = resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
+		String responseBody = getResponseBody(resultActions);
 
 		// then
 		verify(teamInvitationService, times(1))
@@ -276,17 +257,14 @@ class TeamInvitationControllerTest {
 		resultActions
 			.andExpect(status().isBadRequest());
 
-		assertThat(responseBody).contains(responseErrorCode);
-		assertThat(responseBody).contains(responseErrorMessage);
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
 	@DisplayName("팀의 리더가 아니라면 초대가 불가능하며 403 상태코드를 반환한다.")
 	void notTeamLeader() throws Exception {
 		// given
-		String responseErrorCode = "T0002";
-		String responseErrorMessage = "Not team leader";
-
 		TeamInvitationRequest teamInvitationRequest = new TeamInvitationRequest(DEFAULT_TARGET_USER_ID);
 		String request = objectMapper.writeValueAsString(teamInvitationRequest);
 
@@ -305,9 +283,7 @@ class TeamInvitationControllerTest {
 					.content(request))
 			.andDo(print());
 
-		String responseBody = resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
+		String responseBody = getResponseBody(resultActions);
 
 		// then
 		verify(teamInvitationService, times(1))
@@ -316,8 +292,8 @@ class TeamInvitationControllerTest {
 		resultActions
 			.andExpect(status().isForbidden());
 
-		assertThat(responseBody).contains(responseErrorCode);
-		assertThat(responseBody).contains(responseErrorMessage);
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
@@ -349,9 +325,6 @@ class TeamInvitationControllerTest {
 	@DisplayName("다른 사용자의 초대를 거절할 시 403 상태코드를 반환한다.")
 	void accessDeniedInvitation() throws Exception {
 		// given
-		String responseErrorCode = "I004";
-		String responseErrorMessage = "Don't have permission to access invitation";
-
 		TeamInvitationRefuseRequest refuseRequest = new TeamInvitationRefuseRequest(DEFAULT_TARGET_USER_ID);
 		String request = objectMapper.writeValueAsString(refuseRequest);
 
@@ -371,9 +344,7 @@ class TeamInvitationControllerTest {
 				.content(request)
 		).andDo(print());
 
-		String responseBody = resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
+		String responseBody = getResponseBody(resultActions);
 
 		// then
 		resultActions.andExpect(status().isForbidden());
@@ -381,17 +352,14 @@ class TeamInvitationControllerTest {
 		verify(teamInvitationService, times(1))
 			.refuse(DEFAULT_AUTH_ID, DEFAULT_AUTH_TEAM_ID, DEFAULT_TEAM_INVITATION_ID, refuseRequest);
 
-		assertThat(responseBody).contains(responseErrorCode);
-		assertThat(responseBody).contains(responseErrorMessage);
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
 	}
 
 	@Test
 	@DisplayName("초대장을 찾지 못할 경우 404 상태코드를 반환한다.")
 	void notFoundInvitation() throws Exception {
 		// given
-		String responseErrorCode = "I0001";
-		String responseErrorMessage = "Not found invitation";
-
 		TeamInvitationRefuseRequest refuseRequest = new TeamInvitationRefuseRequest(DEFAULT_AUTH_ID);
 		String request = objectMapper.writeValueAsString(refuseRequest);
 
@@ -411,9 +379,7 @@ class TeamInvitationControllerTest {
 				.content(request)
 		).andDo(print());
 
-		String responseBody = resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
+		String responseBody = getResponseBody(resultActions);
 
 		// then
 		resultActions.andExpect(status().isNotFound());
@@ -421,8 +387,14 @@ class TeamInvitationControllerTest {
 		verify(teamInvitationService, times(1))
 			.refuse(DEFAULT_AUTH_ID, DEFAULT_AUTH_TEAM_ID, DEFAULT_NOT_FOUND_INVITATION_ID, refuseRequest);
 
-		assertThat(responseBody).contains(responseErrorCode);
-		assertThat(responseBody).contains(responseErrorMessage);
+		assertThat(responseBody).contains(errorCode.getCode());
+		assertThat(responseBody).contains(errorCode.getMessage());
+	}
+
+	private String getResponseBody(ResultActions resultActions) throws UnsupportedEncodingException {
+		return resultActions.andReturn()
+			.getResponse()
+			.getContentAsString();
 	}
 
 }
