@@ -200,11 +200,11 @@ public class MatchProposalService {
 	}
 
 	public List<ChatRoomResponse> findAllProposalChats(Long matchId, Long authorId) {
-		MatchAuthorResponse matchAuthor = matchGiver.findMatchAuthorById(matchId);
-		if (!Objects.equals(matchAuthor.author().id(), authorId)) {
+		MatchResponse matchResponse = matchGiver.findById(matchId);
+		if (!Objects.equals(matchResponse.author().id(), authorId)) {
 			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
 				MessageFormat.format("Don't have permission to access match with matchId={0}, authorId={1}, userId={2}",
-					matchId, matchAuthor.author().id(), authorId));
+					matchId, matchResponse.author().id(), authorId));
 		}
 
 		List<MatchProposal> matchProposals = proposalRepository.findAllByMatchId(matchId);
@@ -234,6 +234,7 @@ public class MatchProposalService {
 					proposal.getContent(),
 					chatTargetProfile,
 					chatLastResponse == null ? null : new LastChatResponse(chatLastResponse.getLastChat()),
+					matchResponse,
 					chatLastResponse == null ? proposal.getCreatedAt() : chatLastResponse.getLastChatDate()
 				);
 			})

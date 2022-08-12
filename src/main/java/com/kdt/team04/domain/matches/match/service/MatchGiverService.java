@@ -46,8 +46,13 @@ public class MatchGiverService {
 		UserResponse author = userService.findById(foundMatch.getUser().getId());
 		AuthorResponse authorResponse = new AuthorResponse(author.id(), author.nickname(), author.profileImageUrl());
 
+		// TODO TeamResponse 구문 추가 → 테스트 코드 검토 및 수정 필요 2022.08.12(금) midas
 		if (foundMatch.getMatchType().isTeam()) {
-			return toTeamMatch(foundMatch, authorResponse);
+			Team team = foundMatch.getTeam();
+			TeamSimpleResponse teamResponse = new TeamSimpleResponse(team.getId(), team.getName(),
+				team.getSportsCategory(), team.getLogoImageUrl());
+
+			return matchConverter.toMatchResponse(foundMatch, authorResponse, teamResponse);
 		}
 
 		return matchConverter.toMatchResponse(foundMatch, authorResponse);
