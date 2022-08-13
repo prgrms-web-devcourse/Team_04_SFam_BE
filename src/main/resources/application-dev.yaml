@@ -42,11 +42,13 @@ cloud:
     stack:
       auto: false
     region: ENC(j+O+c8Y9xPJqzEO38J5lTKH9E2orZwm1)
-
-encryptor:
-  key: ${ENCRYPTOR_KEY}
-
 cookie:
   secure: ${COOKIE_SECURE:true}
   same-site: ${COOKIE_SAME_SITE:NONE}
   domain: ${COOKIE_DOMAIN:.dongkyurami.link}
+kakao:
+  local:
+    accessKey: ${KAKAO_LOCAL_ACCESS_KEY:ENC(/gVp86WTzLZo8bo5t1QUNrPpMuglwY6aUy9kimx1qz6fsgNi1dxlOU3efF1eS7FW)}
+encryptor:
+  key: ${ENCRYPTOR_KEY}
+

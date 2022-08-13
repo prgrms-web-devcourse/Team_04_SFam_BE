@@ -9,9 +9,11 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.kdt.team04.common.config.resolver.CustomAuthenticationPrincipalArgumentResolver;
+import com.kdt.team04.feign.division.config.DivisionApiProperties;
+import com.kdt.team04.feign.kakao.config.KakaoApiProperties;
 
 @Configuration
-@EnableConfigurationProperties({CorsConfigProperties.class, DivisionApiProperties.class})
+@EnableConfigurationProperties({CorsConfigProperties.class, DivisionApiProperties.class, KakaoApiProperties.class})
 public class WebMvcConfig implements WebMvcConfigurer {
 
 	private final CorsConfigProperties corsConfigProperties;
