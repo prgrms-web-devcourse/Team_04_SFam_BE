@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.PageDto;
+import com.kdt.team04.common.SearchDateType;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.exception.ErrorResponse;
@@ -213,6 +214,7 @@ class MatchControllerTest {
 	void getMatchesPagingCursor() throws Exception {
 		// given
 		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
+			.searchDateType(SearchDateType.MATCH_DATE)
 			.size(5)
 			.build();
 
@@ -231,7 +233,7 @@ class MatchControllerTest {
 			))
 			.toList();
 
-		MatchPagingCursor cursor = new MatchPagingCursor(LocalDateTime.now(), 5L);
+		MatchPagingCursor cursor = new MatchPagingCursor(LocalDateTime.now(), null, 5L);
 
 		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> cursorResponse =
 			new PageDto.CursorResponse(matchListViewResponses, true, cursor);
@@ -246,7 +248,8 @@ class MatchControllerTest {
 		// when
 		ResultActions resultActions = mockMvc
 			.perform(
-				get(BASE_END_POINT + "?size={size}", request.getSize())
+				get(BASE_END_POINT + "?searchDateType={searchDateType}&size={size}",
+					request.getSearchDateType(), request.getSize())
 			).andDo(print());
 
 		// then
