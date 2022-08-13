@@ -15,8 +15,7 @@
 
 ## 🛠 기술 스택
 
-<img src="https://img.shields.io/badge/Java 17-007396.svg?style=flat&logo=Java&logoColor=white"> 
-<img src="https://img.shields.io/badge/Gradle 7.4.2-02303A.svg?style=flat&logo=Gradle&logoColor=white">
+<img src="https://img.shields.io/badge/Java 17-007396.svg?style=flat&logo=Java&logoColor=white"> <img src="https://img.shields.io/badge/Gradle 7.4.2-02303A.svg?style=flat&logo=Gradle&logoColor=white">
 <img src="https://img.shields.io/badge/Spring Boot 2.7.0-6DB33F.svg?style=flat&logo=Spring Boot&logoColor=white">
 <img src="https://img.shields.io/badge/Spring Security-6DB33F.svg?style=flat&logo=Spring Security&logoColor=white">
 <img src="https://img.shields.io/badge/MySQL-4479A1.svg?style=flat&logo=MySQL&logoColor=white">
