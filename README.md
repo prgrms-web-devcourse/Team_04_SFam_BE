@@ -1,6 +1,6 @@
 # Team_04_Temp_BE
 ## 🤲🏻 프로젝트 소개
-<center><img src="img/logo.png" width="350" height="250"></center>
+<center><img src="img_2.png" width="400"></center>
 <br>
 
 ### Sports Family : SFAM
@@ -23,9 +23,9 @@ https://www.dongkyurami.link/
 <img src="https://img.shields.io/badge/AWS-FF9E0F.svg?style=flat&logo=Amazon&logoColor=white">
 
 ## 📝 프로젝트 구조
-![architecture](img/architecture.png)
+![architecture](img.png)
 ## 🗺 ERD 
-![erd](img/erd.png)
+![erd](img_1.png)
 
 ## 🌳 환경 설정 
 ### Husky
