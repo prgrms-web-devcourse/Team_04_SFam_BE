@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.LongStream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
@@ -77,6 +81,18 @@ class MatchControllerTest {
 
 	@MockBean
 	Jwt jwt;
+
+	@Autowired
+	private WebApplicationContext ctx;
+
+	@BeforeEach
+	public void setUp() {
+		//MockMvc 설정
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
+			.addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
+			.alwaysDo(print())
+			.build();
+	}
 
 	@Test
 	@DisplayName("사용자는 개인전 매치 공고글을 작성 할 수 있으며 200 상태코드를 반환한다.")
@@ -131,6 +147,7 @@ class MatchControllerTest {
 	}
 
 	@Test
+	@WithMockJwtAuthentication
 	@DisplayName("팀전 매치 글 작성 시 팀 정보가 없다면 400 상태코드를 반환한다.")
 	void createTeamMatchFail() throws Exception {
 		// given
@@ -173,7 +190,8 @@ class MatchControllerTest {
 				post(BASE_END_POINT)
 					.content(objectMapper.writeValueAsString(request))
 					.contentType(MediaType.APPLICATION_JSON)
-			).andDo(print());;
+			).andDo(print());
+		;
 
 		// then
 		verify(matchService, never()).create(DEFAULT_AUTH_ID, request);
@@ -226,6 +244,7 @@ class MatchControllerTest {
 				DEFAULT_AUTH_ID,
 				DEFAULT_AUTH_NICK_NAME,
 				30.0,
+				"구서동",
 				LocalDate.now(),
 				LocalDateTime.now()
 			))
@@ -245,9 +264,8 @@ class MatchControllerTest {
 
 		// when
 		ResultActions resultActions = mockMvc
-			.perform(
-				get(BASE_END_POINT + "?size={size}", request.getSize())
-			).andDo(print());
+			.perform(get(BASE_END_POINT + "?size={size}", request.getSize()))
+			.andDo(print());
 
 		// then
 		verify(matchService, times(1))
