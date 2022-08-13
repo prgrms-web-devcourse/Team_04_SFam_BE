@@ -11,6 +11,10 @@ import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.proposal.entity.MatchChat;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposal;
 import com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus;
+import com.kdt.team04.domain.matches.review.model.MatchRecordValue;
+import com.kdt.team04.domain.matches.review.model.MatchReviewValue;
+import com.kdt.team04.domain.matches.review.model.entity.MatchRecord;
+import com.kdt.team04.domain.matches.review.model.entity.MatchReview;
 import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
@@ -113,6 +117,26 @@ public class MatchFactory {
 			.target(target)
 			.content(content)
 			.chattedAt(LocalDateTime.now())
+			.build();
+	}
+
+	public static MatchRecord getRecord(Match match, User author, Team team, MatchRecordValue result) {
+		return MatchRecord.builder()
+			.match(match)
+			.user(author)
+			.team(team)
+			.result(result)
+			.build();
+	}
+
+	public static MatchReview getReview(Match match, MatchReviewValue review, User user, Team team, User target, Team targetTeam) {
+		return MatchReview.builder()
+			.match(match)
+			.review(review)
+			.user(user)
+			.team(team)
+			.targetUser(target)
+			.targetTeam(targetTeam)
 			.build();
 	}
 }
