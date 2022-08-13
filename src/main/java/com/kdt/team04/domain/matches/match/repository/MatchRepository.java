@@ -10,6 +10,6 @@ import com.kdt.team04.domain.matches.match.model.entity.Match;
 
 public interface MatchRepository extends JpaRepository<Match, Long>, CustomMatchRepository {
 
-	@Query("SELECT m FROM Match m JOIN FETCH m.user JOIN FETCH m.team WHERE m.id IN (:ids)")
+	@Query("SELECT m FROM Match m JOIN FETCH m.user LEFT JOIN FETCH m.team WHERE m.id IN (:ids)")
 	List<Match> findWithTeamAndUserByIds(@Param("ids") List<Long> ids);
 }
