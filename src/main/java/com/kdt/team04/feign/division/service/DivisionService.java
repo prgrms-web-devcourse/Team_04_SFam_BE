@@ -2,8 +2,8 @@ package com.kdt.team04.feign.division.service;
 
 import org.springframework.stereotype.Service;
 
-import com.kdt.team04.common.config.DivisionApiProperties;
 import com.kdt.team04.feign.division.client.DivisionApiClient;
+import com.kdt.team04.feign.division.config.DivisionApiProperties;
 import com.kdt.team04.feign.division.dto.DivisionApiResponse;
 import com.kdt.team04.feign.division.dto.DivisionRequest;
 
@@ -19,6 +19,11 @@ public class DivisionService {
 	}
 
 	public DivisionApiResponse getDivisions(DivisionRequest request) {
-		return divisionApiClient.getDivisions(divisionApiProperties.domain(), divisionApiProperties.key(), request.data(), request.attrfilter(), request.geomfilter());
+		return divisionApiClient.getDivisions(divisionApiProperties.domain(),
+			divisionApiProperties.key(),
+			request.data(),
+			request.attrfilter(),
+			request.geomfilter()
+		);
 	}
 }
