@@ -1,5 +1,7 @@
 package com.kdt.team04.common.exception;
 
+import java.util.Arrays;
+
 import javax.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
@@ -7,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 @RestControllerAdvice
 public class CommonRestControllerAdvice {
@@ -87,6 +92,31 @@ public class CommonRestControllerAdvice {
 		DataIntegrityViolationException e) {
 		this.log.warn("{}", e.toString(), e);
 		ErrorCode errorCode = ErrorCode.DATA_INTEGRITY_VIOLATION;
+
+		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+	}
+
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ErrorResponse<ErrorCode>> handleHttpMessageNotReadableException(
+		HttpMessageNotReadableException e
+	) {
+		if (e.getCause() instanceof InvalidFormatException) {
+			InvalidFormatException invalidFormat = (InvalidFormatException) e.getCause();
+			if (invalidFormat.getTargetType().isEnum()) {
+				log.warn("Invalid enum value: {} for the field: {}, The value must be one of: {}",
+					invalidFormat.getValue(),
+					invalidFormat.getPath().get(0).getFieldName(),
+					Arrays.toString(invalidFormat.getTargetType().getEnumConstants()),
+					e
+				);
+				ErrorCode errorCode = ErrorCode.INVALID_ENUM_VALUE;
+
+				return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+			}
+		}
+
+		log.warn("Unacceptable JSON : {}", e.getMessage(), e);
+		ErrorCode errorCode = ErrorCode.UNACCEPTABLE_JSON_ERROR;
 
 		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
 	}
