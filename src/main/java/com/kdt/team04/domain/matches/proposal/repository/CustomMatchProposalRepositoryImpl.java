@@ -1,5 +1,6 @@
 package com.kdt.team04.domain.matches.proposal.repository;
 
+import static com.kdt.team04.domain.matches.match.model.MatchStatus.END;
 import static com.kdt.team04.domain.matches.match.model.entity.QMatch.match;
 import static com.kdt.team04.domain.matches.proposal.entity.MatchProposalStatus.FIXED;
 import static com.kdt.team04.domain.matches.proposal.entity.QMatchProposal.matchProposal;
@@ -94,11 +95,14 @@ public class CustomMatchProposalRepositoryImpl implements CustomMatchProposalRep
 			+ " ) mc ON mc.match_proposal_id = mp.id"
 			+ " WHERE (m.user_id = :userId OR mp.user_id = :userId)"
 			+ " AND (mc.rn IS NULL OR mc.rn = 1)"
+			+ " AND (m.status <> :matchEnd OR (m.status = :matchEnd AND mp.status = :proposalFixed AND NOT EXISTS (SELECT 1 FROM match_review mr WHERE mr.match_id = m.id AND mr.user_id = :userId)))"
 			+ " ORDER BY (CASE WHEN mc.rn IS NULL THEN mp.created_at ELSE mc.chatted_at END) DESC";
 
 		JpaResultMapper jpaResultMapper = new JpaResultMapper();
 		Query nativeQuery = em.createNativeQuery(sql)
-			.setParameter("userId", userId);
+			.setParameter("userId", userId)
+			.setParameter("matchEnd", END.toString())
+			.setParameter("proposalFixed", FIXED.toString());
 
 		return jpaResultMapper.list(
 			nativeQuery,
