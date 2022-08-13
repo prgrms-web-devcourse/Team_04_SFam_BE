@@ -26,74 +26,72 @@ public class CommonRestControllerAdvice {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
+	private ResponseEntity<ErrorResponse<ErrorCode>> newResponse(ErrorCode errorCode) {
+		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+	}
+
 	@ExceptionHandler(BusinessException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleBusinessException(BusinessException e) {
-		this.log.info("{}", e.toString(), e);
+		log.warn("Service error occurred : {}", e.getMessage(), e);
 		ErrorCode errorCode = e.errorCode();
 
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+		return newResponse(errorCode);
 	}
 
 	@ExceptionHandler(BindException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleBindException(BindException e) {
-		this.log.warn(e.getMessage(), e);
-		ErrorCode errorCode = ErrorCode.BIND_ERROR;
+		log.warn("Binding error occurred : {}", e.getMessage(), e);
 
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+		return newResponse(ErrorCode.BIND_ERROR);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleMethodArgumentNotValidException(
-		MethodArgumentNotValidException e) {
-		this.log.warn(e.getMessage(), e);
-		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_NOT_VALID;
+		MethodArgumentNotValidException e
+	) {
+		log.warn("Method argument not valid error occurred : {}", e.getMessage(), e);
 
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+		return newResponse(ErrorCode.METHOD_ARGUMENT_NOT_VALID);
 	}
 
 	@ExceptionHandler(MissingServletRequestParameterException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleMissingServletRequestParameterException(
 		MissingServletRequestParameterException e) {
-		this.log.warn(e.getMessage(), e);
-		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_NOT_VALID;
+		log.warn("Missing servlet request parameter error occurred : {}", e.getMessage(), e);
 
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+		return newResponse(ErrorCode.METHOD_ARGUMENT_NOT_VALID);
 	}
 
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleMethodArgumentTypeMismatchException(
 		MethodArgumentTypeMismatchException e
 	) {
-		this.log.warn(e.getMessage(), e);
-		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION;
+		log.warn("Method argument type mismatch error occurred: {}", e.getMessage(), e);
 
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+		return newResponse(ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION);
 	}
 
 	@ExceptionHandler({TransactionSystemException.class, ConstraintViolationException.class})
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleConstraintViolation(ConstraintViolationException e) {
-		this.log.warn(e.getMessage(), e);
-		ErrorCode errorCode = ErrorCode.CONSTRAINT_VIOLATION;
+		log.warn("Constraint violation error occurred: {}", e.getMessage(), e);
 
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+		return newResponse(ErrorCode.CONSTRAINT_VIOLATION);
 	}
 
 	@ExceptionHandler(DomainException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleDomainException(DomainException e) {
-		this.log.warn("{}", e.toString(), e);
+		log.warn("Domain error occurred : {}", e.getMessage(), e);
 		ErrorCode errorCode = e.getErrorCode();
 
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+		return newResponse(errorCode);
 	}
 
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleDataIntegrityViolationException(
 		DataIntegrityViolationException e) {
-		this.log.warn("{}", e.toString(), e);
-		ErrorCode errorCode = ErrorCode.DATA_INTEGRITY_VIOLATION;
+		log.warn("DataIntegrityViolation error occurred : {}", e.getMessage(), e);
 
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+		return newResponse(ErrorCode.DATA_INTEGRITY_VIOLATION);
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
@@ -107,35 +105,28 @@ public class CommonRestControllerAdvice {
 					invalidFormat.getValue(),
 					invalidFormat.getPath().get(0).getFieldName(),
 					Arrays.toString(invalidFormat.getTargetType().getEnumConstants()),
-					e
-				);
-				ErrorCode errorCode = ErrorCode.INVALID_ENUM_VALUE;
+					e);
 
-				return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+				return newResponse(ErrorCode.INVALID_ENUM_VALUE);
 			}
 		}
 
-		log.warn("Unacceptable JSON : {}", e.getMessage(), e);
-		ErrorCode errorCode = ErrorCode.UNACCEPTABLE_JSON_ERROR;
+		log.warn("Unacceptable JSON error occurred : {}", e.getMessage(), e);
 
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+		return newResponse(ErrorCode.UNACCEPTABLE_JSON_ERROR);
 	}
 
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<ErrorResponse<ErrorCode>> handleRuntimeException(RuntimeException e) {
-		this.log.warn("{}", e.toString(), e);
-		ErrorCode errorCode = ErrorCode.RUNTIME_EXCEPTION;
-
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
-	}
-
-	@ResponseStatus(code = HttpStatus.UNAUTHORIZED)
 	@ExceptionHandler(NotAuthenticationException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleNotAuthenticationException(NotAuthenticationException e) {
-		this.log.warn("{}", e.toString(), e);
-		ErrorCode errorCode = ErrorCode.NOT_AUTHENTICATED;
+		log.warn("NotAuthentication error occurred : {}", e.getMessage(), e);
 
-		return new ResponseEntity<>(new ErrorResponse<>(errorCode), errorCode.getStatus());
+		return newResponse(ErrorCode.NOT_AUTHENTICATED);
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<ErrorResponse<ErrorCode>> handleRuntimeException(RuntimeException e) {
+		log.warn("Unexpected error occurred : {}", e.getMessage(), e);
+
+		return newResponse(ErrorCode.RUNTIME_EXCEPTION);
 	}
 }
