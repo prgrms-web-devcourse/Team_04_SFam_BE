@@ -1,6 +1,5 @@
 package com.kdt.team04.domain.teams.teaminvitation.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -15,8 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.LongStream;
@@ -104,9 +101,10 @@ class TeamInvitationControllerTest {
 		// when
 		ResultActions resultActions = mockMvc
 			.perform(
-				get(BASE_END_POINT + "/invitations?size="
-					+ cursorRequest.getSize()
-					+ "&status=" + cursorRequest.getStatus()
+				get(BASE_END_POINT + "/invitations?"
+						+ "size={size}"
+						+ "&status={status}",
+					cursorRequest.getSize(), cursorRequest.getStatus()
 				)
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print());
@@ -157,7 +155,7 @@ class TeamInvitationControllerTest {
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
-			post(BASE_END_POINT + "/" + DEFAULT_AUTH_TEAM_ID + "/invitations")
+			post(BASE_END_POINT + "/{teamId}/invitations", DEFAULT_AUTH_TEAM_ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(request)
 		).andDo(print());
@@ -180,7 +178,7 @@ class TeamInvitationControllerTest {
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
-			post(BASE_END_POINT + "/" + DEFAULT_AUTH_TEAM_ID + "/invitations")
+			post(BASE_END_POINT + "/{teamId}/invitations", DEFAULT_AUTH_TEAM_ID)
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
 
@@ -202,16 +200,13 @@ class TeamInvitationControllerTest {
 
 		ErrorCode errorCode = ErrorCode.ALREADY_INVITED_USER;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
-		doThrow(
-			new BusinessException(errorCode, MessageFormat.format(
-				"teamId = {0}, targetId = {1}", DEFAULT_AUTH_ID, teamInvitationRequest.targetUserId())
-			))
+		doThrow(new BusinessException(errorCode))
 			.when(teamInvitationService)
 			.invite(DEFAULT_AUTH_ID, DEFAULT_AUTH_TEAM_ID, teamInvitationRequest.targetUserId());
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
-				post(BASE_END_POINT + "/" + DEFAULT_AUTH_TEAM_ID + "/invitations")
+				post(BASE_END_POINT + "/{teamId}/invitations", DEFAULT_AUTH_TEAM_ID)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(request))
 			.andDo(print());
@@ -234,16 +229,13 @@ class TeamInvitationControllerTest {
 
 		ErrorCode errorCode = ErrorCode.ALREADY_TEAM_MEMBER;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
-		doThrow(
-			new BusinessException(errorCode, MessageFormat.format(
-				"teamId = {0}, userId = {1}", DEFAULT_AUTH_TEAM_ID, teamInvitationRequest.targetUserId())
-			))
+		doThrow(new BusinessException(errorCode))
 			.when(teamInvitationService)
 			.invite(DEFAULT_AUTH_ID, DEFAULT_AUTH_TEAM_ID, teamInvitationRequest.targetUserId());
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
-				post(BASE_END_POINT + "/" + DEFAULT_AUTH_TEAM_ID + "/invitations")
+				post(BASE_END_POINT + "/{teamId}/invitations", DEFAULT_AUTH_TEAM_ID)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(request))
 			.andDo(print());
@@ -266,16 +258,13 @@ class TeamInvitationControllerTest {
 
 		ErrorCode errorCode = ErrorCode.NOT_TEAM_LEADER;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
-		doThrow(
-			new BusinessException(errorCode, MessageFormat.format(
-				"{0} is not team leader id {1}", DEFAULT_AUTH_ID, DEFAULT_TARGET_USER_ID)
-			))
+		doThrow(new BusinessException(errorCode))
 			.when(teamInvitationService)
 			.invite(DEFAULT_AUTH_ID, DEFAULT_TARGET_USER_TEAM_ID, teamInvitationRequest.targetUserId());
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
-				post(BASE_END_POINT + "/" + DEFAULT_TARGET_USER_TEAM_ID + "/invitations")
+				post(BASE_END_POINT + "/{teamId}/invitations", DEFAULT_TARGET_USER_TEAM_ID)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(request))
 			.andDo(print());
@@ -301,8 +290,9 @@ class TeamInvitationControllerTest {
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
-			patch(BASE_END_POINT + "/" + DEFAULT_TARGET_USER_TEAM_ID
-				+ "/invitation/" + DEFAULT_TEAM_INVITATION_ID)
+			patch(BASE_END_POINT + "/{teamId}/invitation/{invitationId}",
+				DEFAULT_TARGET_USER_TEAM_ID, DEFAULT_TEAM_INVITATION_ID
+			)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(request)
 		).andDo(print());
@@ -324,17 +314,15 @@ class TeamInvitationControllerTest {
 
 		ErrorCode errorCode = ErrorCode.TEAM_INVITATION_ACCESS_DENIED;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
-		doThrow(
-			new BusinessException(errorCode, MessageFormat.format(
-				"{0} is not team leader id {1}", DEFAULT_AUTH_ID, DEFAULT_TARGET_USER_ID)
-			))
+		doThrow(new BusinessException(errorCode))
 			.when(teamInvitationService)
 			.refuse(DEFAULT_AUTH_ID, DEFAULT_AUTH_TEAM_ID, DEFAULT_TEAM_INVITATION_ID, refuseRequest);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
-			patch(BASE_END_POINT + "/" + DEFAULT_AUTH_TEAM_ID
-				+ "/invitation/" + DEFAULT_TEAM_INVITATION_ID)
+			patch(BASE_END_POINT + "/{teamId}/invitation/{invitationId}",
+				DEFAULT_AUTH_TEAM_ID, DEFAULT_TEAM_INVITATION_ID
+			)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(request)
 		).andDo(print());
@@ -357,17 +345,15 @@ class TeamInvitationControllerTest {
 
 		ErrorCode errorCode = ErrorCode.TEAM_INVITATION_NOT_FOUND;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
-		doThrow(
-			new BusinessException(errorCode, MessageFormat.format(
-				"{0} is not team invitation id {1}", DEFAULT_AUTH_TEAM_ID, DEFAULT_NOT_FOUND_INVITATION_ID)
-			))
+		doThrow(new BusinessException(errorCode))
 			.when(teamInvitationService)
 			.refuse(DEFAULT_AUTH_ID, DEFAULT_AUTH_TEAM_ID, DEFAULT_NOT_FOUND_INVITATION_ID, refuseRequest);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(
-			patch(BASE_END_POINT + "/" + DEFAULT_AUTH_TEAM_ID
-				+ "/invitation/" + DEFAULT_NOT_FOUND_INVITATION_ID)
+			patch(BASE_END_POINT + "/{teamId}/invitation/{invitationId}",
+				DEFAULT_AUTH_TEAM_ID, DEFAULT_NOT_FOUND_INVITATION_ID
+			)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(request)
 		).andDo(print());
