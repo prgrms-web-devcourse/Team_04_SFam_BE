@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.kdt.team04.common.PageDto;
+import com.kdt.team04.common.SearchDateType;
 import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
@@ -274,6 +275,7 @@ class MatchServiceIntegrationTest {
 
 		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
 			.id(match.getId())
+			.searchDateType(SearchDateType.CREATED_AT)
 			.createdAt(cursorCreatedAt)
 			.size(5)
 			.category(SportsCategory.BADMINTON)
@@ -337,6 +339,7 @@ class MatchServiceIntegrationTest {
 
 		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
 			.id(matches.get(matches.size() - 1).getId())
+			.searchDateType(SearchDateType.CREATED_AT)
 			.createdAt(cursorCreatedAt)
 			.size(5)
 			.category(SportsCategory.BADMINTON)
@@ -419,6 +422,7 @@ class MatchServiceIntegrationTest {
 
 		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
 			.id(badmintonMatches.get(badmintonMatches.size() - 1).getId())
+			.searchDateType(SearchDateType.CREATED_AT)
 			.createdAt(cursorCreatedAt)
 			.size(5)
 			.category(SportsCategory.BADMINTON)
@@ -483,6 +487,7 @@ class MatchServiceIntegrationTest {
 		entityManager.flush();
 
 		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
+			.searchDateType(SearchDateType.CREATED_AT)
 			.createdAt(cursorCreatedAt)
 			.id(matches.get(matches.size() - 1).getId())
 			.size(5)
@@ -497,6 +502,7 @@ class MatchServiceIntegrationTest {
 
 		PageDto.MatchCursorPageRequest secondRequest = PageDto.MatchCursorPageRequest.builder()
 			.id(lastId)
+			.searchDateType(SearchDateType.CREATED_AT)
 			.createdAt(lastCreatedAt)
 			.size(5)
 			.category(SportsCategory.BADMINTON)
@@ -564,6 +570,7 @@ class MatchServiceIntegrationTest {
 		PageDto.MatchCursorPageRequest request = PageDto.MatchCursorPageRequest.builder()
 			.size(5)
 			.category(SportsCategory.BADMINTON)
+			.searchDateType(SearchDateType.CREATED_AT)
 			.distance(1.51)
 			.build();
 

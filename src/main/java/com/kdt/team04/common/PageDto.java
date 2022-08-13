@@ -1,11 +1,11 @@
 package com.kdt.team04.common;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -85,8 +85,17 @@ public class PageDto {
 	public static class MatchCursorPageRequest {
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 		@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-		@Parameter(description = "마지막 조회 일자 (yyyy-MM-dd HH:mm:ss)")
+		@Parameter(description = "조회 시작 작성 일자 (yyyy-MM-dd HH:mm:ss)")
 		private LocalDateTime createdAt;
+
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
+		@Parameter(description = "조회 시작 경기 일자 (yyyy-MM-dd)")
+		private LocalDate matchDate;
+
+		@NotNull
+		@Parameter(description = "조회 일자 타입 (작성일 (CREATED_AT) | 경기일자 (MATCH_DATE))")
+		private SearchDateType searchDateType;
 
 		@Parameter(description = "마지막 조회 ID")
 		private Long id;
@@ -109,75 +118,63 @@ public class PageDto {
 		@Parameter(description = "검색 거리, 5 ~ 40까지 가능")
 		private Double distance;
 
-		@AssertFalse
-		public boolean isValidCursor() {
-			return id != null && createdAt == null || id == null && createdAt != null;
-		}
-
 		@Builder
-		public MatchCursorPageRequest(LocalDateTime createdAt, Long id, Integer size, SportsCategory category,
-			Double distance) {
+		public MatchCursorPageRequest(
+			LocalDateTime createdAt,
+			LocalDate matchDate,
+			SearchDateType searchDateType,
+			Long id,
+			Integer size,
+			SportsCategory category,
+			MatchStatus status,
+			Long userId,
+			Double distance
+		) {
 			this.createdAt = createdAt;
+			this.matchDate = matchDate;
+			this.searchDateType = searchDateType;
 			this.id = id;
 			this.size = size;
 			this.category = category;
-			this.distance = distance;
-		}
-
-		public MatchStatus getStatus() {
-			return status;
-		}
-
-		public void setStatus(MatchStatus status) {
 			this.status = status;
+			this.userId = userId;
+			this.distance = distance;
 		}
 
 		public LocalDateTime getCreatedAt() {
 			return createdAt;
 		}
 
-		public void setCreatedAt(LocalDateTime createdAt) {
-			this.createdAt = createdAt;
+		public LocalDate getMatchDate() {
+			return matchDate;
+		}
+
+		public SearchDateType getSearchDateType() {
+			return searchDateType;
 		}
 
 		public Long getId() {
 			return id;
 		}
 
-		public void setId(Long id) {
-			this.id = id;
-		}
-
 		public Integer getSize() {
 			return size;
-		}
-
-		public void setSize(Integer size) {
-			this.size = size;
 		}
 
 		public SportsCategory getCategory() {
 			return category;
 		}
 
-		public void setCategory(SportsCategory category) {
-			this.category = category;
+		public MatchStatus getStatus() {
+			return status;
 		}
 
 		public Long getUserId() {
-			return this.userId;
-		}
-
-		public void setUserId(Long userId) {
-			this.userId = userId;
+			return userId;
 		}
 
 		public Double getDistance() {
 			return distance;
-		}
-
-		public void setDistance(Double distance) {
-			this.distance = distance;
 		}
 	}
 
