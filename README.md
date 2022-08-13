@@ -2,7 +2,7 @@
 
 ## 🤲🏻 프로젝트 소개
 
-<center><img src="https://user-images.githubusercontent.com/93169519/184494576-9c85b5b1-c24a-4c89-956d-3babffa724b5.png" width="400"></center>
+<div align="center"><img src="https://user-images.githubusercontent.com/93169519/184494576-9c85b5b1-c24a-4c89-956d-3babffa724b5.png" width="400"></div>
 <br>
 
 ### Sports Family : SFAM
@@ -37,7 +37,7 @@
 
 ### Husky
 
-- git hook을 프로젝트 내에서 공유할 수 있도록 합니다.
+git hook을 프로젝트 내에서 공유할 수 있도록 합니다.
 
 **node가 없다면**
 
@@ -53,14 +53,14 @@ npm install
 
 ### Flyway
 
-📄 flyway.conf
+flyway.conf
 
 ```bash
-flyway.url=
-flyway.schemas=
-flyway.user=
-flyway.password=
-flyway.locations=
+flyway.url=[DB URL]
+flyway.schemas=[DB SCHEMA]
+flyway.user=[DB 사용자]
+flyway.password=[DB 비밀번호]
+flyway.locations=[Flyway 파일 위치]
 ```
 
 ### .env
