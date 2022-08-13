@@ -180,7 +180,7 @@ class MatchProposalControllerSuccessTest {
 	}
 
 	@Test
-	@DisplayName("해당 ID의 신청을 조회하고 상태코드 200을 반환한다.")
+	@DisplayName("매치 신청 ID 값으로 신청을 조회하고 상태코드 200을 반환한다.")
 	void getProposalById() throws Exception {
 		//given
 		ProposalChatResponse value = new ProposalChatResponse(DEFAULT_PROPOSAL_ID, MatchProposalStatus.WAITING,

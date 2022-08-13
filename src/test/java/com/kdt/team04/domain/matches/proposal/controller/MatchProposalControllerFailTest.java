@@ -153,7 +153,7 @@ class MatchProposalControllerFailTest {
 
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			patch(BASE_END_POINT + "/" + null + "/proposals/{id}", DEFAULT_PROPOSAL_ID)
+			patch(BASE_END_POINT + "/" + invalidMatchId + "/proposals/{id}", DEFAULT_PROPOSAL_ID)
 				.content(objectMapper.writeValueAsString(request))
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
@@ -176,7 +176,7 @@ class MatchProposalControllerFailTest {
 
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			patch(BASE_END_POINT + "/{matchId}/proposals/" + null, DEFAULT_MATCH_ID, invalidProposalId)
+			patch(BASE_END_POINT + "/{matchId}/proposals/" + invalidProposalId, DEFAULT_MATCH_ID)
 				.content(objectMapper.writeValueAsString(request))
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
@@ -191,12 +191,13 @@ class MatchProposalControllerFailTest {
 	@DisplayName("해당 대결의 신청 목록을 조회할 때 matchId가 null일 경우, 상태 코드 400을 반환한다.")
 	void findAllChats_fail_1() throws Exception {
 		//given
+		Long invalidMatchId = null;
 		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			get(BASE_END_POINT + "/" + null + "/proposals")
+			get(BASE_END_POINT + "/" + invalidMatchId + "/proposals")
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
 
