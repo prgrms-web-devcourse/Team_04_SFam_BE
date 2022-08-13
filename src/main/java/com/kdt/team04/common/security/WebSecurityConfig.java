@@ -2,7 +2,6 @@ package com.kdt.team04.common.security;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -74,8 +73,10 @@ public class WebSecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		final CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList(corsConfigProperties.origin()));
+		configuration.addAllowedHeader("*");
 		configuration.addAllowedMethod(String.join(", ", Arrays.asList(corsConfigProperties.method())));
 		configuration.setAllowCredentials(true);
+		configuration.setMaxAge(3600L);
 
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration(corsConfigProperties.api(), configuration);
