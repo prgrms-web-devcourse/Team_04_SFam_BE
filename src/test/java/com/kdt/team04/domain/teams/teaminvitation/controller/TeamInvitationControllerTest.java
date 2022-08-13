@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,6 +35,7 @@ import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.PageDto;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.common.exception.ErrorResponse;
 import com.kdt.team04.common.security.WebSecurityConfig;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.domain.auth.service.TokenService;
@@ -110,6 +112,9 @@ class TeamInvitationControllerTest {
 			.andDo(print());
 
 		// then
+		verify(teamInvitationService, times(1))
+			.getInvitations(any(), any());
+
 		resultActions
 			.andExpect(status().isOk())
 			.andExpect(content().string(response));
@@ -120,6 +125,7 @@ class TeamInvitationControllerTest {
 	void getInvitesArgumentsNull() throws Exception {
 		// given
 		ErrorCode errorCode = ErrorCode.BIND_ERROR;
+		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 
 		// when
 		ResultActions resultActions = mockMvc
@@ -128,16 +134,12 @@ class TeamInvitationControllerTest {
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print());
 
-		String responseBody = getResponseBody(resultActions);
-
 		// then
 		verify(teamInvitationService, times(0)).getInvitations(DEFAULT_AUTH_ID, null);
 
 		resultActions
-			.andExpect(status().isBadRequest());
-
-		assertThat(responseBody).contains(errorCode.getCode());
-		assertThat(responseBody).contains(errorCode.getMessage());
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(response));
 	}
 
 	@Test
@@ -174,21 +176,21 @@ class TeamInvitationControllerTest {
 	void inviteArgumentNull() throws Exception {
 		// given
 		ErrorCode errorCode = ErrorCode.RUNTIME_EXCEPTION;
+		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 
+		// when
 		ResultActions resultActions = mockMvc.perform(
 			post(BASE_END_POINT + "/" + DEFAULT_AUTH_TEAM_ID + "/invitations")
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
 
-		// when
-		String responseBody = getResponseBody(resultActions);
-
 		// then
-		resultActions
-			.andExpect(status().isBadRequest());
+		verify(teamInvitationService, never())
+			.invite(null, null, null);
 
-		assertThat(responseBody).contains(errorCode.getCode());
-		assertThat(responseBody).contains(errorCode.getMessage());
+		resultActions
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(response));
 	}
 
 	@Test
@@ -199,6 +201,7 @@ class TeamInvitationControllerTest {
 		String request = objectMapper.writeValueAsString(teamInvitationRequest);
 
 		ErrorCode errorCode = ErrorCode.ALREADY_INVITED_USER;
+		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 		doThrow(
 			new BusinessException(errorCode, MessageFormat.format(
 				"teamId = {0}, targetId = {1}", DEFAULT_AUTH_ID, teamInvitationRequest.targetUserId())
@@ -213,17 +216,13 @@ class TeamInvitationControllerTest {
 					.content(request))
 			.andDo(print());
 
-		String responseBody = getResponseBody(resultActions);
-
 		// then
 		verify(teamInvitationService, times(1))
 			.invite(DEFAULT_AUTH_ID, DEFAULT_AUTH_TEAM_ID, teamInvitationRequest.targetUserId());
 
 		resultActions
-			.andExpect(status().isBadRequest());
-
-		assertThat(responseBody).contains(errorCode.getCode());
-		assertThat(responseBody).contains(errorCode.getMessage());
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(response));
 	}
 
 	@Test
@@ -234,6 +233,7 @@ class TeamInvitationControllerTest {
 		String request = objectMapper.writeValueAsString(teamInvitationRequest);
 
 		ErrorCode errorCode = ErrorCode.ALREADY_TEAM_MEMBER;
+		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 		doThrow(
 			new BusinessException(errorCode, MessageFormat.format(
 				"teamId = {0}, userId = {1}", DEFAULT_AUTH_TEAM_ID, teamInvitationRequest.targetUserId())
@@ -248,17 +248,13 @@ class TeamInvitationControllerTest {
 					.content(request))
 			.andDo(print());
 
-		String responseBody = getResponseBody(resultActions);
-
 		// then
 		verify(teamInvitationService, times(1))
 			.invite(DEFAULT_AUTH_ID, DEFAULT_AUTH_TEAM_ID, teamInvitationRequest.targetUserId());
 
 		resultActions
-			.andExpect(status().isBadRequest());
-
-		assertThat(responseBody).contains(errorCode.getCode());
-		assertThat(responseBody).contains(errorCode.getMessage());
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(response));
 	}
 
 	@Test
@@ -269,6 +265,7 @@ class TeamInvitationControllerTest {
 		String request = objectMapper.writeValueAsString(teamInvitationRequest);
 
 		ErrorCode errorCode = ErrorCode.NOT_TEAM_LEADER;
+		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 		doThrow(
 			new BusinessException(errorCode, MessageFormat.format(
 				"{0} is not team leader id {1}", DEFAULT_AUTH_ID, DEFAULT_TARGET_USER_ID)
@@ -283,17 +280,13 @@ class TeamInvitationControllerTest {
 					.content(request))
 			.andDo(print());
 
-		String responseBody = getResponseBody(resultActions);
-
 		// then
 		verify(teamInvitationService, times(1))
 			.invite(DEFAULT_AUTH_ID, DEFAULT_TARGET_USER_TEAM_ID, teamInvitationRequest.targetUserId());
 
 		resultActions
-			.andExpect(status().isForbidden());
-
-		assertThat(responseBody).contains(errorCode.getCode());
-		assertThat(responseBody).contains(errorCode.getMessage());
+			.andExpect(status().isForbidden())
+			.andExpect(content().string(response));
 	}
 
 	@Test
@@ -315,10 +308,11 @@ class TeamInvitationControllerTest {
 		).andDo(print());
 
 		// then
-		resultActions.andExpect(status().isOk());
-
 		verify(teamInvitationService, times(1))
 			.refuse(DEFAULT_AUTH_ID, DEFAULT_TARGET_USER_TEAM_ID, DEFAULT_TEAM_INVITATION_ID, refuseRequest);
+
+		resultActions
+			.andExpect(status().isOk());
 	}
 
 	@Test
@@ -329,6 +323,7 @@ class TeamInvitationControllerTest {
 		String request = objectMapper.writeValueAsString(refuseRequest);
 
 		ErrorCode errorCode = ErrorCode.TEAM_INVITATION_ACCESS_DENIED;
+		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 		doThrow(
 			new BusinessException(errorCode, MessageFormat.format(
 				"{0} is not team leader id {1}", DEFAULT_AUTH_ID, DEFAULT_TARGET_USER_ID)
@@ -344,16 +339,13 @@ class TeamInvitationControllerTest {
 				.content(request)
 		).andDo(print());
 
-		String responseBody = getResponseBody(resultActions);
-
 		// then
-		resultActions.andExpect(status().isForbidden());
-
 		verify(teamInvitationService, times(1))
 			.refuse(DEFAULT_AUTH_ID, DEFAULT_AUTH_TEAM_ID, DEFAULT_TEAM_INVITATION_ID, refuseRequest);
 
-		assertThat(responseBody).contains(errorCode.getCode());
-		assertThat(responseBody).contains(errorCode.getMessage());
+		resultActions
+			.andExpect(status().isForbidden())
+			.andExpect(content().string(response));
 	}
 
 	@Test
@@ -364,6 +356,7 @@ class TeamInvitationControllerTest {
 		String request = objectMapper.writeValueAsString(refuseRequest);
 
 		ErrorCode errorCode = ErrorCode.TEAM_INVITATION_NOT_FOUND;
+		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 		doThrow(
 			new BusinessException(errorCode, MessageFormat.format(
 				"{0} is not team invitation id {1}", DEFAULT_AUTH_TEAM_ID, DEFAULT_NOT_FOUND_INVITATION_ID)
@@ -379,22 +372,13 @@ class TeamInvitationControllerTest {
 				.content(request)
 		).andDo(print());
 
-		String responseBody = getResponseBody(resultActions);
-
 		// then
-		resultActions.andExpect(status().isNotFound());
-
 		verify(teamInvitationService, times(1))
 			.refuse(DEFAULT_AUTH_ID, DEFAULT_AUTH_TEAM_ID, DEFAULT_NOT_FOUND_INVITATION_ID, refuseRequest);
 
-		assertThat(responseBody).contains(errorCode.getCode());
-		assertThat(responseBody).contains(errorCode.getMessage());
-	}
-
-	private String getResponseBody(ResultActions resultActions) throws UnsupportedEncodingException {
-		return resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
+		resultActions
+			.andExpect(status().isNotFound())
+			.andExpect(content().string(response));
 	}
 
 }
