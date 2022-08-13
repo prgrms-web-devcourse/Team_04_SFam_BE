@@ -1,8 +1,10 @@
 package com.kdt.team04.domain.matches.match.service;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +18,9 @@ import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
 import com.kdt.team04.domain.matches.match.dto.request.CreateMatchRequest;
 import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
-import com.kdt.team04.domain.matches.match.model.entity.Match;
+import com.kdt.team04.domain.matches.match.dto.response.QueryMatchListResponse;
 import com.kdt.team04.domain.matches.match.model.MatchStatus;
+import com.kdt.team04.domain.matches.match.model.entity.Match;
 import com.kdt.team04.domain.matches.match.repository.MatchRepository;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
@@ -33,8 +36,7 @@ import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
-
-import lombok.extern.slf4j.Slf4j;
+import com.kdt.team04.feign.kakao.service.KakaoApiService;
 
 @Transactional(readOnly = true)
 @Service
@@ -48,11 +50,12 @@ public class MatchService {
 	private final MatchConverter matchConverter;
 	private final TeamConverter teamConverter;
 	private final UserConverter userConverter;
+	private final KakaoApiService kakaoApiService;
 
 	public MatchService(MatchRepository matchRepository, UserService userService,
 		MatchProposalService matchProposalService, TeamGiverService teamGiver,
 		TeamMemberGiverService teamMemberGiver, MatchConverter matchConverter, TeamConverter teamConverter,
-		UserConverter userConverter) {
+		UserConverter userConverter, KakaoApiService kakaoApiService) {
 		this.matchRepository = matchRepository;
 		this.userService = userService;
 		this.matchProposalService = matchProposalService;
@@ -61,6 +64,7 @@ public class MatchService {
 		this.matchConverter = matchConverter;
 		this.teamConverter = teamConverter;
 		this.userConverter = userConverter;
+		this.kakaoApiService = kakaoApiService;
 	}
 
 	@Transactional
@@ -129,9 +133,24 @@ public class MatchService {
 		verifyUserLocation(userConverter.toUser(foundUser));
 
 		Location location = foundUser.userSettings().getLocation();
-
-		return matchRepository.findByLocationPaging(
+		PageDto.CursorResponse<QueryMatchListResponse, MatchPagingCursor> queryMatchListResponse = matchRepository.findByLocationPaging(
 			location.getLatitude(), location.getLongitude(), request);
+
+		List<MatchListViewResponse> matchListViewResponses = queryMatchListResponse.values()
+			.stream()
+			.map((match) -> new MatchListViewResponse(match,
+					kakaoApiService.coordToAddressResponse(match.longitude(), match.latitude())
+						.documents()
+						.get(0)
+						.address()
+						.region3DepthName()
+				)
+			)
+			.collect(Collectors.toList());
+		return new PageDto.CursorResponse<>(
+			matchListViewResponses,
+			queryMatchListResponse.hasNext(),
+			queryMatchListResponse.cursor());
 	}
 
 	public MatchResponse findById(Long id, Long userId) {

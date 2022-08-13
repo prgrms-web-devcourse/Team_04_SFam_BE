@@ -20,6 +20,7 @@ import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
 import com.kdt.team04.domain.matches.match.dto.request.CreateMatchRequest;
 import com.kdt.team04.domain.matches.match.dto.request.UpdateMatchStatusRequest;
 import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
+import com.kdt.team04.domain.matches.match.dto.response.QueryMatchListResponse;
 import com.kdt.team04.domain.matches.match.dto.response.MatchResponse;
 import com.kdt.team04.domain.matches.match.service.MatchService;
 
