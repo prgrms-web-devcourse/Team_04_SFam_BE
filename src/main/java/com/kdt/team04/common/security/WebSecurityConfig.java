@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.kdt.team04.common.config.CorsConfigProperties;
@@ -36,16 +37,14 @@ public class WebSecurityConfig {
 	private final SecurityConfigProperties securityConfigProperties;
 	private final Optional<OAuth2LoginConfigurer<HttpSecurity>> oAuth2LoginConfigurer;
 	private final CookieConfigProperties cookieConfigProperties;
-	private final CorsConfigProperties corsConfigProperties;
 
 	public WebSecurityConfig(Jwt jwt, SecurityConfigProperties securityConfigProperties,
 		Optional<OAuth2LoginConfigurer<HttpSecurity>> oAuth2LoginConfigurer,
-		CookieConfigProperties cookieConfigProperties, CorsConfigProperties corsConfigProperties) {
+		CookieConfigProperties cookieConfigProperties) {
 		this.jwt = jwt;
 		this.securityConfigProperties = securityConfigProperties;
 		this.oAuth2LoginConfigurer = oAuth2LoginConfigurer;
 		this.cookieConfigProperties = cookieConfigProperties;
-		this.corsConfigProperties = corsConfigProperties;
 	}
 
 	public JwtAuthenticationFilter jwtAuthenticationFilter(Jwt jwt, TokenService tokenService) {
@@ -68,29 +67,10 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		String[] corsOrigins = corsConfigProperties.origin();
-		for (String origin : corsOrigins) {
-			configuration.addAllowedOrigin(origin);
-		}
-		configuration.addAllowedMethod("*");
-		String[] corsAllowMethod = corsConfigProperties.method();
-		for (String method : corsAllowMethod) {
-			configuration.addAllowedMethod(method);
-		}
-		configuration.setAllowCredentials(true);
-		configuration.setMaxAge(3600L);
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-
-		return source;
-	}
-
-	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, TokenService tokenService) throws Exception {
 		http
 			.authorizeRequests()
+			.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 			.antMatchers(HttpMethod.GET, this.securityConfigProperties.patterns().permitAll().get("GET"))
 			.permitAll()
 			.antMatchers(HttpMethod.POST, this.securityConfigProperties.patterns().permitAll().get("POST"))
@@ -119,7 +99,6 @@ public class WebSecurityConfig {
 			.authenticationEntryPoint(authenticationEntryPoint())
 			.and()
 			.addFilterBefore(jwtAuthenticationFilter(jwt, tokenService), UsernamePasswordAuthenticationFilter.class)
-			.cors()
 		;
 
 		if (oAuth2LoginConfigurer.isPresent()) {
