@@ -25,6 +25,7 @@ public class MatchConverter {
 			.matchDate(match.getMatchDate())
 			.matchType(match.getMatchType())
 			.content(match.getContent())
+			.location(match.getLocation())
 			.build();
 	}
 
@@ -44,6 +45,7 @@ public class MatchConverter {
 			.matchType(match.getMatchType())
 			.content(match.getContent())
 			.proposer(proposer)
+			.location(match.getLocation())
 			.build();
 	}
 
@@ -63,6 +65,7 @@ public class MatchConverter {
 			.matchDate(match.getMatchDate())
 			.matchType(match.getMatchType())
 			.content(match.getContent())
+			.location(match.getLocation())
 			.build();
 	}
 
@@ -84,6 +87,7 @@ public class MatchConverter {
 			.matchType(match.getMatchType())
 			.content(match.getContent())
 			.proposer(proposer)
+			.location(match.getLocation())
 			.build();
 	}
 
@@ -98,6 +102,7 @@ public class MatchConverter {
 			.matchDate(matchResponse.matchDate())
 			.matchType(matchResponse.matchType())
 			.participants(matchResponse.participants())
+			.location(matchResponse.location())
 			.build();
 
 	}
@@ -114,6 +119,7 @@ public class MatchConverter {
 			.matchDate(matchResponse.matchDate())
 			.matchType(matchResponse.matchType())
 			.participants(matchResponse.participants())
+			.location(matchResponse.location())
 			.build();
 
 	}

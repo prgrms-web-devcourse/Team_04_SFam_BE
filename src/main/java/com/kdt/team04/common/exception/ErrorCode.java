@@ -25,6 +25,7 @@ public enum ErrorCode {
 	USER_NOT_FOUND("U0001", "Not found user", HttpStatus.NOT_FOUND),
 	LOCATION_UPDATE_FAIL("U0002", "user location update failed", HttpStatus.BAD_REQUEST),
 	LOCATION_NOT_FOUND("U0003", "Not found location data", HttpStatus.BAD_REQUEST),
+	USER_DUPLICATED_NICKNAME("U0004", "Duplicated user nickname", HttpStatus.BAD_REQUEST),
 
 	//TEAM
 	TEAM_NOT_FOUND("T0001", "Not found team", HttpStatus.NOT_FOUND),
@@ -35,6 +36,7 @@ public enum ErrorCode {
 	TEAM_INVITATION_NOT_FOUND("I0001", "Not found invitation", HttpStatus.NOT_FOUND),
 	INVALID_TEAM_INVITATION("I0002", "Invalid invitation", HttpStatus.BAD_REQUEST),
 	ALREADY_INVITED_USER("I0003", "Invitation is already approval or wait.", HttpStatus.BAD_REQUEST),
+	TEAM_INVITATION_ACCESS_DENIED("I004", "Don't have permission to access invitation", HttpStatus.FORBIDDEN),
 
 	//TEAM_MEMBER
 	ALREADY_TEAM_MEMBER("TM0001", "Already member of team", HttpStatus.BAD_REQUEST),
@@ -58,6 +60,7 @@ public enum ErrorCode {
 	PROPOSAL_INVALID_REACT("MP0005", "Invalid react", HttpStatus.BAD_REQUEST),
 	PROPOSAL_ACCESS_DENIED("MP0006", "Don't have permission to access match proposal", HttpStatus.FORBIDDEN),
 	PROPOSAL_ALREADY_REQUESTED("MP0007", "Already requested", HttpStatus.BAD_REQUEST),
+	PROPOSAL_TOO_FAR_TO_REQUEST("MP0008", "This Match is too far from you" , HttpStatus.BAD_REQUEST),
 
 	//MATCH_CHAT
 	MATCH_CHAT_NOT_CORRECT_CHAT_PARTNER("MC0002", "The chat partner is incorrect.", HttpStatus.BAD_REQUEST),

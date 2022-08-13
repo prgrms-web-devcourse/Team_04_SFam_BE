@@ -40,8 +40,10 @@ public class MatchController {
 
 	@Operation(summary = "매치 공고 생성", description = "사용자는 매칭 공고를 작성할 수 있습니다. ")
 	@PostMapping
-	public void post(@AuthUser JwtAuthentication auth, @RequestBody @Valid CreateMatchRequest request) {
-		matchService.create(auth.id(), request);
+	public ApiResponse<Long> post(@AuthUser JwtAuthentication auth, @RequestBody @Valid CreateMatchRequest request) {
+		Long matchId = matchService.create(auth.id(), request);
+
+		return new ApiResponse<>(matchId);
 	}
 
 	@Operation(summary = "매치 공고 리스트 조회", description = "매칭 상태별, 종목별 공고 리스트를 최신글 순으로 커서방식 페이징한다.")

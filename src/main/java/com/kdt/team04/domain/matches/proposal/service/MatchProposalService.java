@@ -38,6 +38,7 @@ import com.kdt.team04.domain.teams.teammember.service.TeamMemberGiverService;
 import com.kdt.team04.domain.user.UserConverter;
 import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
+import com.kdt.team04.domain.user.entity.Location;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.service.UserService;
 
@@ -102,8 +103,14 @@ public class MatchProposalService {
 		UserResponse authorResponse = userService.findById(matchResponse.author().id());
 		User author = userConverter.toUser(authorResponse);
 
-		UserResponse userResponse = userService.findById(proposerId);
-		User proposer = userConverter.toUser(userResponse);
+		UserResponse proposerResponse = userService.findById(proposerId);
+		User proposer = userConverter.toUser(proposerResponse);
+
+		Double distance = matchGiver.getDistance(
+			proposerResponse.userSettings().getLocation().getLatitude(),
+			proposerResponse.userSettings().getLocation().getLongitude(),
+			matchResponse.id());
+		verifyDistance(proposerResponse, matchResponse, distance);
 
 		MatchProposal matchProposal = matchResponse.matchType() == MatchType.TEAM_MATCH ?
 			teamProposalCreate(author, proposer, matchResponse, request) :
@@ -151,14 +158,37 @@ public class MatchProposalService {
 			.build();
 	}
 
+	private void verifyDistance(UserResponse proposer, MatchResponse match, Double distance) {
+		Location proposerLocation = proposer.userSettings().getLocation();
+		if (distance > 40) {
+			throw new BusinessException(ErrorCode.PROPOSAL_TOO_FAR_TO_REQUEST,
+				MessageFormat.format(
+					"User is too far from Match, User ID, Location = ({0}, {1}), match ID, Location = ({2}, {3})",
+					proposer.id(),
+					proposerLocation,
+					match.id(),
+					match.location()));
+		}
+	}
+
 	@Transactional
-	public MatchProposalStatus react(Long matchId, Long id, MatchProposalStatus status) {
+	public MatchProposalStatus approveOrRefuse(Long authorId, Long matchId, Long id, MatchProposalStatus status) {
 		MatchResponse match = matchGiver.findById(matchId);
+
+		if (!Objects.equals(match.author().id(), authorId)) {
+			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
+				MessageFormat.format("userId = {0}, matchId = {1}", authorId, matchId));
+		}
+
 		MatchProposal proposal = proposalRepository.findById(id)
 			.orElseThrow(() -> new BusinessException(ErrorCode.PROPOSAL_NOT_FOUND,
 				MessageFormat.format("proposalId = {0}", id)));
 
-		if (match.status().isMatched() || proposal.getStatus().isApproved()) {
+		if (match.status().isEnded() // 경기 종료 일때 변경 안됨
+			|| !proposal.getStatus().isWaiting() // 신청 상태가 대기상태가 아니면 변경 안됨!
+			|| (proposal.getStatus().isWaiting() && status.isFixed()) // 대기 → Fixed로도 변경 안되도록 추가
+			// 결과적으로, 경기 종료만 안됬으면 Waiting 일때 → Approved, Refuse 변경만 허용
+		) {
 			throw new BusinessException(ErrorCode.PROPOSAL_INVALID_REACT,
 				MessageFormat.format("matchId = {0}, proposalId = {1}, proposalStatus = {2}, matchStatus = {3}",
 					match.id(), id, status, match.status()));
@@ -170,11 +200,11 @@ public class MatchProposalService {
 	}
 
 	public List<ChatRoomResponse> findAllProposalChats(Long matchId, Long authorId) {
-		MatchAuthorResponse matchAuthor = matchGiver.findMatchAuthorById(matchId);
-		if (!Objects.equals(matchAuthor.author().id(), authorId)) {
+		MatchResponse matchResponse = matchGiver.findById(matchId);
+		if (!Objects.equals(matchResponse.author().id(), authorId)) {
 			throw new BusinessException(ErrorCode.MATCH_ACCESS_DENIED,
 				MessageFormat.format("Don't have permission to access match with matchId={0}, authorId={1}, userId={2}",
-					matchId, matchAuthor.author().id(), authorId));
+					matchId, matchResponse.author().id(), authorId));
 		}
 
 		List<MatchProposal> matchProposals = proposalRepository.findAllByMatchId(matchId);
@@ -196,13 +226,15 @@ public class MatchProposalService {
 				ChatTargetProfileResponse chatTargetProfile
 					= new ChatTargetProfileResponse(
 					BigInteger.valueOf(proposal.getUser().getId()),
-					proposal.getUser().getNickname());
+					proposal.getUser().getNickname(),
+					proposal.getUser().getProfileImageUrl());
 
 				return new ChatRoomResponse(
 					proposal.getId(),
 					proposal.getContent(),
 					chatTargetProfile,
 					chatLastResponse == null ? null : new LastChatResponse(chatLastResponse.getLastChat()),
+					matchResponse,
 					chatLastResponse == null ? proposal.getCreatedAt() : chatLastResponse.getLastChatDate()
 				);
 			})
@@ -212,8 +244,25 @@ public class MatchProposalService {
 		return proposalChats;
 	}
 
-	public List<QueryProposalChatResponse> findAllProposals(Long userId) {
-		return proposalRepository.findAllProposalByUserId(userId);
+	public List<ChatRoomResponse> findAllProposals(Long userId) {
+		List<QueryProposalChatResponse> proposals = proposalRepository.findAllProposalByUserId(userId);
+
+		List<Long> matchIds = proposals.stream()
+			.map(QueryProposalChatResponse::getMatchId)
+			.toList();
+
+		Map<Long, MatchResponse> matches = matchGiver.findByIds(matchIds);
+
+		return proposals.stream()
+			.map(proposal -> new ChatRoomResponse(
+				proposal.getId(),
+				proposal.getContent(),
+				proposal.getTarget(),
+				proposal.getLastChat(),
+				matches.get(proposal.getMatchId()),
+				null
+			))
+			.toList();
 	}
 
 	@Transactional

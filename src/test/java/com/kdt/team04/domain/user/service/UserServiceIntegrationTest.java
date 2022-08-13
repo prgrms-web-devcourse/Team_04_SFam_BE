@@ -75,8 +75,10 @@ class UserServiceIntegrationTest {
 
 		//then
 		Assertions.assertThat(foundUser.getUserSettings()).isNotNull();
-		Assertions.assertThat(foundUser.getUserSettings().getLocation().getLongitude()).isEqualTo(location.getLongitude());
-		Assertions.assertThat(foundUser.getUserSettings().getLocation().getLatitude()).isEqualTo(location.getLatitude());
+		Assertions.assertThat(foundUser.getUserSettings().getLocation().getLongitude())
+			.isEqualTo(location.getLongitude());
+		Assertions.assertThat(foundUser.getUserSettings().getLocation().getLatitude())
+			.isEqualTo(location.getLatitude());
 		Assertions.assertThat(foundUser.getUserSettings().getSearchDistance()).isEqualTo(searchDistance);
 		Assertions.assertThat(response.latitude()).isEqualTo(location.getLatitude());
 		Assertions.assertThat(response.longitude()).isEqualTo(location.getLongitude());
@@ -87,14 +89,7 @@ class UserServiceIntegrationTest {
 	@DisplayName("nickname이 중복되면 true를 반환한다.")
 	void testNicknameDuplicationCheckTrue() {
 		//given
-		String password = "@test1234!";
-		String encodedPassword = passwordEncoder.encode(password);
-
-		User userA = User.builder()
-			.username("test1234")
-			.nickname("nickname1234")
-			.password(encodedPassword)
-			.build();
+		User userA = getDummyUser();
 		entityManager.persist(userA);
 
 		//when
@@ -108,14 +103,7 @@ class UserServiceIntegrationTest {
 	@DisplayName("nickname이 중복되지 않으면 false를 반환한다.")
 	void testNicknameDuplicationCheckFalse() {
 		//given
-		String password = "@test1234!";
-		String encodedPassword = passwordEncoder.encode(password);
-
-		User userA = User.builder()
-			.username("test1234")
-			.nickname("nickname1235")
-			.password(encodedPassword)
-			.build();
+		User userA = getDummyUser();
 		entityManager.persist(userA);
 
 		//when
@@ -129,14 +117,7 @@ class UserServiceIntegrationTest {
 	@DisplayName("username이 중복되면 true를 반환한다.")
 	void testUsernameDuplicationCheckTrue() {
 		//given
-		String password = "@test1234!";
-		String encodedPassword = passwordEncoder.encode(password);
-
-		User userA = User.builder()
-			.username("test1234")
-			.nickname("nickname1234")
-			.password(encodedPassword)
-			.build();
+		User userA = getDummyUser();
 		entityManager.persist(userA);
 
 		//when
@@ -150,14 +131,7 @@ class UserServiceIntegrationTest {
 	@DisplayName("username이 중복되지 않으면 false를 반환한다.")
 	void testUsernameDuplicationCheckFalse() {
 		//given
-		String password = "@test1234!";
-		String encodedPassword = passwordEncoder.encode(password);
-
-		User userA = User.builder()
-			.username("test1234")
-			.nickname("nickname1235")
-			.password(encodedPassword)
-			.build();
+		User userA = getDummyUser();
 		entityManager.persist(userA);
 
 		//when
@@ -165,5 +139,14 @@ class UserServiceIntegrationTest {
 
 		//then
 		assertThat(isDuplicated).isFalse();
+	}
+
+	private User getDummyUser() {
+		String encodedPassword = passwordEncoder.encode("@test1234!");
+		return User.builder()
+			.username("test1234")
+			.nickname("nickname1235")
+			.password(encodedPassword)
+			.build();
 	}
 }

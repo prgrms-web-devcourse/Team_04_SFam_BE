@@ -20,12 +20,14 @@ import com.kdt.team04.common.aws.s3.S3Uploader;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.EntityNotFoundException;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.domain.teams.team.dto.QueryTeamLeaderResponse;
 import com.kdt.team04.domain.teams.team.dto.request.CreateTeamRequest;
 import com.kdt.team04.domain.teams.team.dto.response.TeamResponse;
-import com.kdt.team04.domain.teams.team.dto.response.TeamSimpleResponse;
 import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.team.repository.TeamRepository;
+import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
+import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
 import com.kdt.team04.domain.user.entity.User;
 
 @SpringBootTest
@@ -132,12 +134,15 @@ class TeamServiceIntegrationTest {
 			.build();
 		Team savedTeam = teamRepository.save(team);
 
+		TeamMember teamLeader = new TeamMember(team, user, TeamMemberRole.LEADER);
+		entityManager.persist(teamLeader);
+
 		//when
-		List<TeamSimpleResponse> foundTeams = teamService.findByLeaderId(user.getId());
+		List<QueryTeamLeaderResponse> foundTeams = teamService.findByLeaderId(user.getId());
 
 		//then
 		assertThat(foundTeams).hasSize(1);
-		assertThat(foundTeams.get(0).id()).isEqualTo(savedTeam.getId());
+		assertThat(foundTeams.get(0).getId()).isEqualTo(savedTeam.getId());
 	}
 
 	public User getDemoUser() {

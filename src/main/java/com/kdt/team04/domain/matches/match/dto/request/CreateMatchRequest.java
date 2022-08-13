@@ -9,20 +9,22 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kdt.team04.domain.matches.match.model.MatchType;
 import com.kdt.team04.domain.teams.team.model.SportsCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateMatchRequest(
-	@Schema(description = "매칭 제목, 2자 이상 10자 이하", required = true)
+	@Schema(description = "매칭 제목, 2자 이상 50자 이하", required = true)
 	@NotBlank
-	@Size(min = 2, max = 10)
+	@Size(min = 2, max = 50)
 	String title,
 
-	@Schema(description = "매칭 날짜, 오늘 이후의 날짜만 가능", required = true)
+	@Schema(description = "매칭 날짜, 오늘 이후의 날짜만 가능", required = true, pattern = "yyyy-MM-dd")
 	@NotNull
 	@FutureOrPresent
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	LocalDate matchDate,
 
 	@Schema(description = "매칭 타입(값/설명) - TEAM_MATCH/팀전, INDIVIDUAL_MATCH/개인전", required = true)

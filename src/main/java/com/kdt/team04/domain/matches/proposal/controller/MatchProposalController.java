@@ -1,7 +1,6 @@
 package com.kdt.team04.domain.matches.proposal.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -15,14 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.config.resolver.AuthUser;
-import com.kdt.team04.common.exception.NotAuthenticationException;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
 import com.kdt.team04.domain.matches.proposal.dto.QueryProposalChatResponse;
 import com.kdt.team04.domain.matches.proposal.dto.request.CreateProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.request.ReactProposalRequest;
 import com.kdt.team04.domain.matches.proposal.dto.response.ChatRoomResponse;
 import com.kdt.team04.domain.matches.proposal.dto.response.ProposalChatResponse;
-import com.kdt.team04.domain.matches.proposal.dto.response.ProposalSimpleResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,10 +49,11 @@ public class MatchProposalController {
 	@Operation(summary = "신청 수락 및 거절", description = "대결 공고자는 대결 신청을 수락 또는 거절 할 수 있다.")
 	@PatchMapping("/{matchId}/proposals/{id}")
 	public void proposeReact(
+		@AuthUser JwtAuthentication auth,
 		@Parameter(description = "매칭 공고 ID") @PathVariable Long matchId,
 		@Parameter(description = "매칭 신청 ID") @PathVariable Long id,
 		@RequestBody @Valid ReactProposalRequest request) {
-		matchProposalService.react(matchId, id, request.status());
+		matchProposalService.approveOrRefuse(auth.id(), matchId, id, request.status());
 	}
 
 	@Operation(summary = "신청 목록 조회", description = "해당 대결의 신청 목록이 조회된다.")
@@ -74,10 +72,10 @@ public class MatchProposalController {
 
 	@Operation(summary = "사용자 전체 신청 목록 조회", description = "로그인된 사용자의 전체 신청 목록이 조회된다.")
 	@GetMapping("/proposals")
-	public ApiResponse<List<QueryProposalChatResponse>> findAllChats(
+	public ApiResponse<List<ChatRoomResponse>> findAllChats(
 		@AuthUser JwtAuthentication auth
 	) {
-		List<QueryProposalChatResponse> proposals = matchProposalService.findAllProposals(
+		List<ChatRoomResponse> proposals = matchProposalService.findAllProposals(
 			auth.id()
 		);
 

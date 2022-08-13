@@ -80,6 +80,9 @@ class MatchProposalServiceIntegrationTest {
 		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
 		entityManager.persist(match);
 
+		entityManager.flush();
+		entityManager.clear();
+
 		CreateProposalRequest request = new CreateProposalRequest(null, "개인전 신청합니다.");
 
 		//when
@@ -229,6 +232,9 @@ class MatchProposalServiceIntegrationTest {
 		Match match = MatchFactory.getTeamMatchSoccer(2, MatchStatus.WAITING, author, authorTeam);
 		entityManager.persist(match);
 
+		entityManager.flush();
+		entityManager.clear();
+
 		CreateProposalRequest request = new CreateProposalRequest(null, "팀전 신청합니다.");
 
 		//when, then
@@ -292,10 +298,16 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.persist(chat);
 
 		List<ChatRoomResponse> expected = new ArrayList<>();
+		// TODO match null 들어가는 부분 채워야 됨!! 2022-08-12 midas
 		expected.add(new ChatRoomResponse(proposal2.getId(), proposal2.getContent(), new ChatTargetProfileResponse(
-			BigInteger.valueOf(target2.getId()), target2.getNickname()), new LastChatResponse(chat.getContent()), proposal2.getCreatedAt()));
-		expected.add(new ChatRoomResponse(proposal3.getId(), proposal3.getContent(), new ChatTargetProfileResponse(BigInteger.valueOf(target3.getId()), target3.getNickname()), null, proposal3.getCreatedAt()));
-		expected.add(new ChatRoomResponse(proposal1.getId(), proposal1.getContent(), new ChatTargetProfileResponse(BigInteger.valueOf(target1.getId()), target1.getNickname()), null, proposal1.getCreatedAt()));
+			BigInteger.valueOf(target2.getId()), target2.getNickname(), ""), new LastChatResponse(chat.getContent()), null,
+			proposal2.getCreatedAt()));
+		expected.add(new ChatRoomResponse(proposal3.getId(), proposal3.getContent(),
+			new ChatTargetProfileResponse(BigInteger.valueOf(target3.getId()), target3.getNickname(), ""), null, null,
+			proposal3.getCreatedAt()));
+		expected.add(new ChatRoomResponse(proposal1.getId(), proposal1.getContent(),
+			new ChatTargetProfileResponse(BigInteger.valueOf(target1.getId()), target1.getNickname(), ""), null, null,
+			proposal1.getCreatedAt()));
 
 		//when
 		matchProposalService.findAllProposalChats(match.getId(), author.getId());
@@ -403,8 +415,12 @@ class MatchProposalServiceIntegrationTest {
 		MatchProposal savedProposal = matchProposalRepository.save(proposal);
 
 		//when
-		MatchProposalStatus react = matchProposalService.react(match.getId(), savedProposal.getId(),
-			MatchProposalStatus.REFUSE);
+		MatchProposalStatus react = matchProposalService.approveOrRefuse(
+			author.getId(),
+			match.getId(),
+			savedProposal.getId(),
+			MatchProposalStatus.REFUSE
+		);
 
 		//then
 		assertThat(react).isEqualTo(MatchProposalStatus.REFUSE);
@@ -421,15 +437,53 @@ class MatchProposalServiceIntegrationTest {
 		entityManager.persist(author);
 		entityManager.persist(proposer);
 
-		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.IN_GAME, author);
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.END, author);
 		entityManager.persist(match);
 
 		MatchProposal proposal = MatchFactory.getIndividualProposal(match, proposer, WAITING);
-		MatchProposal savedProposal = matchProposalRepository.save(proposal);
+		entityManager.persist(proposal);
+
+		entityManager.flush();
+		entityManager.clear();
 
 		//when
-		assertThatThrownBy(() -> matchProposalService.react(match.getId(), savedProposal.getId(),
-			MatchProposalStatus.APPROVED)).isInstanceOf(BusinessException.class);
+		assertThatThrownBy(() ->
+			matchProposalService.approveOrRefuse(
+				author.getId(),
+				match.getId(),
+				proposal.getId(),
+				MatchProposalStatus.APPROVED
+			)
+		).isInstanceOf(BusinessException.class);
+	}
+
+	// TODO react() - to change Fixed
+	// TODO react() - to change Waiting
+	// TODO react() - already approved or refuse
+
+	@Test
+	@DisplayName("[실패] 다른 사용자가 공고 신청상태 변경 시 예외가 발생한다.")
+	void approveOrRefuse_notAuthentication_fail() {
+		//given
+		User author = MatchFactory.getUser("author");
+		User proposer = MatchFactory.getUser("proposer");
+		entityManager.persist(author);
+		entityManager.persist(proposer);
+
+		Match match = MatchFactory.getIndividualMatchSoccer(MatchStatus.WAITING, author);
+		entityManager.persist(match);
+		MatchProposal proposal = MatchFactory.getIndividualProposal(match, proposer, WAITING);
+		entityManager.persist(proposal);
+
+		//when
+		assertThatThrownBy(() ->
+			matchProposalService.approveOrRefuse(
+				-999L,
+				match.getId(),
+				proposal.getId(),
+				MatchProposalStatus.APPROVED
+			)
+		).isInstanceOf(BusinessException.class);
 
 	}
 

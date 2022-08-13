@@ -66,10 +66,15 @@ public class MatchProposalGiverService {
 			matchProposal.getUser().getNickname() :
 			match.author().nickname();
 
+		String targetProfileImageUrl = Objects.equals(match.author().id(), userId) ?
+			matchProposal.getUser().getProfileImageUrl() :
+			match.author().profileImageUrl();
+
 		return new MatchChatViewMatchResponse(
+			match.id(),
 			match.title(),
 			match.status(),
-			new ChatTargetProfileResponse(targetUserId, targetNickname)
+			new ChatTargetProfileResponse(targetUserId, targetNickname, targetProfileImageUrl)
 		);
 	}
 
@@ -101,7 +106,7 @@ public class MatchProposalGiverService {
 		matchProposal.updateStatus(MatchProposalStatus.FIXED);
 
 		User user = matchProposal.getUser();
-		AuthorResponse userResponse = new AuthorResponse(user.getId(), user.getNickname());
+		AuthorResponse userResponse = new AuthorResponse(user.getId(), user.getNickname(), user.getProfileImageUrl());
 
 		Team team = matchProposal.getTeam();
 		TeamSimpleResponse teamResponse =

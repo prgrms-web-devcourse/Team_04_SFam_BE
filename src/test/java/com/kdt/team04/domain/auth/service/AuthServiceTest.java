@@ -60,8 +60,16 @@ class AuthServiceTest {
 		//given
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null,
-			"test00@gmail.com", null, Role.USER);
+		UserResponse userResponse = new UserResponse(1L,
+			"test00",
+			encodedPassword,
+			"nickname",
+			null,
+			"test00@gmail.com",
+			null,
+			Role.USER
+		);
+
 		List<GrantedAuthority> authorities = new ArrayList<>(
 			Collections.singleton(new SimpleGrantedAuthority("USER")));
 		Jwt.Claims claims = Jwt.Claims.builder()
@@ -102,8 +110,15 @@ class AuthServiceTest {
 		//given
 		String password = "@Test1234";
 		String encodedPassword = "$2a$12$JB1zYmj1TfoylCds8Tt5ue//BQTWE2xO5HZn.MjZcpo.z.7LKagZ.";
-		UserResponse userResponse = new UserResponse(1L, "test00", encodedPassword, "nickname", null,
-			"test00@gmail.com", null, Role.USER);
+		UserResponse userResponse = new UserResponse(1L,
+			"test00",
+			encodedPassword,
+			"nickname",
+			null,
+			"test00@gmail.com",
+			null,
+			Role.USER
+		);
 		given(userService.findByUsername(userResponse.username())).willReturn(userResponse);
 		given(passwordEncoder.matches(password, encodedPassword)).willReturn(false);
 		//when, then

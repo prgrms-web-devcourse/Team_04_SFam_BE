@@ -23,17 +23,23 @@ public class QueryProposalChatResponse {
 	@Schema(description = "마지막 채팅 정보")
 	private final LastChatResponse lastChat;
 
+	@Schema(description = "매칭 공고 ID(고유 PK)")
+	private final Long matchId;
+
 	public QueryProposalChatResponse(
 		BigInteger id,
 		String content,
 		BigInteger targetId,
 		String targetNickname,
-		String lastChat
+		String targetProfileImageUrl,
+		String lastChat,
+		BigInteger matchId
 	) {
 		this.id = id.longValue();
 		this.content = content;
-		this.target = new ChatTargetProfileResponse(targetId, targetNickname);
+		this.target = new ChatTargetProfileResponse(targetId, targetNickname, targetProfileImageUrl);
 		this.lastChat = new LastChatResponse(lastChat);
+		this.matchId = matchId.longValue();
 	}
 
 	public Long getId() {
@@ -52,6 +58,10 @@ public class QueryProposalChatResponse {
 		return lastChat;
 	}
 
+	public Long getMatchId() {
+		return matchId;
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -59,6 +69,7 @@ public class QueryProposalChatResponse {
 			.append("content", content)
 			.append("target", target)
 			.append("lastChat", lastChat)
+			.append("matchId", matchId)
 			.toString();
 	}
 }

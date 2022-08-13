@@ -81,9 +81,9 @@ class UserControllerIntegrationTest {
 	@DisplayName("회원 프로필을 조회한다.")
 	void testFindProfile() throws Exception {
 		// given
-		User findUser = new User("test00", "nk-test00",
+		User findUser = new User("test00", "nk_test00",
 			passwordEncoder.encode("1234"));
-		User user = new User("test01", "nk-test01",
+		User user = new User("test01", "nk_test01",
 			passwordEncoder.encode("1234"));
 
 		Team findUserTeam1 = Team.builder()

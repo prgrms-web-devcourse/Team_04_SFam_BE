@@ -23,6 +23,7 @@ import com.kdt.team04.common.config.resolver.AuthUser;
 import com.kdt.team04.common.exception.BusinessException;
 import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.common.security.jwt.JwtAuthentication;
+import com.kdt.team04.domain.user.dto.UpdateUserRequest;
 import com.kdt.team04.domain.user.dto.request.UpdateUserSettingsRequest;
 import com.kdt.team04.domain.user.dto.response.FindProfileResponse;
 import com.kdt.team04.domain.user.dto.response.UpdateUserSettingsResponse;
@@ -89,13 +90,19 @@ public class UserController {
 
 	@Operation(summary = "회원 프로필 이미지 업데이트", description = "파일을 받아 사용자 프로필 이미지를 업데이트 한다.")
 	@PatchMapping("/profile")
-	public void uploadProfile(@AuthUser JwtAuthentication auth, MultipartFile file) {
+	public String uploadProfile(@AuthUser JwtAuthentication auth, MultipartFile file) {
 		if (file.isEmpty() || !file.getContentType().startsWith(MediaType.ANY_IMAGE_TYPE.type())) {
 			throw new BusinessException(ErrorCode.INVALID_FILE_TYPE,
 				"파일이 첨부되지 않았거나 지원하지 않는 타입입니다.");
 		}
 
-		userService.uploadProfile(auth.id(), file);
+		return userService.uploadProfile(auth.id(), file);
+	}
+
+	@Operation(summary = "회원 정보 수정", description = "회원 정보를 수정한다.")
+	@PatchMapping
+	public void update(@AuthUser JwtAuthentication auth, @RequestBody UpdateUserRequest request) {
+		userService.update(auth.id(), request);
 	}
 
 }

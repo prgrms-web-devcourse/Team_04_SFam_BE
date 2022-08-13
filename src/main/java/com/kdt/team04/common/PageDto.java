@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Range;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,7 @@ public class PageDto {
 	}
 
 	public static class TeamInvitationCursorPageRequest {
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 		@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		@Parameter(description = "초대받은 일자 (yyyy-MM-dd HH:mm:ss)")
 		private LocalDateTime createdAt;
@@ -82,7 +83,7 @@ public class PageDto {
 	}
 
 	public static class MatchCursorPageRequest {
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 		@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		@Parameter(description = "마지막 조회 일자 (yyyy-MM-dd HH:mm:ss)")
 		private LocalDateTime createdAt;
@@ -100,9 +101,12 @@ public class PageDto {
 		@Parameter(description = "매칭 상태")
 		private MatchStatus status;
 
-		@Min(1)
-		@Max(30)
-		@Parameter(description = "검색 거리, 1 ~ 30까지 가능")
+		@Parameter(description = "회원 ID(고유 PK) userID 입력 시 distance는 무시 된다.")
+		private Long userId;
+
+		@Min(5)
+		@Max(40)
+		@Parameter(description = "검색 거리, 5 ~ 40까지 가능")
 		private Double distance;
 
 		@AssertFalse
@@ -158,6 +162,14 @@ public class PageDto {
 
 		public void setCategory(SportsCategory category) {
 			this.category = category;
+		}
+
+		public Long getUserId() {
+			return this.userId;
+		}
+
+		public void setUserId(Long userId) {
+			this.userId = userId;
 		}
 
 		public Double getDistance() {
@@ -238,6 +250,7 @@ public class PageDto {
 		}
 	}
 
+	@ParameterObject
 	public record CursorResponse<T, C>(List<T> values, Boolean hasNext, C cursor) {
 	}
 }

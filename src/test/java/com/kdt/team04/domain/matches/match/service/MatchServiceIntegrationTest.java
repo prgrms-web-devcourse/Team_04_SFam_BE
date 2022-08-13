@@ -492,8 +492,8 @@ class MatchServiceIntegrationTest {
 		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
-		LocalDateTime lastCreatedAt = foundMatches.cursor().getCreatedAt();
-		Long lastId = foundMatches.cursor().getId();
+		LocalDateTime lastCreatedAt = foundMatches.cursor().createdAt();
+		Long lastId = foundMatches.cursor().id();
 
 		PageDto.MatchCursorPageRequest secondRequest = PageDto.MatchCursorPageRequest.builder()
 			.id(lastId)

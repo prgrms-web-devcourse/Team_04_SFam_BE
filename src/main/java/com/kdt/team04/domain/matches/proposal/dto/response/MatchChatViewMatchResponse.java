@@ -6,6 +6,9 @@ import com.kdt.team04.domain.user.dto.response.ChatTargetProfileResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record MatchChatViewMatchResponse(
+	@Schema(description = "매칭 ID(고유 PK)")
+	Long id,
+
 	@Schema(description = "매칭 공고 제목")
 	String title,
 

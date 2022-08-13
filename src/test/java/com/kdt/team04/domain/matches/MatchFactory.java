@@ -16,6 +16,7 @@ import com.kdt.team04.domain.teams.team.model.entity.Team;
 import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
 import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
 import com.kdt.team04.domain.user.entity.User;
+import com.kdt.team04.domain.user.entity.UserSettings;
 
 public class MatchFactory {
 
@@ -24,6 +25,7 @@ public class MatchFactory {
 			.password("1234")
 			.username(name)
 			.nickname(name + "Nik")
+			.userSettings(new UserSettings(127.1554531, 37.6139816, 40))
 			.build();
 	}
 
@@ -59,6 +61,7 @@ public class MatchFactory {
 			.status(status)
 			.user(user)
 			.team(team)
+			.location(user.getUserSettings().getLocation())
 			.build();
 	}
 
@@ -71,6 +74,7 @@ public class MatchFactory {
 			.participants(1)
 			.status(status)
 			.user(user)
+			.location(user.getUserSettings().getLocation())
 			.build();
 	}
 

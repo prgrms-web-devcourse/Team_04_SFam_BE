@@ -7,4 +7,6 @@ import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
 public interface CustomMatchRepository {
 	PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> findByLocationPaging(Double latitude,
 		Double longitude, PageDto.MatchCursorPageRequest pageRequest);
+
+	Double getDistance(Double latitude, Double longitude, Long matchId);
 }
