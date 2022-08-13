@@ -1,9 +1,9 @@
 package com.kdt.team04.domain.matches.review.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,8 +11,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.UnsupportedEncodingException;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +24,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdt.team04.common.ApiResponse;
 import com.kdt.team04.common.exception.ErrorCode;
+import com.kdt.team04.common.exception.ErrorResponse;
 import com.kdt.team04.common.security.WebSecurityConfig;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.domain.auth.service.TokenService;
@@ -93,6 +92,7 @@ class MatchRecordControllerTest {
 	void endGameNotAuthor() throws Exception {
 		// given
 		ErrorCode errorCode = ErrorCode.RUNTIME_EXCEPTION;
+		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 
 		// when
 		ResultActions resultActions = mockMvc
@@ -101,17 +101,13 @@ class MatchRecordControllerTest {
 			)
 			.andDo(print());
 
-		String responseBody = getResponseBody(resultActions);
-
 		// then
-		verify(matchRecordService, times(0))
+		verify(matchRecordService, never())
 			.endGame(null, null, null, null);
 
 		resultActions
-			.andExpect(status().isBadRequest());
-
-		assertThat(responseBody).contains(errorCode.getCode());
-		assertThat(responseBody).contains(errorCode.getMessage());
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(response));
 	}
 
 	@Test
@@ -132,22 +128,21 @@ class MatchRecordControllerTest {
 		// when
 		ResultActions resultActions = mockMvc
 			.perform(
-				get(BASE_END_POINT + "/records?sportsCategory="
-					+ recordRequest.getSportsCategory()
-					+ "&userId=" + DEFAULT_AUTH_ID)
+				get(BASE_END_POINT + "/records?"
+						+ "sportsCategory={category}"
+						+ "&userId={userId}",
+					recordRequest.getSportsCategory(), recordRequest.getUserId()
+				)
 					.contentType(MediaType.APPLICATION_JSON)
 			).andDo(print());
 
 		// then
+		verify(matchRecordService, times(1))
+			.findMatchRecordTotal(any(QueryMatchRecordRequest.class));
+
 		resultActions
 			.andExpect(status().isOk())
 			.andExpect(content().string(response));
-	}
-
-	private String getResponseBody(ResultActions resultActions) throws UnsupportedEncodingException {
-		return resultActions.andReturn()
-			.getResponse()
-			.getContentAsString();
 	}
 
 }
