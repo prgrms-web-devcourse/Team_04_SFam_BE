@@ -108,7 +108,7 @@ class MatchProposalControllerFailTest {
 
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			post(BASE_END_POINT + "/1/proposals")
+			post(BASE_END_POINT + "/{matchId}/proposals", DEFAULT_MATCH_ID)
 				.content(objectMapper.writeValueAsString(request))
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
@@ -120,7 +120,7 @@ class MatchProposalControllerFailTest {
 	}
 
 	@Test
-	@DisplayName("대결 신청을 수락할 때 request의 status가 null일 경우, 400 상태코드를 반환한다.")
+	@DisplayName("대결 신청을 수락 또는 거절 할 때 request의 status가 null일 경우, 400 상태코드를 반환한다.")
 	void proposeApproveReact_fail_1() throws Exception {
 		//give
 		ReactProposalRequest request = new ReactProposalRequest(null);
@@ -130,7 +130,7 @@ class MatchProposalControllerFailTest {
 
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			patch(BASE_END_POINT + "/" + DEFAULT_MATCH_ID + "/proposals/" + DEFAULT_PROPOSAL_ID)
+			patch(BASE_END_POINT + "/{matchId}/proposals/{id}", DEFAULT_MATCH_ID, DEFAULT_PROPOSAL_ID)
 				.content(objectMapper.writeValueAsString(request))
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
@@ -142,9 +142,10 @@ class MatchProposalControllerFailTest {
 	}
 
 	@Test
-	@DisplayName("대결 신청을 수락이나 거절 할 때 matchId가 null일 경우, 400 상태코드를 반환한다.")
+	@DisplayName("대결 신청을 수락 또는 거절 할 때 matchId가 null일 경우, 400 상태코드를 반환한다.")
 	void proposeApproveReact_fail_2() throws Exception {
 		//give
+		Long invalidMatchId = null;
 		ReactProposalRequest request = new ReactProposalRequest(MatchProposalStatus.WAITING);
 
 		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION;
@@ -152,7 +153,7 @@ class MatchProposalControllerFailTest {
 
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			patch(BASE_END_POINT + "/" + null + "/proposals/" + DEFAULT_PROPOSAL_ID)
+			patch(BASE_END_POINT + "/" + null + "/proposals/{id}", DEFAULT_PROPOSAL_ID)
 				.content(objectMapper.writeValueAsString(request))
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
@@ -164,9 +165,10 @@ class MatchProposalControllerFailTest {
 	}
 
 	@Test
-	@DisplayName("대결 신청을 수락이나 거절 할 때 proposalId가 null일 경우, 400 상태코드를 반환한다.")
+	@DisplayName("대결 신청을 수락 또는 거절 할 때 proposalId가 null일 경우, 400 상태코드를 반환한다.")
 	void proposeApproveReact_fail_3() throws Exception {
 		//give
+		Long invalidProposalId = null;
 		ReactProposalRequest request = new ReactProposalRequest(MatchProposalStatus.WAITING);
 
 		ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION;
@@ -174,7 +176,7 @@ class MatchProposalControllerFailTest {
 
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			patch(BASE_END_POINT + "/" + null + "/proposals/" + DEFAULT_PROPOSAL_ID)
+			patch(BASE_END_POINT + "/{matchId}/proposals/" + null, DEFAULT_MATCH_ID, invalidProposalId)
 				.content(objectMapper.writeValueAsString(request))
 				.contentType(MediaType.APPLICATION_JSON)
 		).andDo(print());
