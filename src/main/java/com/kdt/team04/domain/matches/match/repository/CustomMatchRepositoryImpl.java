@@ -40,8 +40,11 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 		Double distance = pageRequest.getDistance();
 		Integer size = pageRequest.getSize();
 		SportsCategory category = pageRequest.getCategory();
-		Long id = pageRequest.getId();
 		SearchDateType searchDateType = pageRequest.getSearchDateType();
+		Long id = switch (searchDateType) {
+			case MATCH_DATE -> (pageRequest.getId() == null) ? 0L : pageRequest.getId();
+			case CREATED_AT -> (pageRequest.getId() == null) ? Long.MAX_VALUE : pageRequest.getId();
+		};
 		LocalDateTime createdAt = pageRequest.getCreatedAt();
 		LocalDate matchDate = pageRequest.getMatchDate();
 		MatchStatus status = pageRequest.getStatus();

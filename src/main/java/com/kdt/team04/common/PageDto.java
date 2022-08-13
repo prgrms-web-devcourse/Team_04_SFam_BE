@@ -93,6 +93,7 @@ public class PageDto {
 		@Parameter(description = "조회 시작 경기 일자 (yyyy-MM-dd)")
 		private LocalDate matchDate;
 
+		@NotNull
 		@Parameter(description = "조회 일자 타입 (작성일 (CREATED_AT) | 경기일자 (MATCH_DATE))")
 		private SearchDateType searchDateType;
 
@@ -118,16 +119,21 @@ public class PageDto {
 		private Double distance;
 
 		@Builder
-		public MatchCursorPageRequest(LocalDateTime createdAt, LocalDate matchDate, SearchDateType searchDateType,
+		public MatchCursorPageRequest(
+			LocalDateTime createdAt,
+			LocalDate matchDate,
+			SearchDateType searchDateType,
 			Long id,
-			Integer size, SportsCategory category, MatchStatus status, Long userId, Double distance) {
+			Integer size,
+			SportsCategory category,
+			MatchStatus status,
+			Long userId,
+			Double distance
+		) {
 			this.createdAt = createdAt;
 			this.matchDate = matchDate;
 			this.searchDateType = searchDateType;
-			this.id = switch (searchDateType) {
-				case MATCH_DATE -> (id == null) ? 0 : id;
-				case CREATED_AT -> (id == null) ? Long.MAX_VALUE : id;
-			};
+			this.id = id;
 			this.size = size;
 			this.category = category;
 			this.status = status;
