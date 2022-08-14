@@ -32,7 +32,7 @@ public class CommonRestControllerAdvice {
 
 	@ExceptionHandler(BusinessException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleBusinessException(BusinessException e) {
-		log.warn("Service error occurred : {}", e.getMessage(), e);
+		log.warn("Service exception occurred : {}", e.getMessage(), e);
 		ErrorCode errorCode = e.errorCode();
 
 		return newResponse(errorCode);
@@ -40,16 +40,16 @@ public class CommonRestControllerAdvice {
 
 	@ExceptionHandler(BindException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleBindException(BindException e) {
-		log.warn("Binding error occurred : {}", e.getMessage(), e);
+		log.warn("Binding exception occurred : {}", e.getMessage(), e);
 
 		return newResponse(ErrorCode.BIND_ERROR);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleMethodArgumentNotValidException(
-		MethodArgumentNotValidException e
+		Exception e
 	) {
-		log.warn("Method argument not valid error occurred : {}", e.getMessage(), e);
+		log.warn("Method argument not valid exception occurred : {}", e.getMessage(), e);
 
 		return newResponse(ErrorCode.METHOD_ARGUMENT_NOT_VALID);
 	}
@@ -57,7 +57,7 @@ public class CommonRestControllerAdvice {
 	@ExceptionHandler(MissingServletRequestParameterException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleMissingServletRequestParameterException(
 		MissingServletRequestParameterException e) {
-		log.warn("Missing servlet request parameter error occurred : {}", e.getMessage(), e);
+		log.warn("Missing servlet request parameter exception occurred : {}", e.getMessage(), e);
 
 		return newResponse(ErrorCode.METHOD_ARGUMENT_NOT_VALID);
 	}
@@ -66,21 +66,30 @@ public class CommonRestControllerAdvice {
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleMethodArgumentTypeMismatchException(
 		MethodArgumentTypeMismatchException e
 	) {
-		log.warn("Method argument type mismatch error occurred: {}", e.getMessage(), e);
+		log.warn("Method argument type mismatch exception occurred: {}", e.getMessage(), e);
+
+		return newResponse(ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION);
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponse<ErrorCode>> handleIllegalArgumentException(
+		IllegalArgumentException e
+	) {
+		log.warn("Bad request exception occurred: {}", e.getMessage(), e);
 
 		return newResponse(ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION);
 	}
 
 	@ExceptionHandler({TransactionSystemException.class, ConstraintViolationException.class})
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleConstraintViolation(ConstraintViolationException e) {
-		log.warn("Constraint violation error occurred: {}", e.getMessage(), e);
+		log.warn("Constraint violation exception occurred: {}", e.getMessage(), e);
 
 		return newResponse(ErrorCode.CONSTRAINT_VIOLATION);
 	}
 
 	@ExceptionHandler(DomainException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleDomainException(DomainException e) {
-		log.warn("Domain error occurred : {}", e.getMessage(), e);
+		log.warn("Domain exception occurred : {}", e.getMessage(), e);
 		ErrorCode errorCode = e.getErrorCode();
 
 		return newResponse(errorCode);
@@ -89,7 +98,7 @@ public class CommonRestControllerAdvice {
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleDataIntegrityViolationException(
 		DataIntegrityViolationException e) {
-		log.warn("DataIntegrityViolation error occurred : {}", e.getMessage(), e);
+		log.warn("DataIntegrityViolation exception occurred : {}", e.getMessage(), e);
 
 		return newResponse(ErrorCode.DATA_INTEGRITY_VIOLATION);
 	}
@@ -111,21 +120,21 @@ public class CommonRestControllerAdvice {
 			}
 		}
 
-		log.warn("Unacceptable JSON error occurred : {}", e.getMessage(), e);
+		log.warn("Unacceptable JSON exception occurred : {}", e.getMessage(), e);
 
 		return newResponse(ErrorCode.UNACCEPTABLE_JSON_ERROR);
 	}
 
 	@ExceptionHandler(NotAuthenticationException.class)
 	public ResponseEntity<ErrorResponse<ErrorCode>> handleNotAuthenticationException(NotAuthenticationException e) {
-		log.warn("NotAuthentication error occurred : {}", e.getMessage(), e);
+		log.warn("NotAuthentication exception occurred : {}", e.getMessage(), e);
 
 		return newResponse(ErrorCode.NOT_AUTHENTICATED);
 	}
 
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<ErrorResponse<ErrorCode>> handleRuntimeException(RuntimeException e) {
-		log.warn("Unexpected error occurred : {}", e.getMessage(), e);
+	@ExceptionHandler({RuntimeException.class, Exception.class})
+	public ResponseEntity<ErrorResponse<ErrorCode>> handleRuntimeException(Throwable e) {
+		log.error("Unexpected exception occurred : {}", e.getMessage(), e);
 
 		return newResponse(ErrorCode.RUNTIME_EXCEPTION);
 	}

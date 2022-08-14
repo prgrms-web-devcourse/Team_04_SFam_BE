@@ -91,7 +91,7 @@ class MatchRecordControllerTest {
 	@DisplayName("경기 결과 등록에 필요한 데이터가 없는 경우 400 상태코드를 반환한다.")
 	void endGameNotAuthor() throws Exception {
 		// given
-		ErrorCode errorCode = ErrorCode.RUNTIME_EXCEPTION;
+		ErrorCode errorCode = ErrorCode.UNACCEPTABLE_JSON_ERROR;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 
 		// when

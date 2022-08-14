@@ -162,7 +162,7 @@ class MatchControllerTest {
 	@DisplayName("매치 신청 시 요청값이 null 이라면 400 상태코드를 반환한다.")
 	void createMatchRequestNull() throws Exception {
 		// given
-		ErrorCode errorCode = ErrorCode.RUNTIME_EXCEPTION;
+		ErrorCode errorCode = ErrorCode.UNACCEPTABLE_JSON_ERROR;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 
 		CreateMatchRequest request = null;
