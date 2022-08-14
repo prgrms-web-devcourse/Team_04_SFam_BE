@@ -111,7 +111,7 @@ class MatchChatControllerTest {
 	@DisplayName("쪽지를 보낼 데이터가 없다면 400 상태코드를 반환한다.")
 	void chatsNotArguments() throws Exception {
 		// given
-		ErrorCode errorCode = ErrorCode.RUNTIME_EXCEPTION;
+		ErrorCode errorCode = ErrorCode.UNACCEPTABLE_JSON_ERROR;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 
 		// when

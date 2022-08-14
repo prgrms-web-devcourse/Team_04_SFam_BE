@@ -88,7 +88,7 @@ class MatchReviewControllerTest {
 	@DisplayName("후기를 등록에 필요한 값이 없으면 400 상태코드를 반환한다.")
 	void reviewNotArgument() throws Exception {
 		// given
-		ErrorCode errorCode = ErrorCode.RUNTIME_EXCEPTION;
+		ErrorCode errorCode = ErrorCode.UNACCEPTABLE_JSON_ERROR;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 
 		// when
