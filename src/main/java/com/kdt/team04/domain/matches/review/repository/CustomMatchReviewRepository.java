@@ -8,4 +8,6 @@ public interface CustomMatchReviewRepository {
 	MatchReviewTotalResponse getTeamTotalCountByUserId(Long userId);
 
 	boolean existsByMatchIdAndUserId(Long matchId, Long userId);
+
+	boolean existsByMatchIdAndTeamId(Long matchId, Long teamId);
 }

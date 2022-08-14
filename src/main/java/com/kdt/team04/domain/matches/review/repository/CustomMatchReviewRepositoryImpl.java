@@ -56,4 +56,17 @@ public class CustomMatchReviewRepositoryImpl implements CustomMatchReviewReposit
 
 		return exists != null;
 	}
+
+	@Override
+	public boolean existsByMatchIdAndTeamId(Long matchId, Long teamId) {
+		Integer exists = jpaQueryFactory
+			.selectOne()
+			.from(matchReview)
+			.where(
+				matchReview.match.id.eq(matchId),
+				matchReview.team.id.eq(teamId)
+			).fetchFirst();
+
+		return exists != null;
+	}
 }

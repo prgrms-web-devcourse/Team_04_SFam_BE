@@ -52,6 +52,8 @@ public class MatchReviewService {
 				MessageFormat.format("matchId = {0} , userId = {1}", matchId, userId));
 		}
 
+
+
 		boolean existsReview = matchReviewRepository.existsByMatchIdAndUserId(matchId, userId);
 		if (existsReview) {
 			throw new BusinessException(ErrorCode.MATCH_REVIEW_ALREADY_EXISTS,
@@ -75,6 +77,12 @@ public class MatchReviewService {
 		Long teamId = Objects.equals(proposalDto.getAuthorId(), loginId) ?
 			proposalDto.getAuthorTeamId() :
 			proposalDto.getProposerTeamId();
+
+		if(matchReviewRepository.existsByMatchIdAndTeamId(proposalDto.getMatchId(), teamId)) {
+			throw new BusinessException(ErrorCode.MATCH_REVIEW_ALREADY_EXISTS,
+				MessageFormat.format("matchId = {0}, teamId = {1}", proposalDto.getMatchId(), teamId));
+		}
+
 		Long targetTeamId = Objects.equals(proposalDto.getAuthorId(), loginId) ?
 			proposalDto.getProposerTeamId() :
 			proposalDto.getAuthorTeamId();
