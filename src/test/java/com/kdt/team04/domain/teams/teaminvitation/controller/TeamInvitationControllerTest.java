@@ -173,7 +173,7 @@ class TeamInvitationControllerTest {
 	@DisplayName("팀 초대에 필요한 데이터가 없다면 400 상태코드를 반환한다.")
 	void inviteArgumentNull() throws Exception {
 		// given
-		ErrorCode errorCode = ErrorCode.RUNTIME_EXCEPTION;
+		ErrorCode errorCode = ErrorCode.UNACCEPTABLE_JSON_ERROR;
 		String response = objectMapper.writeValueAsString(new ErrorResponse<>(errorCode));
 
 		// when

@@ -9,6 +9,9 @@ public enum ErrorCode {
 	BIND_ERROR("C0003", "Binding Exception", HttpStatus.BAD_REQUEST),
 	RUNTIME_EXCEPTION("C0004", "Runtime error", HttpStatus.BAD_REQUEST),
 	METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION("C0005", "Method argument type mismatch exception", HttpStatus.BAD_REQUEST),
+	UNACCEPTABLE_JSON_ERROR("C0006", "Unacceptable json error", HttpStatus.BAD_REQUEST),
+	INVALID_ENUM_VALUE("C0007", "Invalid enum value", HttpStatus.BAD_REQUEST),
+	ILLEGAL_ARGUMENT_EXCEPTION("C0008", "Bad request error", HttpStatus.BAD_REQUEST),
 
 	//VALIDATION
 	METHOD_ARGUMENT_NOT_VALID("V0001", "Validation error", HttpStatus.BAD_REQUEST),

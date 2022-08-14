@@ -143,8 +143,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private void verifyRefreshToken(String accessToken, String refreshToken) {
 		jwt.verify(refreshToken);
-		TokenResponse token = tokenService.findByToken(refreshToken);
 		Long userId = jwt.decode(accessToken).userId;
+		TokenResponse token = tokenService.findByUserId(userId);
 
 		if (!userId.equals(token.userId())) {
 			throw new JWTVerificationException("Invalid refresh token.");

@@ -92,6 +92,10 @@ public class Jwt {
 		return this.jwtConfigure.refreshToken();
 	}
 
+	public int getExpirySeconds() {
+		return this.jwtConfigure.refreshToken().expirySeconds();
+	}
+
 	public static class Claims {
 		Long userId;
 		String username;

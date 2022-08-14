@@ -60,11 +60,12 @@ public class AuthService {
 			.build();
 		String accessToken = jwt.generateAccessToken(claims);
 		String refreshToken = jwt.generateRefreshToken();
+		int expirySeconds = jwt.getExpirySeconds();
 		JwtAuthentication authentication = new JwtAuthentication(accessToken, foundUser.id(), foundUser.username(),
 			foundUser.email());
 		JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authentication, null,
 			jwt.getAuthorities(jwt.verify(accessToken)));
-		tokenService.save(refreshToken, foundUser.id());
+		tokenService.save(foundUser.id(), refreshToken, (long)expirySeconds);
 
 		UserSettings foundUserSettings = foundUser.userSettings() == null
 			? new UserSettings(null, null, null)
