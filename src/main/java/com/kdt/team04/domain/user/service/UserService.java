@@ -137,7 +137,7 @@ public class UserService {
 
 	@Transactional
 	public void update(Long targetId, UpdateUserRequest request) {
-		if(request.nickname() != null && nicknameDuplicationCheck(request.nickname())) {
+		if (request.nickname() != null && nicknameDuplicationCheck(request.nickname())) {
 			throw new BusinessException(ErrorCode.USER_DUPLICATED_NICKNAME,
 				MessageFormat.format("already exists nickname : {0}", request.nickname()));
 		}

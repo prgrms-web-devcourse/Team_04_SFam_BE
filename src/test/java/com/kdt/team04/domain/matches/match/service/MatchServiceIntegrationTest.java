@@ -2,9 +2,11 @@ package com.kdt.team04.domain.matches.match.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -37,6 +39,8 @@ import com.kdt.team04.domain.teams.teammember.model.TeamMemberRole;
 import com.kdt.team04.domain.teams.teammember.model.entity.TeamMember;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.entity.UserSettings;
+import com.kdt.team04.feign.kakao.dto.CoordToAddressResponse;
+import com.kdt.team04.feign.kakao.service.KakaoApiService;
 
 @Transactional
 @SpringBootTest
@@ -56,6 +60,9 @@ class MatchServiceIntegrationTest {
 
 	@MockBean
 	AmazonS3 amazonS3;
+
+	@MockBean
+	KakaoApiService kakaoApiService;
 
 	@Test
 	@DisplayName("팀의 리더는 팀 매칭 공고를 생성할 수 있다.")
@@ -289,6 +296,7 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("두 지점 간 거리 1.51km 5개 매치 불러오기")
 	void testFindMatchesCursorPaging() {
+		//given
 		UserSettings mySettings = new UserSettings(37.3947122, 127.111253, 10);
 		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
@@ -342,9 +350,17 @@ class MatchServiceIntegrationTest {
 			.category(SportsCategory.BADMINTON)
 			.distance(1.51)
 			.build();
+
+		given(kakaoApiService.coordToAddressResponse(
+			authorSettings.getLocation().getLongitude(),
+			authorSettings.getLocation().getLatitude())).willReturn(getDummyAddressResponse());
+
+		//when
 		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
+
+		//then
 		assertThat(foundMatches.values()).hasSize(request.getSize());
 		assertThat(foundMatches.hasNext()).isTrue();
 		assertThat(foundMatches.values().get(0).id()).isEqualTo(matches.get(matches.size() - 1).getId());
@@ -354,6 +370,7 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("축구매치 3개, 배트민턴 2개일때 매치 불러오기")
 	void testFindMatchesCursorPagingDifferentCategory() {
+		//given
 		UserSettings mySettings = new UserSettings(37.3947122, 127.111253, 10);
 		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
@@ -424,9 +441,16 @@ class MatchServiceIntegrationTest {
 			.category(SportsCategory.BADMINTON)
 			.distance(1.51)
 			.build();
+
+		given(kakaoApiService.coordToAddressResponse(
+			authorSettings.getLocation().getLongitude(),
+			authorSettings.getLocation().getLatitude())).willReturn(getDummyAddressResponse());
+
+		//when
 		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
+		//then
 		assertThat(foundMatches.values()).hasSize(2);
 		assertThat(foundMatches.hasNext()).isFalse();
 		assertThat(foundMatches.values().get(0).id()).isEqualTo(
@@ -436,6 +460,7 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("두 지점 간 거리 1.51km 5개 매치 불러오기 - 2번째 페이징")
 	void testFindMatchesCursorPagingTwice() {
+		//given
 		UserSettings mySettings = new UserSettings(37.3947122, 127.111253, 10);
 		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 		LocalDateTime cursorCreatedAt = LocalDateTime.now().plusWeeks(1);
@@ -489,6 +514,12 @@ class MatchServiceIntegrationTest {
 			.category(SportsCategory.BADMINTON)
 			.distance(1.51)
 			.build();
+
+		given(kakaoApiService.coordToAddressResponse(
+			authorSettings.getLocation().getLongitude(),
+			authorSettings.getLocation().getLatitude())).willReturn(getDummyAddressResponse());
+
+		//when
 		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
@@ -506,6 +537,7 @@ class MatchServiceIntegrationTest {
 		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> secondFoundMatches = matchService.findMatches(
 			member.getId(), secondRequest);
 
+		//then
 		assertThat(secondFoundMatches.values()).hasSize(request.getSize());
 		assertThat(secondFoundMatches.hasNext()).isFalse();
 		assertThat(secondFoundMatches.values().get(0).id()).isEqualTo(matches.get(matches.size() - 6).getId());
@@ -515,6 +547,7 @@ class MatchServiceIntegrationTest {
 	@Test
 	@DisplayName("페이징 커서가 없다면 전체 내림차순으로 조회한다.")
 	void testFindAllMatchesIfNullPagingRequest() {
+		//given
 		UserSettings mySettings = new UserSettings(37.3947122, 127.111253, 10);
 		UserSettings authorSettings = new UserSettings(37.3956683, 127.128228, 10);
 
@@ -567,9 +600,15 @@ class MatchServiceIntegrationTest {
 			.distance(1.51)
 			.build();
 
+		given(kakaoApiService.coordToAddressResponse(
+			authorSettings.getLocation().getLongitude(),
+			authorSettings.getLocation().getLatitude())).willReturn(getDummyAddressResponse());
+
+		//when
 		PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> foundMatches = matchService.findMatches(
 			member.getId(), request);
 
+		//then
 		assertThat(foundMatches.values()).hasSize(request.getSize());
 		assertThat(foundMatches.values().get(0).id()).isEqualTo(matches.get(matches.size() - 1).getId());
 		assertThat(foundMatches.values().get(4).id()).isEqualTo(matches.get(matches.size() - 5).getId());
@@ -871,5 +910,14 @@ class MatchServiceIntegrationTest {
 
 		//when, then
 		assertThatThrownBy(() -> matchService.delete(user.getId(), savedMatch.getId()));
+	}
+
+	CoordToAddressResponse getDummyAddressResponse() {
+		CoordToAddressResponse.Address address = CoordToAddressResponse.Address.builder()
+			.region3DepthName("구서동")
+			.build();
+		CoordToAddressResponse.Documents documents = new CoordToAddressResponse.Documents(null, address);
+
+		return new CoordToAddressResponse(null, Collections.singletonList(documents));
 	}
 }

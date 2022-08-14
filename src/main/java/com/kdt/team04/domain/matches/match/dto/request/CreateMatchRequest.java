@@ -38,7 +38,7 @@ public record CreateMatchRequest(
 	@Min(1) @Max(15)
 	int participants,
 
-	@Schema(description = "매칭 종목(값/설명) - BADMINTON/배드민턴, SOCCER/축구, BASEBALL/야구", required = true)
+	@Schema(description = "매칭 종목", required = true)
 	@NotNull
 	SportsCategory sportsCategory,
 

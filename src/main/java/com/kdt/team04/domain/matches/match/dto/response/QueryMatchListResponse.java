@@ -9,7 +9,7 @@ import com.kdt.team04.domain.teams.team.model.SportsCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record MatchListViewResponse(
+public record QueryMatchListResponse(
 	@Schema(description = "매칭 ID(고유 PK)")
 	Long id,
 
@@ -31,11 +31,14 @@ public record MatchListViewResponse(
 	@Schema(description = "작성자 닉네임")
 	String authorNickname,
 
+	@Schema(description = "작성자 위도")
+	Double latitude,
+
+	@Schema(description = "작성자 경도")
+	Double longitude,
+
 	@Schema(description = "나와의 거리")
 	Double distance,
-
-	@Schema(description = "지역 이름 (XX동)")
-	String localName,
 
 	@Schema(description = "원하는 경기 일자")
 	LocalDate matchDate,
@@ -44,17 +47,5 @@ public record MatchListViewResponse(
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	LocalDateTime createdAt
 ) {
-	public MatchListViewResponse(QueryMatchListResponse response, String localName) {
-		this(response.id(),
-			response.title(),
-			response.category(),
-			response.matchType(),
-			response.content(),
-			response.authorId(),
-			response.authorNickname(),
-			response.distance(),
-			localName,
-			response.matchDate(),
-			response.createdAt());
-	}
+
 }

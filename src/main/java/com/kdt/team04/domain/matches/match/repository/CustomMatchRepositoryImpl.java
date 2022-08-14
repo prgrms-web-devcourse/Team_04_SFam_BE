@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import com.kdt.team04.common.PageDto;
 import com.kdt.team04.domain.matches.match.dto.MatchPagingCursor;
-import com.kdt.team04.domain.matches.match.dto.response.MatchListViewResponse;
+import com.kdt.team04.domain.matches.match.dto.response.QueryMatchListResponse;
 import com.kdt.team04.domain.matches.match.model.MatchStatus;
 import com.kdt.team04.domain.teams.team.model.SportsCategory;
 import com.querydsl.core.BooleanBuilder;
@@ -32,7 +32,7 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 		this.jpaQueryFactory = jpaQueryFactory;
 	}
 
-	public PageDto.CursorResponse<MatchListViewResponse, MatchPagingCursor> findByLocationPaging(
+	public PageDto.CursorResponse<QueryMatchListResponse, MatchPagingCursor> findByLocationPaging(
 		Double latitude, Double longitude, PageDto.MatchCursorPageRequest pageRequest) {
 		Double distance = pageRequest.getDistance();
 		Integer size = pageRequest.getSize();
@@ -72,8 +72,8 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 				.or(asDateTime(createdAt).eq(match.createdAt).and(asNumber(match.id).lt(id)));
 		}
 
-		List<MatchListViewResponse> matches = jpaQueryFactory.select(
-				Projections.constructor(MatchListViewResponse.class,
+		List<QueryMatchListResponse> matches = jpaQueryFactory.select(
+				Projections.constructor(QueryMatchListResponse.class,
 					match.id,
 					match.title,
 					match.sportsCategory,
@@ -81,6 +81,8 @@ public class CustomMatchRepositoryImpl implements CustomMatchRepository {
 					match.content,
 					match.user.id,
 					match.user.nickname,
+					match.location.latitude,
+					match.location.longitude,
 					distanceExpression.as("distance"),
 					match.matchDate,
 					match.createdAt

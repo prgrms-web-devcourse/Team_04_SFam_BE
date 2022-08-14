@@ -42,5 +42,8 @@ jwt:
 cookie:
   secure: ${COOKIE_SECURE:false}
   same-site: ${COOKIE_SAME_SITE:lax}
+kakao:
+  local:
+    accessKey: ${KAKAO_LOCAL_ACCESS_KEY:ENC(neqAQ1ELtne7FgKotd35OS74GfMxz+J2aYHrFJHwjsQXNYRbDBLBVfyxcVKOTJKu)}
 encryptor:
   key: ${ENCRYPTOR_KEY}
