@@ -13,8 +13,8 @@ import com.kdt.team04.common.exception.ErrorCode;
 import com.kdt.team04.domain.matches.proposal.dto.QueryMatchProposalResponse;
 import com.kdt.team04.domain.matches.proposal.service.MatchProposalGiverService;
 import com.kdt.team04.domain.matches.review.dto.MatchReviewConverter;
-import com.kdt.team04.domain.matches.review.model.entity.MatchReview;
 import com.kdt.team04.domain.matches.review.model.MatchReviewValue;
+import com.kdt.team04.domain.matches.review.model.entity.MatchReview;
 import com.kdt.team04.domain.matches.review.repository.MatchReviewRepository;
 
 @Service
@@ -52,8 +52,6 @@ public class MatchReviewService {
 				MessageFormat.format("matchId = {0} , userId = {1}", matchId, userId));
 		}
 
-
-
 		boolean existsReview = matchReviewRepository.existsByMatchIdAndUserId(matchId, userId);
 		if (existsReview) {
 			throw new BusinessException(ErrorCode.MATCH_REVIEW_ALREADY_EXISTS,
@@ -78,7 +76,7 @@ public class MatchReviewService {
 			proposalDto.getAuthorTeamId() :
 			proposalDto.getProposerTeamId();
 
-		if(matchReviewRepository.existsByMatchIdAndTeamId(proposalDto.getMatchId(), teamId)) {
+		if (matchReviewRepository.existsByMatchIdAndTeamId(proposalDto.getMatchId(), teamId)) {
 			throw new BusinessException(ErrorCode.MATCH_REVIEW_ALREADY_EXISTS,
 				MessageFormat.format("matchId = {0}, teamId = {1}", proposalDto.getMatchId(), teamId));
 		}
@@ -87,7 +85,7 @@ public class MatchReviewService {
 			proposalDto.getProposerTeamId() :
 			proposalDto.getAuthorTeamId();
 
-		return matchReviewConverter.toTeamReview(proposalDto.getMatchId(), review, teamId, targetTeamId);
+		return matchReviewConverter.toTeamReview(proposalDto.getMatchId(), review, loginId, teamId, targetTeamId);
 	}
 
 	private MatchReview createIndividualReview(

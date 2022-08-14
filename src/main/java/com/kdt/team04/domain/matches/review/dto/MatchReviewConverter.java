@@ -14,17 +14,20 @@ public class MatchReviewConverter {
 	public MatchReview toTeamReview(
 		Long matchId,
 		MatchReviewValue review,
+		Long userId,
 		Long teamId,
 		Long targetTeamId
 	) {
 		Match match = Match.builder().id(matchId).build();
 		Team team = Team.builder().id(teamId).build();
+		User user = User.builder().id(userId).build();
 		Team target = Team.builder().id(targetTeamId).build();
 
 		return MatchReview.builder()
 			.match(match)
 			.review(review)
 			.team(team)
+			.user(user)
 			.targetTeam(target)
 			.build();
 	}
