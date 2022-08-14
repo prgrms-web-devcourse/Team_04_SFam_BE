@@ -16,13 +16,13 @@ public class KakaoApiService {
 		this.kakaoApiProperties = kakaoApiProperties;
 	}
 
-	public CoordToAddressResponse coordToAddressResponse(Double x, Double y) {
+	public CoordToAddressResponse coordToAddressResponse(Double longitude, Double latitude) {
 		KakaoApiProperties.LocalApiProperties localApiProperties = kakaoApiProperties.local();
 
 		final String kakaoAkHeaderValue = localApiProperties.header()
 			+ " "
 			+ localApiProperties.accessKey();
 
-		return kakaoClient.coordToAddress(kakaoAkHeaderValue, x, y);
+		return kakaoClient.coordToAddress(kakaoAkHeaderValue, longitude, latitude);
 	}
 }

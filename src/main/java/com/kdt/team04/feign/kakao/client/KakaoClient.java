@@ -13,6 +13,6 @@ public interface KakaoClient {
 	@GetMapping("/local/geo/coord2address.json?input_coord=WGS84")
 	CoordToAddressResponse coordToAddress(
 		@RequestHeader("Authorization") String kakaoAk,
-		@RequestParam(name = "x") Double x,
-		@RequestParam(name = "y") Double y);
+		@RequestParam(name = "x") Double longitude,
+		@RequestParam(name = "y") Double latitude);
 }
