@@ -97,7 +97,7 @@ class AuthServiceTest {
 		verify(jwt, times(1)).generateRefreshToken();
 		verify(jwt, times(2)).accessTokenProperties();
 		verify(jwt, times(2)).refreshTokenProperties();
-		verify(tokenService, times(1)).save("refreshToken", userResponse.id());
+		verify(tokenService, times(1)).save(userResponse.id(), "refreshToken", (long)jwt.getExpirySeconds());
 
 		assertThat(signInResponse.id()).isEqualTo(userResponse.id());
 		assertThat(signInResponse.username()).isEqualTo(userResponse.username());

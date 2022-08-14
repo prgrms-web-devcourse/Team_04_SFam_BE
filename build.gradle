@@ -101,6 +101,9 @@ dependencies {
 
 	//CLOUD WATCH LOG
 	implementation group: 'ca.pjer', name: 'logback-awslogs-appender', version: '1.6.0'
+
+	//REDIS
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 dependencyManagement {

@@ -4,6 +4,7 @@ import com.kdt.team04.common.security.jwt.TokenResponse;
 
 public interface TokenService {
 	TokenResponse findByToken(String token);
+	TokenResponse findByUserId(Long userId);
 
-	String save(String refreshToken, Long userId);
+	String save(Long userId, String refreshToken, Long expirySeconds);
 }
