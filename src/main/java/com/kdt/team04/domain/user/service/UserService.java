@@ -28,6 +28,7 @@ import com.kdt.team04.domain.user.dto.response.UserFindResponse;
 import com.kdt.team04.domain.user.dto.response.UserResponse;
 import com.kdt.team04.domain.user.entity.User;
 import com.kdt.team04.domain.user.repository.UserRepository;
+import com.kdt.team04.feign.kakao.service.KakaoApiService;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,14 +39,16 @@ public class UserService {
 	private final TeamGiverService teamGiver;
 	private final UserConverter userConverter;
 	private final S3Uploader s3Uploader;
+	private final KakaoApiService kakaoApiService;
 
 	public UserService(UserRepository userRepository, MatchReviewGiverService matchReviewGiver,
-		TeamGiverService teamGiver, S3Uploader s3Uploader, UserConverter userConverter) {
+		TeamGiverService teamGiver, S3Uploader s3Uploader, UserConverter userConverter, KakaoApiService kakaoApiService) {
 		this.userRepository = userRepository;
 		this.matchReviewGiver = matchReviewGiver;
 		this.teamGiver = teamGiver;
 		this.userConverter = userConverter;
 		this.s3Uploader = s3Uploader;
+		this.kakaoApiService = kakaoApiService;
 	}
 
 	public UserResponse findByUsername(String username) {
@@ -77,15 +80,33 @@ public class UserService {
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND,
 				MessageFormat.format("UserId = {0}", id)));
 
+		String userLocalName = getUserLocalName(foundUser);
+
 		MatchReviewTotalResponse review = matchReviewGiver.findTotalReviewByUserId(id);
 		List<TeamSimpleResponse> teams = teamGiver.findAllByTeamMemberUserId(id);
 
-		return new FindProfileResponse(
-			foundUser.getNickname(),
-			foundUser.getProfileImageUrl(),
-			review,
-			teams
-		);
+		return FindProfileResponse.builder()
+			.nickname(foundUser.getNickname())
+			.profileImageUrl(foundUser.getProfileImageUrl())
+			.localName(userLocalName)
+			.review(review)
+			.teams(teams)
+			.build();
+	}
+
+	private String getUserLocalName(User user) {
+		if (user.getUserSettings() == null) {
+			return null;
+		}
+
+		Double longitude = user.getUserSettings().getLocation().getLongitude();
+		Double latitude = user.getUserSettings().getLocation().getLatitude();
+
+		return kakaoApiService.coordToAddressResponse(longitude, latitude)
+			.documents()
+			.get(0)
+			.address()
+			.region3DepthName();
 	}
 
 	@Transactional

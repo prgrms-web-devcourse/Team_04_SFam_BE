@@ -175,7 +175,7 @@ class UserServiceTest {
 			new TeamSimpleResponse(1L, "축구왕", SportsCategory.SOCCER, null),
 			new TeamSimpleResponse(2L, "야구왕", SportsCategory.BASEBALL, null)
 		);
-		FindProfileResponse response = new FindProfileResponse(user.getUsername(), user.getProfileImageUrl(),
+		FindProfileResponse response = new FindProfileResponse(user.getUsername(), user.getProfileImageUrl(), null,
 			review, teams);
 
 		given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));

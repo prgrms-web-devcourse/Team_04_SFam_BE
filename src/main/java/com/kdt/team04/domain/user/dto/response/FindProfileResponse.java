@@ -16,6 +16,9 @@ public record FindProfileResponse(
 	@Schema(description = "회원 프로필 url")
 	String profileImageUrl,
 
+	@Schema(description = "지역 이름 (XX동)")
+	String localName,
+
 	@Schema(description = "후기 정보")
 	MatchReviewTotalResponse review,
 
