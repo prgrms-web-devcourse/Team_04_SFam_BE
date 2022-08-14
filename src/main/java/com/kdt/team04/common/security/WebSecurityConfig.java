@@ -1,5 +1,6 @@
 package com.kdt.team04.common.security;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -17,7 +18,12 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.kdt.team04.common.config.CorsConfigProperties;
 import com.kdt.team04.common.security.jwt.Jwt;
 import com.kdt.team04.common.security.jwt.JwtAuthenticationFilter;
 import com.kdt.team04.common.security.jwt.JwtConfig;
@@ -25,21 +31,23 @@ import com.kdt.team04.domain.auth.service.TokenService;
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties({JwtConfig.class, SecurityConfigProperties.class, CookieConfigProperties.class})
+@EnableConfigurationProperties({JwtConfig.class, SecurityConfigProperties.class, CookieConfigProperties.class, CorsConfigProperties.class})
 public class WebSecurityConfig {
 
 	private final Jwt jwt;
 	private final SecurityConfigProperties securityConfigProperties;
 	private final Optional<OAuth2LoginConfigurer<HttpSecurity>> oAuth2LoginConfigurer;
 	private final CookieConfigProperties cookieConfigProperties;
+	private final CorsConfigProperties corsConfigProperties;
 
 	public WebSecurityConfig(Jwt jwt, SecurityConfigProperties securityConfigProperties,
 		Optional<OAuth2LoginConfigurer<HttpSecurity>> oAuth2LoginConfigurer,
-		CookieConfigProperties cookieConfigProperties) {
+		CookieConfigProperties cookieConfigProperties, CorsConfigProperties corsConfigProperties) {
 		this.jwt = jwt;
 		this.securityConfigProperties = securityConfigProperties;
 		this.oAuth2LoginConfigurer = oAuth2LoginConfigurer;
 		this.cookieConfigProperties = cookieConfigProperties;
+		this.corsConfigProperties = corsConfigProperties;
 	}
 
 	public JwtAuthenticationFilter jwtAuthenticationFilter(Jwt jwt, TokenService tokenService) {
@@ -62,9 +70,24 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		final CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList(corsConfigProperties.origin()));
+		configuration.addAllowedHeader("*");
+		configuration.addAllowedMethod(String.join(", ", Arrays.asList(corsConfigProperties.method())));
+		configuration.setAllowCredentials(true);
+		configuration.setMaxAge(3600L);
+
+		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration(corsConfigProperties.api(), configuration);
+		return source;
+	}
+
+	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, TokenService tokenService) throws Exception {
 		http
 			.authorizeRequests()
+			.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 			.antMatchers(HttpMethod.GET, this.securityConfigProperties.patterns().permitAll().get("GET"))
 			.permitAll()
 			.antMatchers(HttpMethod.POST, this.securityConfigProperties.patterns().permitAll().get("POST"))
@@ -93,6 +116,7 @@ public class WebSecurityConfig {
 			.authenticationEntryPoint(authenticationEntryPoint())
 			.and()
 			.addFilterBefore(jwtAuthenticationFilter(jwt, tokenService), UsernamePasswordAuthenticationFilter.class)
+			.cors()
 		;
 
 		if (oAuth2LoginConfigurer.isPresent()) {

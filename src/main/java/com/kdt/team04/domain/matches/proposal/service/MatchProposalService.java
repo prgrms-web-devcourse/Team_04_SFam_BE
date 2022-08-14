@@ -249,6 +249,7 @@ public class MatchProposalService {
 
 		List<Long> matchIds = proposals.stream()
 			.map(QueryProposalChatResponse::getMatchId)
+			.distinct()
 			.toList();
 
 		Map<Long, MatchResponse> matches = matchGiver.findByIds(matchIds);
