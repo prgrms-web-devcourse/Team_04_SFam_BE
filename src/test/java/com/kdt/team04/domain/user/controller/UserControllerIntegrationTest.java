@@ -147,7 +147,7 @@ class UserControllerIntegrationTest {
 				findUserTeam2.getSportsCategory(), findUserTeam2.getLogoImageUrl())
 		);
 		FindProfileResponse profileResponse = new FindProfileResponse(findUser.getNickname(),
-			findUser.getProfileImageUrl(), null, reviewResponse,
+			findUser.getProfileImageUrl(), findUser.getEmail(), null, reviewResponse,
 			teamResponses);
 
 		String response = objectMapper.writeValueAsString(new ApiResponse<>(profileResponse));

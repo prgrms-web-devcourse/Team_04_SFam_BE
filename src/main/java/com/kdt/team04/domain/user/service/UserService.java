@@ -88,6 +88,7 @@ public class UserService {
 		return FindProfileResponse.builder()
 			.nickname(foundUser.getNickname())
 			.profileImageUrl(foundUser.getProfileImageUrl())
+			.email(foundUser.getEmail())
 			.localName(userLocalName)
 			.review(review)
 			.teams(teams)
